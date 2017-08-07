@@ -9,10 +9,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.dianedun.R;
 import cn.dianedun.tools.AppManager;
@@ -28,10 +30,17 @@ public abstract class BaseTitlActivity extends Activity {
     private TextView vt_tv_title;
     private Toast mToast;
     private RelativeLayout rl_titleback;
+    protected Context mContext;
+    protected Class<?> mClassThis;
+
+    @Bind(R.id.vt_btn_left)
+    ImageView vt_btn_left;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mContext = this;
+        mClassThis = this.getClass();
         AppManager.getInstance().addActivity(this);
     }
 
@@ -52,14 +61,25 @@ public abstract class BaseTitlActivity extends Activity {
         mDeadStatusView.getLayoutParams().height = CommonUtil.getStatusBarHeight(this);
     }
 
-    protected void setStatusColor(@ColorInt int color) {
-        mDeadStatusView.setBackgroundColor(color);
-    }
 
     protected void setTitleBack(int resource) {
         rl_titleback = (RelativeLayout) findViewById(R.id.rl_titleback);
         rl_titleback.setBackgroundResource(resource);
 
+    }
+
+    protected void setImgLeftVisibility(int visibility) {
+        vt_btn_left.setVisibility(visibility);
+        vt_btn_left.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppManager.getInstance().finishActivity(mClassThis);
+            }
+        });
+    }
+
+    protected void setImgLeft(int resource) {
+        vt_btn_left.setBackgroundResource(resource);
     }
 
 

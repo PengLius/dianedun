@@ -2,6 +2,7 @@ package cn.dianedun.view.BottomBarView;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.v4.view.ViewCompat;
@@ -53,7 +54,9 @@ public class BottomBar extends LinearLayout {
 //        shadowView.setBackgroundResource(R.drawable.actionbar_shadow_up);
 //        addView(shadowView, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
         mTabLayout = new LinearLayout(context);
-        mTabLayout.setBackgroundColor(Color.parseColor("#000000"));
+//        mTabLayout.setBackgroundColor(Color.parseColor("#000000"));
+//        mTabLayout.setBackgroundDrawable(new
+//                ColorDrawable(Color.TRANSPARENT));
         mTabLayout.setOrientation(LinearLayout.HORIZONTAL);
         addView(mTabLayout, new LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
 

@@ -14,7 +14,6 @@ import static cn.dianedun.base.Constant.TOOLBAR_TYPE;
 
 public class BaseFragment extends com.vise.xsnow.ui.BaseFragment {
 
-
     @Override
     protected int getLayoutID() {
         return 0;

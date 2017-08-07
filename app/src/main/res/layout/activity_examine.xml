@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/backall"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="30dp">
+
+                <TextView
+                    android:id="@+id/tv_examine_gdhs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="工  单  号："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:id="@+id/tv_annul_gdh"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/tv_examine_gdhs"
+                    android:text="123456789"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:id="@+id/tv_examine_sqrs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_examine_gdhs"
+                    android:layout_marginTop="20dp"
+                    android:text="申  请  人："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:id="@+id/tv_examine_sqr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/tv_annul_gdh"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_toRightOf="@+id/tv_examine_sqrs"
+                    android:text="张三"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/hoem_jg_yellow" />
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="时        间："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:id="@+id/tv_annul_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/tv_annul_gdhs"
+                    android:text="2016-5-12 23:20:11"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="原        因："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/tv_annul_gdhs"
+                    android:text="小区住户电压异常"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="地        点："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:id="@+id/tv_annul_adr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/tv_annul_gdhs"
+                    android:text="保定市北市区炫彩soho"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="详细地址："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:id="@+id/tv_annul_xxadr"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/tv_annul_gdhs"
+                    android:text="保定市北市区炫彩soho"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:background="#00B168"
+                android:gravity="center"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:text="处理详情"
+                android:textColor="#000"
+                android:textSize="@dimen/content_text_s14" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@mipmap/dot_null"
+                    android:drawablePadding="10dp"
+                    android:gravity="center_vertical"
+                    android:text="审批通过"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_weight="1"
+                    android:drawableLeft="@mipmap/dot_bule"
+                    android:drawablePadding="10dp"
+                    android:gravity="center_vertical"
+                    android:text="驳回申请"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+
+
+            </LinearLayout>
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_marginTop="10dp"
+                android:background="#6019246B"></RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:src="@mipmap/button_blue" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:text="提交"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s18" />
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+
+</LinearLayout>
