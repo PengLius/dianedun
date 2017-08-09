@@ -40,6 +40,7 @@ public class MessageActivity extends BaseTitlActivity {
     }
 
 
+
     private class IndentCusAdapter extends BaseAdapter {
         @Override
         public int getCount() {

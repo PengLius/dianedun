@@ -20,4 +20,5 @@ public class ExamineActivity extends BaseTitlActivity {
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
     }
+
 }

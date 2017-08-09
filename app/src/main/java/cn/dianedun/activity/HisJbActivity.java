@@ -36,6 +36,7 @@ public class HisJbActivity extends BaseTitlActivity {
         lv_hisjb.setAdapter(adapter);
     }
 
+
     private class IndentCusAdapter extends BaseAdapter {
 
 

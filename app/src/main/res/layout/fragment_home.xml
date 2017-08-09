@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/backall"
@@ -61,4 +61,40 @@
         android:layout_height="wrap_content"
         android:divider="@null"></ListView>
 
-</LinearLayout>
+    <RelativeLayout
+        android:id="@+id/rl_home"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="120dp"
+            android:layout_height="80dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="5dp"
+            android:background="@mipmap/home_side"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_home_hisjb"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:text="历史警报"
+                android:textColor="#FFF"
+                android:textSize="@dimen/content_text_s14" />
+
+            <TextView
+                android:id="@+id/tv_home_hisgd"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:gravity="center"
+                android:text="历史工单"
+                android:textColor="#FFF"
+                android:textSize="@dimen/content_text_s14" />
+        </LinearLayout>
+    </RelativeLayout>
+
+</RelativeLayout>

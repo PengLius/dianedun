@@ -14,6 +14,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.vise.xsnow.ui.*;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.dianedun.R;
@@ -35,6 +37,9 @@ public abstract class BaseTitlActivity extends Activity {
 
     @Bind(R.id.vt_btn_left)
     ImageView vt_btn_left;
+
+    @Bind(R.id.vt_img_right)
+    ImageView vt_img_right;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,6 +81,18 @@ public abstract class BaseTitlActivity extends Activity {
                 AppManager.getInstance().finishActivity(mClassThis);
             }
         });
+    }
+
+    protected void setImgRightVisibility(int visibility) {
+        vt_img_right.setVisibility(visibility);
+    }
+
+    protected void setImgRight(int resource) {
+        vt_img_right.setImageResource(resource);
+    }
+
+    protected void setImgRightOnClick(View.OnClickListener listener) {
+        vt_img_right.setOnClickListener(listener);
     }
 
     protected void setImgLeft(int resource) {

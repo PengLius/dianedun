@@ -20,4 +20,5 @@ public class HisDetailsActivity extends BaseTitlActivity {
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
     }
+
 }

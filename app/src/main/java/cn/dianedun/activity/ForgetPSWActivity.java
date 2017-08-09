@@ -21,4 +21,5 @@ public class ForgetPSWActivity extends BaseTitlActivity {
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
     }
+
 }

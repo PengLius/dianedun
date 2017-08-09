@@ -7,20 +7,18 @@ import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 
 /**
- * Created by Administrator on 2017/8/7.
+ * Created by Administrator on 2017/8/8.
  */
 
-public class AnnulActivity extends BaseTitlActivity {
+public class ApplyGdActivity extends BaseTitlActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_annul);
-        setTvTitleText("工单撤销");
+        setContentView(R.layout.activity_amendgd);
+        setTvTitleText("工单申请");
         setTitleBack(R.mipmap.home_backg_rightnull);
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
     }
-
-
 
 }

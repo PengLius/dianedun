@@ -21,4 +21,5 @@ public class DetailsingActivity extends BaseTitlActivity{
         setImgLeft(R.mipmap.bt_back);
     }
 
+
 }

@@ -37,20 +37,15 @@ public abstract class BaseTitlFragment extends SupportFragment {
     private boolean isOnStartRegisterBus = false;
     private TextView vt_tv_right;
 
-    @Bind(R.id.rl_titleback)
     RelativeLayout rl_titleback;
 
-    @Bind(R.id.vt_btn_left)
     ImageView vt_btn_left;
 
-    @Bind(R.id.vt_img_right)
     ImageView vt_img_right;
 
-    @Bind(R.id.vt_tv_title)
     TextView mTvTitle;
 
-    @Bind(R.id.ftr_dead_statusbg)
-    public View mDeadStatusView;
+    View mDeadStatusView;
 
     @Override
     public void onAttach(Activity activity) {
@@ -64,6 +59,13 @@ public abstract class BaseTitlFragment extends SupportFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = (ViewGroup) inflater.inflate(R.layout.fragment_toolbar_root, container, false);
         View mContentView = inflater.inflate(getLayoutID(), mRootView, false);
+
+        rl_titleback = (RelativeLayout) mRootView.findViewById(R.id.rl_titleback);
+        vt_btn_left = (ImageView) mRootView.findViewById(R.id.vt_btn_left);
+        vt_img_right = (ImageView) mRootView.findViewById(R.id.vt_img_right);
+        mTvTitle = (TextView) mRootView.findViewById(R.id.vt_tv_title);
+        mDeadStatusView =mRootView.findViewById(R.id.ftr_dead_statusbg);
+
         ((ViewGroup) mRootView.findViewById(R.id.ftr_fl_container)).addView(mContentView);
         vt_tv_right = (TextView) mRootView.findViewById(R.id.vt_tv_right);
         ButterKnife.bind(this, mRootView);
