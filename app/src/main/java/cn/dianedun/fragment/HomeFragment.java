@@ -88,13 +88,13 @@ public class HomeFragment extends BaseTitlFragment {
                     rl_home.setVisibility(View.VISIBLE);
                     rightState = true;
                 }
-
             }
         });
         rl_home.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 rl_home.setVisibility(View.GONE);
+                rightState = false;
             }
         });
         tv_home_hisjb.setOnClickListener(new View.OnClickListener() {

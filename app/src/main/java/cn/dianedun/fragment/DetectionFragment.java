@@ -1,11 +1,18 @@
 package cn.dianedun.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.ImageView;
+import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -13,7 +20,10 @@ import java.util.List;
 
 import butterknife.Bind;
 import cn.dianedun.R;
+import cn.dianedun.activity.DetailsingActivity;
 import cn.dianedun.activity.DetectionActivity;
+import cn.dianedun.activity.DisposeJbActivity;
+import cn.dianedun.activity.HisWorkOrderActivity;
 import cn.dianedun.base.BaseFragment;
 import cn.dianedun.base.BaseTitlFragment;
 
@@ -38,6 +48,14 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Bind(R.id.tv_fdetection_sd)
     TextView tv_fdetection_sd;
 
+    @Bind(R.id.lv_detection)
+    ListView lv_detection;
+
+    @Bind(R.id.rl_detection)
+    RelativeLayout rl_detection;
+
+    private IndentCusAdapter adapter;
+    private boolean rightState = false;
 
     private List<Fragment> mList;
 
@@ -59,11 +77,26 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         setTvTitleText("监测");
         setTitleBack(R.mipmap.home_backg_leftnull);
         setImgRightVisibility(View.VISIBLE);
-        setImgRight(R.mipmap.home_look);
+        setImgRight(R.mipmap.jc_topright);
         setImgRightOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if (rightState) {
+                    rl_detection.setVisibility(View.GONE);
+                    rightState = false;
+                } else {
+                    rl_detection.setVisibility(View.VISIBLE);
+                    rightState = true;
+                }
+                adapter = new IndentCusAdapter();
+                lv_detection.setAdapter(adapter);
+            }
+        });
+        rl_detection.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                rl_detection.setVisibility(View.GONE);
+                rightState = false;
             }
         });
     }
@@ -193,5 +226,41 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         @Override
         public void onPageScrollStateChanged(int state) {
         }
+    }
+
+    private class IndentCusAdapter extends BaseAdapter {
+
+        @Override
+        public int getCount() {
+            return 6;
+        }
+
+        @Override
+        public Object getItem(int position) {
+            return 0;
+        }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+        @Override
+        public View getView(final int position, View convertView, ViewGroup parent) {
+            final Cache cache;
+            if (convertView == null) {
+                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_detection, null);
+                cache = new Cache();
+                convertView.setTag(cache);
+            } else {
+                cache = (Cache) convertView.getTag();
+            }
+            return convertView;
+        }
+    }
+
+    class Cache {
+        TextView tv_grouponall_name, tv_grouponall_from, tv_grouponall_offered;
+        ImageView img_grouponall_head;
     }
 }

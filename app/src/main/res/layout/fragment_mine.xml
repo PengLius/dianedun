@@ -64,9 +64,8 @@
                         android:layout_height="wrap_content"
                         android:layout_alignParentRight="true"
                         android:layout_centerVertical="true"
-                        android:src="@mipmap/my_blue_back"
                         android:layout_marginRight="10dp"
-                        />
+                        android:src="@mipmap/my_blue_back" />
 
                 </RelativeLayout>
 
@@ -81,6 +80,7 @@
             </LinearLayout>
 
             <LinearLayout
+                android:id="@+id/ll_mine_xgdlmm"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
@@ -119,11 +119,12 @@
                 android:background="#25684A" />
 
             <LinearLayout
+                android:id="@+id/ll_mine_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -157,11 +158,12 @@
                 android:background="#25684A" />
 
             <LinearLayout
+                android:id="@+id/ll_mine_phone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -197,11 +199,12 @@
                 android:background="#25684A" />
 
             <LinearLayout
+                android:id="@+id/ll_mine_we"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
@@ -235,11 +238,12 @@
                 android:background="#25684A" />
 
             <LinearLayout
+                android:id="@+id/ll_mine_jcgx"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginTop="20dp"
                 android:gravity="center_vertical"
                 android:orientation="horizontal">
 
