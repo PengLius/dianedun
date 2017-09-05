@@ -35,11 +35,8 @@ public abstract class BaseTitlActivity extends Activity {
     protected Context mContext;
     protected Class<?> mClassThis;
 
-    @Bind(R.id.vt_btn_left)
-    ImageView vt_btn_left;
-
-    @Bind(R.id.vt_img_right)
-    ImageView vt_img_right;
+    private ImageView vt_btn_left;
+    private ImageView vt_img_right;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +51,8 @@ public abstract class BaseTitlActivity extends Activity {
         super.setContentView(layoutResID);
         mRootView = (ViewGroup) LayoutInflater.from(this).inflate(R.layout.activity_toolbar_root, null);
         mContentView = LayoutInflater.from(this).inflate(layoutResID, null);
+        vt_img_right = (ImageView) mRootView.findViewById(R.id.vt_img_right);
+        vt_btn_left = (ImageView) mRootView.findViewById(R.id.vt_btn_left);
         ((ViewGroup) mRootView.findViewById(R.id.ftr_fl_container)).addView(mContentView);
         super.setContentView(mRootView);
         ButterKnife.bind(this, mRootView);
@@ -78,7 +77,8 @@ public abstract class BaseTitlActivity extends Activity {
         vt_btn_left.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AppManager.getInstance().finishActivity(mClassThis);
+//                AppManager.getInstance().finishActivity(mClassThis);
+                finish();
             }
         });
     }

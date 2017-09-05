@@ -71,7 +71,7 @@ public class TemperatureFragment extends Fragment {
                 cache.tv_item_temname.setText("变压器温度");
             } else if (position == 4) {
                 cache.ll_temperature.setVisibility(View.VISIBLE);
-                cache.tv_item_temname.setText("母牌温度");
+                cache.tv_item_temname.setText("母排温度");
             } else {
                 cache.ll_temperature.setVisibility(View.GONE);
             }

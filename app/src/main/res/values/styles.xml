@@ -57,7 +57,14 @@
         <attr name="upv_automeasure" format="boolean" />
         <attr name="upv_itemratio" format="float" />
     </declare-styleable>
-
+    <style name="loading_dialog" parent="android:style/Theme.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowBackground">@drawable/loading_bg</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+    <string name="filter_vcode">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</string>
 
     <style name="tab">
         <item name="android:layout_width">wrap_content</item>
@@ -83,5 +90,9 @@
     <style name="Animation_Bottom_Dialog">
         <item name="android:windowEnterAnimation">@anim/pop_action_sheet_enter</item>
         <item name="android:windowExitAnimation">@anim/pop_action_sheet_exit</item>
+    </style>
+    <style name="MenuAnimationFade">
+        <item name="android:windowEnterAnimation">@anim/menu_fadein</item>
+        <item name="android:windowExitAnimation">@anim/menu_fadeout</item>
     </style>
 </resources>

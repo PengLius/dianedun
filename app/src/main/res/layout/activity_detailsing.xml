@@ -76,7 +76,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_annul_gdhs"
@@ -94,7 +94,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="时        间："
+                    android:text="开始时间："
                     android:textColor="#00B168"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -107,6 +107,30 @@
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="结束时间："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/tv_annul_gdhs"
+                    android:text="2017-2-7 14:22:11"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+            </LinearLayout>
+
 
             <LinearLayout
                 android:layout_width="match_parent"

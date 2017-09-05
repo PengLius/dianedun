@@ -28,17 +28,17 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@mipmap/login_phone" />
+                android:background="@mipmap/user" />
 
             <EditText
-                android:id="@+id/ed_login_phone"
+                android:id="@+id/ed_login_user"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="15dp"
                 android:layout_weight="1"
                 android:background="@null"
-                android:hint="请输入登录密码"
-                android:inputType="textPassword"
+                android:digits="@string/filter_vcode"
+                android:hint="请输入用户名"
                 android:maxLength="12"
                 android:textColor="#FFFFFF"
                 android:textColorHint="#AAC2EB"
@@ -50,7 +50,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
-                android:layout_marginTop="5dp"
                 android:background="@mipmap/login_clear" />
         </LinearLayout>
 
@@ -107,13 +106,15 @@
             android:background="#25684A" />
 
         <LinearLayout
+            android:id="@+id/ll_login_yz"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
             android:layout_marginTop="20dp"
             android:gravity="center_vertical"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -204,6 +205,7 @@
             </LinearLayout>
 
             <TextView
+                android:id="@+id/tv_login_forget"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"
@@ -215,27 +217,25 @@
         </RelativeLayout>
 
         <RelativeLayout
+            android:id="@+id/rl_login_ok"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            >
+            android:layout_height="wrap_content">
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:src="@mipmap/button_blue"
-                android:layout_centerVertical="true"
                 android:layout_centerHorizontal="true"
-                />
+                android:layout_centerVertical="true"
+                android:src="@mipmap/button_blue" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_centerVertical="true"
                 android:text="登录"
                 android:textColor="#FFF"
-                android:textSize="@dimen/content_text_s18"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"
-                />
+                android:textSize="@dimen/content_text_s18" />
 
         </RelativeLayout>
 

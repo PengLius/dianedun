@@ -17,6 +17,9 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    android {
+        useLibrary 'org.apache.http.legacy'
+    }
 }
 
 dependencies {
@@ -27,4 +30,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
     compile project(':xsnow')
+    compile 'com.jiechic.library:xUtils:2.6.14'
+
 }

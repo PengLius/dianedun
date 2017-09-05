@@ -3,6 +3,8 @@ package cn.dianedun.activity;
 import android.os.Bundle;
 import android.view.View;
 
+import com.bumptech.glide.Glide;
+
 import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 

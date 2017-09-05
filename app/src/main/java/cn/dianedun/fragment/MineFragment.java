@@ -2,6 +2,7 @@ package cn.dianedun.fragment;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.LinearLayout;
@@ -10,6 +11,7 @@ import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.activity.AmendPSWActivity;
 import cn.dianedun.activity.MessageActivity;
+import cn.dianedun.activity.PersonActivity;
 import cn.dianedun.activity.WeActivity;
 import cn.dianedun.base.BaseTitlFragment;
 
@@ -34,6 +36,9 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
     @Bind(R.id.ll_mine_jcgx)
     LinearLayout ll_mine_jcgx;
 
+    @Bind(R.id.ll_mine_person)
+    LinearLayout ll_mine_person;
+
     private Intent intent;
 
     public static MineFragment getInstance() {
@@ -57,6 +62,7 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
         ll_mine_phone.setOnClickListener(this);
         ll_mine_we.setOnClickListener(this);
         ll_mine_jcgx.setOnClickListener(this);
+        ll_mine_person.setOnClickListener(this);
     }
 
     @Override
@@ -82,8 +88,10 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
                 startActivity(intent);
                 break;
             case R.id.ll_mine_phone:
-
-
+                intent = new Intent(Intent.ACTION_DIAL);
+                Uri data = Uri.parse("tel:" + 123456789);
+                intent.setData(data);
+                startActivity(intent);
                 break;
             case R.id.ll_mine_we:
                 intent = new Intent(getActivity(), WeActivity.class);
@@ -91,8 +99,12 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
                 break;
             case R.id.ll_mine_jcgx:
 
-
                 break;
+            case R.id.ll_mine_person:
+                intent = new Intent(getActivity(), PersonActivity.class);
+                startActivity(intent);
+                break;
+
             default:
                 break;
         }

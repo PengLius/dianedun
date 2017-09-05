@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import com.vise.xsnow.event.EventSubscribe;
 
+import java.util.HashMap;
+
 import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.base.BaseActivity;
@@ -12,6 +14,7 @@ import cn.dianedun.fragment.DetectionFragment;
 import cn.dianedun.fragment.HomeFragment;
 import cn.dianedun.fragment.MineFragment;
 import cn.dianedun.fragment.VideoFragment;
+import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.BottomBarView.BottomBar;
 import cn.dianedun.view.BottomBarView.BottomBarTab;
 import me.yokeyword.fragmentation.SupportFragment;
