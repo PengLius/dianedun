@@ -1,13 +1,17 @@
 package cn.dianedun.tools;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.view.animation.LinearInterpolator;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -27,6 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import cn.dianedun.R;
+import cn.dianedun.activity.LoginActivity;
 
 /**
  * Created by Administrator on 2017/9/2.
@@ -39,6 +44,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
     private HashMap<String, String> hashMap;
     private String result;
     private Callback callback;
+    private Intent intent;
 
     @Override
     protected void onPreExecute() {
@@ -69,6 +75,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
         if (hashMap.size() > 0) {
             for (Map.Entry<String, String> entry : hashMap.entrySet()) {
                 params1.addBodyParameter(entry.getKey(), entry.getValue());
+                Log.e(entry.getKey(), entry.getValue());
             }
         }
         if (token != null && !token.equals("")) {
@@ -85,6 +92,16 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                         if (callback != null) {
                             callback.send(result);
                         }
+                    } else if (jsonObject.getString("code").equals("2001")) {
+                        Toast.makeText(context, "授权验证失败，请重新登录", Toast.LENGTH_SHORT).show();
+                        SharedPreferences sharedPreferences = context.getSharedPreferences("user",
+                                Activity.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("zddl", "n");
+                        editor.commit();
+                        intent = new Intent(context, LoginActivity.class);
+                        context.startActivity(intent);
+                        AppManager.getInstance().finishAllActivity();
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -114,8 +131,10 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
         // 加载动画
         Animation hyperspaceJumpAnimation = AnimationUtils.loadAnimation(
                 context, R.anim.load_animation);
-        // 使用ImageView显示动画
+        LinearInterpolator lir = new LinearInterpolator();
+        hyperspaceJumpAnimation.setInterpolator(lir);
         spaceshipImage.startAnimation(hyperspaceJumpAnimation);
+
         tipTextView.setText(msg);// 设置加载信息
         Dialog loadingDialog = new Dialog(context, R.style.loading_dialog);// 创建自定义样式dialog
         loadingDialog.setCancelable(false);// 不可以用“返回键”取消

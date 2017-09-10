@@ -15,7 +15,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="230dp"
+        android:layout_height="240dp"
         android:layout_marginTop="10dp"
         android:background="@mipmap/home_item_backg"
         android:layout_marginLeft="5dp"
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="25dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="35dp"
+            android:layout_marginTop="25dp"
             android:gravity="center_vertical"
             android:orientation="horizontal">
 
@@ -82,7 +82,7 @@
                         android:layout_height="wrap_content"
                         android:background="@mipmap/home_4side_green"
                         android:gravity="center"
-                        android:text="时   间"
+                        android:text="开始时间"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 
@@ -91,17 +91,44 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_weight="1"
-                        android:text="2017-3-22 14:24:18—\n2017-3-28 14:24:18"
+                        android:text="2017-3-22 14:24:18"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="25dp"
+                    android:layout_marginRight="20dp"
+                    android:layout_marginTop="15dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="64dp"
+                        android:layout_height="wrap_content"
+                        android:background="@mipmap/home_4side_green"
+                        android:gravity="center"
+                        android:text="结束时间"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="20dp"
+                        android:layout_weight="1"
+                        android:text="2017-3-22 14:24:18"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+                </LinearLayout>
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
                     android:layout_marginRight="20dp"
-                    android:layout_marginTop="20dp"
+                    android:layout_marginTop="10dp"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -131,7 +158,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="10dp"
                 android:layout_marginRight="10dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="40dp"
                 android:src="@mipmap/home_rightback_green" />
         </LinearLayout>
 

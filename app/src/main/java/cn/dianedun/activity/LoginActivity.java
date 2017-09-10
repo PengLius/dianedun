@@ -301,6 +301,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             @Override
             public void onFailure(HttpException error, String msg) {
                 showToast("请检查网络");
+                Log.e("error",error.toString());
+                Log.e("msg",msg);
                 dialog.dismiss();
             }
         });

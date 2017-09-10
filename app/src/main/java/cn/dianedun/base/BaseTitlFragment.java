@@ -47,6 +47,8 @@ public abstract class BaseTitlFragment extends SupportFragment {
 
     View mDeadStatusView;
 
+    public  Bundle savedInstanceState;
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -59,7 +61,7 @@ public abstract class BaseTitlFragment extends SupportFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
         mRootView = (ViewGroup) inflater.inflate(R.layout.fragment_toolbar_root, container, false);
         View mContentView = inflater.inflate(getLayoutID(), mRootView, false);
-
+        this.savedInstanceState =savedInstanceState;
         rl_titleback = (RelativeLayout) mRootView.findViewById(R.id.rl_titleback);
         vt_btn_left = (ImageView) mRootView.findViewById(R.id.vt_btn_left);
         vt_img_right = (ImageView) mRootView.findViewById(R.id.vt_img_right);

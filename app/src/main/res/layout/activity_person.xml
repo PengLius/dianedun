@@ -11,12 +11,17 @@
         android:layout_marginTop="30dp"
         android:gravity="center"
         android:orientation="vertical">
-
-        <ImageView
+        <com.thinkcool.circletextimageview.CircleTextImageView
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/img_person_head"
             android:layout_width="100dp"
-            android:layout_height="100dp" />
+            android:layout_height="100dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="20dp"
+            app:citv_border_color="#1761A7"
+            android:src="@mipmap/ic_launcher"
+            app:citv_border_width="2dp" />
     </LinearLayout>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -45,7 +50,10 @@
 
         <ImageView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:src="@mipmap/login_clear"
+            android:visibility="invisible"
+            />
     </LinearLayout>
 
     <View
@@ -73,12 +81,13 @@
             android:textSize="@dimen/content_text_s14" />
 
         <EditText
+            android:id="@+id/ed_person_nc"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ed_null"
+            android:background="@null"
             android:gravity="right"
             android:hint="请输入您的昵称"
             android:maxLength="12"
@@ -88,7 +97,9 @@
             android:textSize="@dimen/content_text_s14" />
 
         <ImageView
+            android:id="@+id/img_person_clear"
             android:layout_width="wrap_content"
+            android:visibility="invisible"
             android:layout_height="wrap_content"
             android:src="@mipmap/login_clear" />
     </LinearLayout>
@@ -118,12 +129,13 @@
             android:textSize="@dimen/content_text_s14" />
 
         <EditText
+            android:id="@+id/ed_person_lxr"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dp"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
-            android:background="@drawable/ed_null"
+            android:background="@null"
             android:gravity="right"
             android:hint="请输入您的姓名或称谓"
             android:maxLength="12"
@@ -133,6 +145,8 @@
             android:textSize="@dimen/content_text_s14" />
 
         <ImageView
+            android:visibility="invisible"
+            android:id="@+id/img_person_clear1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/login_clear" />

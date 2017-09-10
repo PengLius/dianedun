@@ -1,22 +1,44 @@
 package cn.dianedun.activity;
 
+import android.app.Dialog;
 import android.content.Context;
-import android.graphics.drawable.BitmapDrawable;
+import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.MediaPlayer;
+import android.media.MediaRecorder;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.lidroid.xutils.HttpUtils;
+import com.lidroid.xutils.exception.HttpException;
+import com.lidroid.xutils.http.RequestParams;
+import com.lidroid.xutils.http.ResponseInfo;
+import com.lidroid.xutils.http.callback.RequestCallBack;
+import com.lidroid.xutils.http.client.HttpRequest;
+
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +50,9 @@ import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.bean.ApplyAdreesBean;
 import cn.dianedun.bean.ApplyPresonBean;
-import cn.dianedun.fragment.DetectionFragment;
+import cn.dianedun.bean.ResultBean;
+import cn.dianedun.bean.ToJsonBean;
+import cn.dianedun.bean.UpdataBean;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.GsonUtil;
@@ -36,6 +60,8 @@ import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.DateTimeDialog;
 import cn.dianedun.view.DateTimeDialogOnlyTime;
 import cn.dianedun.view.DateTimeDialogOnlyYMD;
+import dev.xesam.android.toolbox.timer.CountDownTimer;
+import dev.xesam.android.toolbox.timer.CountTimer;
 
 /**
  * Created by Administrator on 2017/8/8.
@@ -74,15 +100,40 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     @Bind(R.id.img_amendgd_yuyin)
     ImageView img_amendgd_yuyin;
 
+    @Bind(R.id.rl_amendgd_tj)
+    RelativeLayout rl_amendgd_tj;
+
+    @Bind(R.id.ed_amendgd_xxadress)
+    EditText ed_amendgd_xxadress;
+
+    @Bind(R.id.ed_amendgd_sqyy)
+    EditText ed_amendgd_sqyy;
+
+    @Bind(R.id.rl_amendgd_ly)
+    RelativeLayout rl_amendgd_ly;
+
+    @Bind(R.id.ll_amendgd_star)
+    LinearLayout ll_amendgd_star;
+
+    @Bind(R.id.img_amendgd_del)
+    ImageView img_amendgd_del;
+
+    @Bind(R.id.tv_amendgd_lytime)
+    TextView tv_amendgd_lytime;
+
+    @Bind(R.id.img_amendgd_lyic)
+    ImageView img_amendgd_lyic;
+
 
     private GridView gv_amendgd;
     private TextView tv_sqr_qd, tv_sqr_cz;
+    private LinearLayout ll_adress_close;
     private List<String> alllist;
     int STARTTIME = 0;
     int ENDTTIME = 1;
     String level = "1";
-    private View view, view2;
-    private PopupWindow pop, pop2;
+    private View view, view2, view3;
+    private PopupWindow pop, pop2, pop3;
     private GirdAdapter adapter;
     private ListViewAdapter listAdapters;
     private ListView lv_itemadress;
@@ -94,10 +145,29 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private SimpleDateFormat mFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private List<String> nameList;
     private boolean includs = false;
+    private int type = 0;
+    private UpdataBean updataBean;
+    private RelativeLayout rl_luyin_type;
+    private String fileName = "/sdcard/myHead/audiorecordtest.mp3";
+    private Dialog diaglog;
+    private ImageView img_luyin_uploading, img_yuyin_close, img_luyin;
+    private MediaPlayer player;
+    private MediaRecorder recorder;
+    private TextView tv_luyin_timer;
+    String beginTime, endTime;
+    private CountTimer countTimer;
+    private ToJsonBean toJsonBean;
+    private boolean offs = false;
+    private String obj2 = "";
+    private CountDownTimer countDownTimer;
+    private int playTyp = 0;
+    private AnimationDrawable animationDrawable;
+    private Date startTimer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_amendgd);
         setTvTitleText("工单申请");
         setTitleBack(R.mipmap.home_backg_rightnull);
@@ -106,14 +176,24 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
         LayoutInflater inflaters = LayoutInflater.from(this);
         view = inflaters.inflate(R.layout.popupwindow_sqr, null);
         view2 = inflaters.inflate(R.layout.popupwindow_adress, null);
+        view3 = inflaters.inflate(R.layout.popupwindow_luyin, null);
+//        tv_amendgd_adress.setText("00'00\"");
 
         gv_amendgd = (GridView) view.findViewById(R.id.gv_amendgd);
         tv_sqr_qd = (TextView) view.findViewById(R.id.tv_sqr_qd);
         tv_sqr_cz = (TextView) view.findViewById(R.id.tv_sqr_cz);
         lv_itemadress = (ListView) view2.findViewById(R.id.lv_itemadress);
+        ll_adress_close = (LinearLayout) view2.findViewById(R.id.ll_adress_close);
+        rl_luyin_type = (RelativeLayout) view3.findViewById(R.id.rl_luyin_type);
+        img_luyin_uploading = (ImageView) view3.findViewById(R.id.img_luyin_uploading);
+        img_yuyin_close = (ImageView) view3.findViewById(R.id.img_yuyin_close);
+        img_luyin = (ImageView) view3.findViewById(R.id.img_luyin);
+        tv_luyin_timer = (TextView) view3.findViewById(R.id.tv_luyin_timer);
 
         tv_amendgd_startime.setOnClickListener(this);
         tv_amendgd_endtime.setOnClickListener(this);
+        ll_amendgd_star.setOnClickListener(this);
+        img_amendgd_del.setOnClickListener(this);
         tv_sqr_qd.setOnClickListener(this);
         tv_sqr_cz.setOnClickListener(this);
         tv_amendgd_pt.setOnClickListener(this);
@@ -121,19 +201,49 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
         img_amendgd_add.setOnClickListener(this);
         ll_amendgd_adress.setOnClickListener(this);
         img_amendgd_yuyin.setOnClickListener(this);
+        rl_amendgd_tj.setOnClickListener(this);
+        rl_luyin_type.setOnClickListener(this);
+        img_luyin_uploading.setOnClickListener(this);
+        ll_adress_close.setOnClickListener(this);
+        img_yuyin_close.setOnClickListener(this);
+        countTimer = new CountTimer(1000) {
+            @Override
+            public void onTick(long millisFly) {
+                long js = millisFly / 1000;
+                long minute = millisFly / 1000 / 60;
+                long second = (millisFly - (minute * 1000 * 60)) / 1000;
+                if (minute < 10) {
+                    if (second < 10) {
+                        tv_luyin_timer.setText("0" + minute + ":" + "0" + second);
+                    } else {
+                        tv_luyin_timer.setText("0" + minute + ":" + second);
+                    }
+                } else {
+                    if (second < 10) {
+                        tv_luyin_timer.setText(minute + ":" + "0" + second);
+                    } else {
+                        tv_luyin_timer.setText(minute + ":" + second);
+                    }
+                }
 
-        view.setFocusableInTouchMode(true);
-        pop = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
-        pop.setAnimationStyle(R.style.MenuAnimationFade);
-        pop.setBackgroundDrawable(new BitmapDrawable());
+                if (js == 600 || js > 600) {
+                    countTimer.cancel();
+                    img_luyin.setImageResource(R.mipmap.bofang);
+                    recorder.stop();
+                    recorder.release();
+                    recorder = null;
+                    type = 3;
+                    showToast("录音时间到");
+                    offs = false;
+                }
+            }
+        };
 
-        view2.setFocusableInTouchMode(true);
-        pop2 = new PopupWindow(view2, ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, true);
-        pop2.setAnimationStyle(R.style.MenuAnimationFade);
-        pop2.setBackgroundDrawable(new BitmapDrawable());
         nameList = new ArrayList<>();
+
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     public void onClick(View v) {
         Drawable drawable = this.getResources().getDrawable(R.mipmap.amendgd_yellow);
@@ -150,16 +260,25 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
             case R.id.tv_amendgd_endtime:
                 //选择结束时间
-                dateTimeDialog = new DateTimeDialog(this, null, this, ENDTTIME);
-                showAll();
+                if (tv_amendgd_startime.getText() == null || tv_amendgd_startime.getText().toString().equals("")) {
+                    showToast("请先选择开始时间");
+                } else {
+                    dateTimeDialog = new DateTimeDialog(this, null, this, ENDTTIME);
+                    showAll();
+                }
                 break;
             case R.id.tv_amendgd_pt:
                 //普通
                 level = "1";
                 tv_amendgd_pt.setCompoundDrawables(drawable, null, null, null);
                 tv_amendgd_jj.setCompoundDrawables(drawable2, null, null, null);
-
                 break;
+            case R.id.ll_adress_close:
+                if (pop2.isShowing()) {
+                    pop2.dismiss();
+                }
+                break;
+
             case R.id.tv_amendgd_jj:
                 //紧急
                 level = "2";
@@ -196,7 +315,11 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 String name = "";
                 if (nameList.size() > 0) {
                     for (int i = 0; i < nameList.size(); i++) {
-                        name = name + nameList.get(i) + ",";
+                        if ((i + 1) != nameList.size()) {
+                            name = name + nameList.get(i) + ",";
+                        } else {
+                            name = name + nameList.get(i);
+                        }
                     }
                     tv_amendgd_name.setText(name);
                 } else {
@@ -220,7 +343,126 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
             case R.id.img_amendgd_yuyin:
                 //语音
+                showDialog3();
+                break;
+            case R.id.rl_amendgd_tj:
+                //提交
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                String applyTime = formatter.format(curDate);
+                String handlePersion = "";
+                if (nameList.size() > 0) {
+                    for (int i = 0; i < nameList.size(); i++) {
+                        if ((i + 1) != nameList.size()) {
+                            handlePersion = handlePersion + nameList.get(i) + ",";
+                        } else {
+                            handlePersion = handlePersion + nameList.get(i);
+                        }
+                    }
+                }
+                HashMap hashMap = new HashMap();
+                if (departId != null) {
+                    hashMap.put("departId", departId);
+                }
+                if (level != null) {
+                    hashMap.put("urgency", level);
+                }
+                if (applyTime != null) {
+                    hashMap.put("applyTime", applyTime + ":00");
+                }
+                if (handlePersion != null) {
+                    hashMap.put("handlePersion", handlePersion);
+                }
+                if (ed_amendgd_xxadress.getText() != null) {
+                    hashMap.put("address", ed_amendgd_xxadress.getText().toString());
+                }
+                if (beginTime != null) {
+                    hashMap.put("beginTime", beginTime + ":00");
+                }
+                if (endTime != null) {
+                    hashMap.put("endTime", endTime + ":00");
+                }
+                if (ed_amendgd_sqyy.getText() != null) {
+                    hashMap.put("cause", ed_amendgd_sqyy.getText().toString());
+                }
 
+//                if (!obj2.equals("")) {
+//                    hashMap.put("jsonStr", obj2);
+//                }
+                myAsyncTast = new MyAsyncTast(ApplyGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                    @Override
+                    public void send(String result) {
+                        ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
+                        if (bean.getCode() == 0) {
+                            showToast("工单提交成功");
+                            finish();
+                        } else {
+                            showToast(bean.getMsg());
+                        }
+                    }
+                });
+                myAsyncTast.execute();
+                break;
+            case R.id.rl_luyin_type:
+                //开始录音
+                if (type == 0) {
+                    type = 1;
+                    recorder.start();
+                    offs = true;
+                    img_luyin.setImageResource(R.mipmap.zanting);
+                    countTimer.start();
+                } else if (type == 1) {
+                    img_luyin.setImageResource(R.mipmap.bofang);
+                    recorder.pause();
+                    countTimer.pause();
+                    type = 4;
+                } else if (type == 3) {
+                    showToast("录音时间到");
+                } else if (type == 4) {
+                    type = 1;
+                    offs = true;
+                    img_luyin.setImageResource(R.mipmap.zanting);
+                    recorder.start();
+                    countTimer.resume();
+                }
+                break;
+            case R.id.img_luyin_uploading:
+                //上传录音
+                MyAsync myAsync = new MyAsync();
+                myAsync.execute();
+                break;
+            case R.id.img_yuyin_close:
+                //关闭录音弹窗
+                pop3.dismiss();
+                break;
+            case R.id.ll_amendgd_star:
+                //播放
+                if (playTyp == 0) {
+                    player.start();
+                    countDownTimer.start();
+                    playTyp = 1;
+                    img_amendgd_lyic.setImageResource(R.drawable.animation1);
+                    animationDrawable = (AnimationDrawable) img_amendgd_lyic.getDrawable();
+                    animationDrawable.start();
+                } else if (playTyp == 1) {
+                    img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
+                    player.pause();
+                    countDownTimer.pause();
+                    playTyp = 2;
+                    animationDrawable.stop();
+                } else {
+                    img_amendgd_lyic.setImageResource(R.drawable.animation1);
+                    animationDrawable = (AnimationDrawable) img_amendgd_lyic.getDrawable();
+                    player.start();
+                    countDownTimer.resume();
+                    playTyp = 1;
+                    animationDrawable.start();
+                }
+                break;
+            case R.id.img_amendgd_del:
+                //隐藏录音
+                rl_amendgd_ly.setVisibility(View.GONE);
+                obj2 = "";
                 break;
             default:
                 break;
@@ -236,8 +478,15 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     public void onDateSet(Date date, int type) {
         if (type == STARTTIME) {
             tv_amendgd_startime.setText(mFormatter.format(date) + "");
+            beginTime = mFormatter.format(date) + "";
+            startTimer = date;
         } else if (type == ENDTTIME) {
-            tv_amendgd_endtime.setText(mFormatter.format(date) + "");
+            if (startTimer.getTime() > date.getTime()) {
+                showToast("开始时间不能大于结束时间");
+            } else {
+                tv_amendgd_endtime.setText(mFormatter.format(date) + "");
+                endTime = mFormatter.format(date) + "";
+            }
         }
     }
 
@@ -251,13 +500,13 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
      */
     private void showDialog() {
         // TODO Auto-generated method stub
-        if (pop.isShowing()) {
-            // 隐藏窗口，如果设置了点击窗口外消失，则不需要此方式隐藏
-            pop.dismiss();
-        } else {
-            // 弹出窗口显示内容视图,默认以锚定视图的左下角为起点，这里为点击按钮
-            pop.showAtLocation(tv_amendgd_headView, Gravity.CENTER, 0, 0);
-        }
+        pop = new PopupWindow(view, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT, false);
+        pop.setTouchable(true);
+        pop.setFocusable(true);
+        pop.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        // 设置好参数之后再show
+        pop.showAsDropDown(tv_amendgd_headView);
     }
 
     /**
@@ -265,13 +514,54 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
      */
     private void showDialog2() {
         // TODO Auto-generated method stub
-        if (pop2.isShowing()) {
-            // 隐藏窗口，如果设置了点击窗口外消失，则不需要此方式隐藏
-            pop2.dismiss();
-        } else {
-            // 弹出窗口显示内容视图,默认以锚定视图的左下角为起点，这里为点击按钮
-            pop2.showAtLocation(tv_amendgd_headView, Gravity.CENTER, 0, 0);
+        pop2 = new PopupWindow(view2, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT, false);
+        pop2.setTouchable(true);
+        pop2.setFocusable(true);
+        pop2.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        // 设置好参数之后再show
+        pop2.showAsDropDown(tv_amendgd_headView);
+    }
+
+    /**
+     * 录音弹窗
+     */
+    private void showDialog3() {
+        // TODO Auto-generated method stub
+        recorder = new MediaRecorder();
+        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+        recorder.setOutputFile(fileName);
+        try {
+            recorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+        pop3 = new PopupWindow(view3, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT, false);
+        pop3.setTouchable(true);
+        pop3.setFocusable(true);
+        pop3.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onDismiss() {
+                img_luyin.setImageResource(R.mipmap.yuyin);
+                tv_luyin_timer.setText("00:00");
+                countTimer.cancel();
+                if (recorder != null && offs) {
+                    recorder.stop();
+                    recorder.release();
+                }
+                recorder = null;
+                offs = false;
+                type = 0;
+            }
+        });
+        pop3.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE);
+        // 设置好参数之后再show
+        pop3.showAsDropDown(tv_amendgd_headView);
+
     }
 
     /**
@@ -386,9 +676,10 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                     tv_amendgd_adress.setText(applyBean.getData().getResult().get(position).getDepartname());
                     departId = applyBean.getData().getResult().get(position).getId();
                     pop2.dismiss();
+                    nameList = new ArrayList<String>();
+                    tv_amendgd_name.setText("");
                 }
             });
-
 
             return convertView;
         }
@@ -402,5 +693,144 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
 
     class ListViewCache {
         TextView tv_item_adress;
+    }
+
+    class MyAsync extends AsyncTask<Object, Object, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            diaglog = createLoadingDialog(ApplyGdActivity.this, "上传文件中请稍后...");
+            diaglog.show();
+        }
+
+        @Override
+        protected String doInBackground(Object... params) {
+            HttpUtils httpUtils = new HttpUtils();
+            RequestParams param = new RequestParams();
+            param.addBodyParameter("file", new File(fileName));
+            param.addBodyParameter("type", "1");
+            param.addHeader("token", App.getInstance().getToken());
+            httpUtils.send(HttpRequest.HttpMethod.POST, AppConfig.UPLOADFILE, param,
+                    new RequestCallBack<String>() {
+                        @Override
+                        public void onFailure(HttpException error, String msg) {
+                            // TODO Auto-generated method stub
+                            showToast("上传失败");
+                            Log.e("error", error + "");
+                            Log.e("msg", msg + "");
+                            diaglog.dismiss();
+                        }
+
+                        @Override
+                        public void onSuccess(ResponseInfo<String> responseInfo) {
+                            // TODO Auto-generated method stub
+                            Log.e("result", responseInfo.result);
+                            updataBean = GsonUtil.parseJsonWithGson(responseInfo.result, UpdataBean.class);
+                            if (updataBean.getCode() == 0) {
+                                player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData()));
+                                showToast("上传成功");
+                                rl_amendgd_ly.setVisibility(View.VISIBLE);
+                                pop3.dismiss();
+                                toJsonBean = new ToJsonBean();
+                                toJsonBean.setOptionType(1);
+                                toJsonBean.setContents(updataBean.getData());
+                                toJsonBean.setType(4);
+                                Gson gson = new Gson();
+                                obj2 = "[" + gson.toJson(toJsonBean) + "]";
+                                long a = player.getDuration() / 1000 / 60;
+                                long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                                if (a < 10) {
+                                    if (b < 10) {
+                                        tv_amendgd_lytime.setText("0" + a + "'" + "0" + b + "\"");
+                                    } else {
+                                        tv_amendgd_lytime.setText("0" + a + "'" + b + "\"");
+                                    }
+                                } else {
+                                    if (b < 10) {
+                                        tv_amendgd_lytime.setText(a + "'" + "0" + b + "\"");
+                                    } else {
+                                        tv_amendgd_lytime.setText(a + "'" + b + "\"");
+                                    }
+                                }
+                                countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
+                                    @Override
+                                    public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
+                                        long f = millisUntilFinished / 1000 / 60;
+                                        long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                                        if (f < 10) {
+                                            if (m < 10) {
+                                                tv_amendgd_lytime.setText("0" + f + "'" + "0" + m + "\"");
+                                            } else {
+                                                tv_amendgd_lytime.setText("0" + f + "'" + m + "\"");
+                                            }
+                                        } else {
+                                            if (m < 10) {
+                                                tv_amendgd_lytime.setText(f + "'" + "0" + m + "\"");
+                                            } else {
+                                                tv_amendgd_lytime.setText(f + "'" + m + "\"");
+                                            }
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancel(long millisUntilFinished) {
+                                    }
+
+                                    @Override
+                                    public void onPause(long millisUntilFinished) {
+
+                                    }
+
+                                    @Override
+                                    public void onResume(long millisUntilFinished) {
+                                    }
+
+                                    @Override
+                                    public void onFinish() {
+                                        long a = player.getDuration() / 1000 / 60;
+                                        long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                                        if (a < 10) {
+                                            if (b < 10) {
+                                                tv_amendgd_lytime.setText("0" + a + "'" + "0" + b + "\"");
+                                            } else {
+                                                tv_amendgd_lytime.setText("0" + a + "'" + b + "\"");
+                                            }
+                                        } else {
+                                            if (b < 10) {
+                                                tv_amendgd_lytime.setText(a + "'" + "0" + b + "\"");
+                                            } else {
+                                                tv_amendgd_lytime.setText(a + "'" + b + "\"");
+                                            }
+                                        }
+                                        animationDrawable.stop();
+                                        img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
+                                        playTyp = 0;
+                                    }
+                                };
+                            }
+                            diaglog.dismiss();
+                        }
+                    });
+            return null;
+        }
+
+        public Dialog createLoadingDialog(Context context, String msg) {
+            LayoutInflater inflater = LayoutInflater.from(context);
+            View v = inflater.inflate(R.layout.dialog_loadings, null);// 得到加载view
+            LinearLayout layout = (LinearLayout) v.findViewById(R.id.dialog_view);// 加载布局
+            // main.xml中的ImageView
+            ImageView spaceshipImage = (ImageView) v.findViewById(R.id.img);
+            TextView tipTextView = (TextView) v.findViewById(R.id.tipTextView);// 提示文字
+            // 加载动画
+            Animation hyperspaceJumpAnimation = AnimationUtils.loadAnimation(
+                    context, R.anim.load_animation);
+            // 使用ImageView显示动画
+            spaceshipImage.startAnimation(hyperspaceJumpAnimation);
+            tipTextView.setText(msg);// 设置加载信息
+            Dialog loadingDialog = new Dialog(context, R.style.loading_dialog);// 创建自定义样式dialog
+            loadingDialog.setCancelable(false);// 不可以用“返回键”取消
+            loadingDialog.setContentView(layout);// 设置布局
+            return loadingDialog;
+        }
     }
 }

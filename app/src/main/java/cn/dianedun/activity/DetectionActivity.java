@@ -1,6 +1,5 @@
 package cn.dianedun.activity;
 
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -19,8 +18,7 @@ import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.base.BaseActivity;
 import cn.dianedun.fragment.DiYaFragment;
-import cn.dianedun.fragment.GaoYaFragment;
-import cn.dianedun.fragment.HomeFragment;
+import cn.dianedun.fragment.GaoCeFragment;
 import cn.dianedun.fragment.HumidityFragment;
 import cn.dianedun.fragment.TemperatureFragment;
 import cn.dianedun.tools.CommonUtil;
@@ -78,7 +76,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
     @Override
     protected void initData() {
         mList = new ArrayList<>();
-        mList.add(new GaoYaFragment("aaa"));
+        mList.add(new GaoCeFragment());
         mList.add(new DiYaFragment());
         mList.add(new TemperatureFragment());
         mList.add(new HumidityFragment());

@@ -1,30 +1,24 @@
 package cn.dianedun.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.dianedun.R;
-import cn.dianedun.activity.DetailsingActivity;
-import cn.dianedun.activity.DisposeJbActivity;
-import cn.dianedun.activity.MessageActivity;
 
 /**
  * Created by Administrator on 2017/8/8.
  */
 
-public class GaoYaFragment extends Fragment {
+public class GaoCeFragment extends Fragment {
 
     private IndentCusAdapter adapter;
 
@@ -33,11 +27,6 @@ public class GaoYaFragment extends Fragment {
 
     @Bind(R.id.lv_gaoya)
     ListView lv_gaoya;
-
-
-    public GaoYaFragment(String result) {
-        this.result = result;
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {

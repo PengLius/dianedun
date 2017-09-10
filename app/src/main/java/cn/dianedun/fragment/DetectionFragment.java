@@ -1,7 +1,7 @@
 package cn.dianedun.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -15,16 +15,18 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.model.LatLng;
+import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps2d.model.MarkerOptions;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
 import cn.dianedun.R;
-import cn.dianedun.activity.DetailsingActivity;
-import cn.dianedun.activity.DetectionActivity;
-import cn.dianedun.activity.DisposeJbActivity;
-import cn.dianedun.activity.HisWorkOrderActivity;
-import cn.dianedun.base.BaseFragment;
 import cn.dianedun.base.BaseTitlFragment;
 
 /**
@@ -54,6 +56,16 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Bind(R.id.rl_detection)
     RelativeLayout rl_detection;
 
+    @Bind(R.id.map)
+    MapView mapView;
+
+    AMap aMap;
+
+    List<HashMap<String, Double>> list;
+    List<String> markList;
+
+    private TextView title, snippet;
+
     private IndentCusAdapter adapter;
     private boolean rightState = false;
 
@@ -74,6 +86,12 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Override
     protected void initView(View contentView) {
         super.initView(contentView);
+        mapView.onCreate(savedInstanceState);
+        if (aMap == null) {
+            aMap = mapView.getMap();
+        }
+
+
         setTvTitleText("监测");
         setTitleBack(R.mipmap.home_backg_leftnull);
         setImgRightVisibility(View.VISIBLE);
@@ -104,7 +122,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Override
     protected void initData() {
         mList = new ArrayList<>();
-        mList.add(new GaoYaFragment("aaa"));
+        mList.add(new GaoCeFragment());
         mList.add(new DiYaFragment());
         mList.add(new TemperatureFragment());
         mList.add(new HumidityFragment());
@@ -116,6 +134,83 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         vp_fdetection.setAdapter(myAdapter);
         vp_fdetection.setCurrentItem(0);
         vp_fdetection.setOnPageChangeListener(new MyOnPageChangeListener());
+        markList = new ArrayList<>();
+        list = new ArrayList<>();
+        HashMap<String, Double> hashMap = new HashMap<>();
+        hashMap.put("jd", 39.906901);
+        hashMap.put("wd", 116.397);
+        list.add(hashMap);
+        hashMap = new HashMap<>();
+        hashMap.put("jd", 39.906901);
+        hashMap.put("wd", 116.396);
+        list.add(hashMap);
+        hashMap = new HashMap<>();
+        hashMap.put("jd", 39.906901);
+        hashMap.put("wd", 116.395);
+        list.add(hashMap);
+        hashMap = new HashMap<>();
+        hashMap.put("jd", 39.906901);
+        hashMap.put("wd", 116.394);
+        list.add(hashMap);
+        hashMap = new HashMap<>();
+        hashMap.put("jd", 39.906901);
+        hashMap.put("wd", 116.393);
+        list.add(hashMap);
+        iniDt();
+
+    }
+
+    /**
+     * 地图设置点
+     */
+    private void iniDt() {
+        AMap.InfoWindowAdapter infoWindowAdapter = new AMap.InfoWindowAdapter() {
+            @Override
+            public View getInfoWindow(Marker marker) {
+                if (infoWindow == null) {
+                    infoWindow = LayoutInflater.from(getActivity()).inflate(
+                            R.layout.custom_info_window, null);
+                }
+                render(marker, infoWindow);
+                return infoWindow;
+            }
+
+            View infoWindow = null;
+
+            @Override
+            public View getInfoContents(Marker marker) {
+                return null;
+            }
+
+            public void render(Marker marker, View view) {
+                snippet = (TextView) view.findViewById(R.id.snippet);
+                title = (TextView) view.findViewById(R.id.title);
+                for (int i = 0; i < markList.size(); i++) {
+                    if (markList.get(i).equals(marker.getId())) {
+                        title.setText(list.get(i).get("jd") + "");
+                        snippet.setText(list.get(i).get("wd") + "");
+                    }
+                }
+            }
+        };
+
+        for (int i = 0; i < list.size(); i++) {
+            LatLng latLng = new LatLng(list.get(i).get("jd"), list.get(i).get("wd"));
+            Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("").snippet(""));
+            markList.add(marker.getId());
+        }
+        aMap.setInfoWindowAdapter(infoWindowAdapter);
+        AMap.OnInfoWindowClickListener listener = new AMap.OnInfoWindowClickListener() {
+            @Override
+            public void onInfoWindowClick(Marker marker) {
+                for (int i = 0; i < markList.size(); i++) {
+                    if (markList.get(i).equals(marker.getId())) {
+                        showToast(i + "");
+                    }
+                }
+            }
+        };
+        aMap.setOnInfoWindowClickListener(listener);
     }
 
     @Override

@@ -14,6 +14,7 @@ import cn.dianedun.fragment.DetectionFragment;
 import cn.dianedun.fragment.HomeFragment;
 import cn.dianedun.fragment.MineFragment;
 import cn.dianedun.fragment.VideoFragment;
+import cn.dianedun.tools.AppManager;
 import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.BottomBarView.BottomBar;
 import cn.dianedun.view.BottomBarView.BottomBarTab;
@@ -33,6 +34,9 @@ public class MainActivity extends BaseActivity {
         setOnResumeRegisterBus(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        AppManager.getInstance().addActivity(MainActivity.this);
+
+
     }
 
     @Override

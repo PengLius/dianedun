@@ -11,9 +11,14 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import java.util.HashMap;
+
 import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
+import cn.dianedun.tools.App;
+import cn.dianedun.tools.AppConfig;
+import cn.dianedun.tools.MyAsyncTast;
 
 /**
  * Created by Administrator on 2017/8/8.
@@ -22,6 +27,7 @@ import cn.dianedun.base.BaseTitlActivity;
 public class MessageActivity extends BaseTitlActivity {
 
     private IndentCusAdapter adapter;
+    MyAsyncTast myAsyncTast;
 
     @Bind(R.id.lv_message)
     ListView lv_message;
@@ -35,10 +41,23 @@ public class MessageActivity extends BaseTitlActivity {
         setTitleBack(R.mipmap.home_backg_rightnull);
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
-        adapter = new IndentCusAdapter();
-        lv_message.setAdapter(adapter);
+
+
+        getDate();
+
     }
 
+    public void getDate() {
+        myAsyncTast = new MyAsyncTast(MessageActivity.this, new HashMap<String, String>(), AppConfig.GETMESSAGELIST, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void send(String result) {
+                adapter = new IndentCusAdapter();
+                lv_message.setAdapter(adapter);
+            }
+        });
+        myAsyncTast.execute();
+
+    }
 
 
     private class IndentCusAdapter extends BaseAdapter {
