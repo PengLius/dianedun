@@ -131,7 +131,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private List<String> alllist;
     int STARTTIME = 0;
     int ENDTTIME = 1;
-    String level = "1";
+    private String level = "1";
     private View view, view2, view3;
     private PopupWindow pop, pop2, pop3;
     private GirdAdapter adapter;
@@ -164,6 +164,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private AnimationDrawable animationDrawable;
     private Date startTimer;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,7 +178,6 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
         view = inflaters.inflate(R.layout.popupwindow_sqr, null);
         view2 = inflaters.inflate(R.layout.popupwindow_adress, null);
         view3 = inflaters.inflate(R.layout.popupwindow_luyin, null);
-//        tv_amendgd_adress.setText("00'00\"");
 
         gv_amendgd = (GridView) view.findViewById(R.id.gv_amendgd);
         tv_sqr_qd = (TextView) view.findViewById(R.id.tv_sqr_qd);
@@ -385,10 +385,9 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 if (ed_amendgd_sqyy.getText() != null) {
                     hashMap.put("cause", ed_amendgd_sqyy.getText().toString());
                 }
-
-//                if (!obj2.equals("")) {
-//                    hashMap.put("jsonStr", obj2);
-//                }
+                if (!obj2.equals("")) {
+                    hashMap.put("jsonStr", obj2);
+                }
                 myAsyncTast = new MyAsyncTast(ApplyGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                     @Override
                     public void send(String result) {
@@ -591,7 +590,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 cache = new Cache();
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_sqr, null);
                 cache.img_itemsqr_type = (ImageView) convertView.findViewById(R.id.img_itemsqr_type);
-                cache.ll_itemsqr = (LinearLayout) convertView.findViewById(R.id.ll_itemsqr);
+                cache.ll_itemsqr = (RelativeLayout) convertView.findViewById(R.id.ll_itemsqr);
                 cache.tv_itemsqr_name = (TextView) convertView.findViewById(R.id.tv_itemsqr_name);
                 convertView.setTag(cache);
             } else {
@@ -688,7 +687,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     class Cache {
         TextView tv_itemsqr_name;
         ImageView img_itemsqr_type;
-        LinearLayout ll_itemsqr;
+        RelativeLayout ll_itemsqr;
     }
 
     class ListViewCache {

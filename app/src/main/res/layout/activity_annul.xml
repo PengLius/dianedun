@@ -184,6 +184,7 @@
                 android:background="#6019246B">
 
                 <EditText
+                    android:id="@+id/ed_annul_cause"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_above="@+id/ll_disposejb"
@@ -217,15 +218,15 @@
                         android:textSize="@dimen/content_text_s12" />
 
                     <ImageView
+                        android:id="@+id/img_annul_ly"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@mipmap/yuyin" />
                 </LinearLayout>
-
-
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/rl_annul_sub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">

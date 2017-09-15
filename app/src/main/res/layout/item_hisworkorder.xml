@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="250dp"
-        android:layout_marginTop="10dp"
-        android:background="@mipmap/his_gd"
         android:layout_marginLeft="5dp"
         android:layout_marginRight="5dp"
+        android:layout_marginTop="10dp"
+        android:background="@mipmap/his_gd"
         android:orientation="vertical">
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -24,9 +26,9 @@
                 android:layout_width="64dp"
                 android:layout_height="wrap_content"
                 android:background="#848D94"
-                android:paddingTop="3dp"
-                android:paddingBottom="3dp"
                 android:gravity="center"
+                android:paddingBottom="3dp"
+                android:paddingTop="3dp"
                 android:text="工单号"
                 android:textColor="#FFF"
                 android:textSize="@dimen/content_text_s14" />
@@ -40,11 +42,10 @@
                 android:text="12345678944566"
                 android:textColor="#00B168"
                 android:textSize="@dimen/content_text_s14" />
-
         </LinearLayout>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
@@ -66,14 +67,15 @@
                         android:layout_width="64dp"
                         android:layout_height="wrap_content"
                         android:background="#848D94"
-                        android:paddingTop="3dp"
-                        android:paddingBottom="3dp"
                         android:gravity="center"
+                        android:paddingBottom="3dp"
+                        android:paddingTop="3dp"
                         android:text="开始时间"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 
                     <TextView
+                        android:id="@+id/item_hometv_startime"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
@@ -82,6 +84,7 @@
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -94,14 +97,15 @@
                         android:layout_width="64dp"
                         android:layout_height="wrap_content"
                         android:background="#848D94"
-                        android:paddingTop="3dp"
-                        android:paddingBottom="3dp"
                         android:gravity="center"
-                        android:text="开始时间"
+                        android:paddingBottom="3dp"
+                        android:paddingTop="3dp"
+                        android:text="结束时间"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 
                     <TextView
+                        android:id="@+id/item_hometv_endtime"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
@@ -125,57 +129,65 @@
                         android:layout_width="64dp"
                         android:layout_height="wrap_content"
                         android:background="#848D94"
-                        android:paddingTop="3dp"
-                        android:paddingBottom="3dp"
                         android:gravity="center"
+                        android:paddingBottom="3dp"
+                        android:paddingTop="3dp"
                         android:text="地   点"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 
                     <TextView
+                        android:id="@+id/item_hometv_adress"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="5dp"
                         android:layout_weight="1"
-                        android:text="保定市炫彩soho大厦B座1号配电室"
+                        android:text="看看"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
             </LinearLayout>
 
-            <ImageView
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_marginRight="10dp"
-                android:layout_marginTop="40dp"
-                android:src="@mipmap/home_rightback_green" />
+                android:gravity="right"
+                android:layout_marginLeft="20dp"
+                android:orientation="horizontal">
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="40dp"
+                    android:src="@mipmap/home_rightback_green" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
             android:layout_marginLeft="30dp"
             android:layout_marginTop="10dp"
             android:gravity="center"
-            >
+            android:orientation="vertical">
+
             <ImageView
+                android:id="@+id/item_homeimg_jg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:src="@mipmap/his_jg_gray" />
+
             <TextView
+                android:id="@+id/item_homeitv_jg"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="普通"
-                android:textColor="#FFF"
-                />
+                android:textColor="#FFF" />
 
         </LinearLayout>
 
     </LinearLayout>
-
 
 
 </LinearLayout>

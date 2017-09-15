@@ -210,6 +210,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:id="@+id/tv_examine_pass"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -222,6 +223,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_examine_reject"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
@@ -239,7 +241,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="100dp"
                 android:layout_marginTop="10dp"
                 android:background="#6019246B">
 
@@ -256,6 +258,7 @@
                     android:textSize="@dimen/content_text_s12" />
 
                 <EditText
+                    android:id="@+id/ed_examine_cause"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_above="@+id/tv_examine_numb"
@@ -273,6 +276,7 @@
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/rl_examine_sub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">
@@ -295,6 +299,4 @@
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
-
-
 </LinearLayout>

@@ -2,30 +2,34 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
     android:orientation="horizontal">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/ll_itemsqr"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center"
         android:orientation="horizontal">
-
-        <TextView
-            android:id="@+id/tv_itemsqr_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="张三"
-            android:textColor="#000"
-            android:textSize="@dimen/content_text_s14" />
 
         <ImageView
             android:id="@+id/img_itemsqr_type"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:background="@mipmap/dot_black" />
-    </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_itemsqr_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/img_itemsqr_type"
+            android:gravity="center"
+            android:text="张三"
+            android:textColor="#000"
+            android:textSize="@dimen/content_text_s14" />
+
+    </RelativeLayout>
 
 </LinearLayout>

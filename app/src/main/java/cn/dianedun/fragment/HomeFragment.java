@@ -7,11 +7,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
@@ -25,16 +27,18 @@ import cn.dianedun.activity.HisJbActivity;
 import cn.dianedun.activity.HisWorkOrderActivity;
 import cn.dianedun.base.BaseFragment;
 import cn.dianedun.base.BaseTitlFragment;
+import cn.dianedun.bean.HomeListBean;
+import cn.dianedun.tools.App;
+import cn.dianedun.tools.AppConfig;
+import cn.dianedun.tools.DataUtil;
+import cn.dianedun.tools.GsonUtil;
+import cn.dianedun.tools.MyAsyncTast;
 
 /**
  * Created by Administrator on 2017/8/3.
  */
 
 public class HomeFragment extends BaseTitlFragment {
-    private IndentCusAdapter adapter;
-    private List<Integer> alllist;
-    private Intent intent;
-
 
     @Bind(R.id.lv_home)
     ListView lv_home;
@@ -48,8 +52,18 @@ public class HomeFragment extends BaseTitlFragment {
     @Bind(R.id.tv_home_hisgd)
     TextView tv_home_hisgd;
 
-    private boolean rightState = false;
+    @Bind(R.id.ll_home_null)
+    LinearLayout ll_home_null;
 
+
+    private IndentCusAdapter adapter;
+    private Intent intent;
+    private MyAsyncTast myAsyncTast;
+    private boolean rightState = false;
+    private HomeListBean bean;
+    private List<HashMap<String, String>> itemList;
+    private HashMap<String, String> itemHash;
+    private int jg;
 
     public static HomeFragment getInstance() {
         HomeFragment fragment = new HomeFragment();
@@ -114,26 +128,55 @@ public class HomeFragment extends BaseTitlFragment {
                 rl_home.setVisibility(View.GONE);
             }
         });
-
-
-        alllist = new ArrayList();
-        alllist.add(1);
-        alllist.add(2);
-        alllist.add(3);
-        alllist.add(4);
-        alllist.add(5);
-        alllist.add(6);
-        alllist.add(7);
-        alllist.add(8);
-        alllist.add(9);
-        alllist.add(10);
-        adapter = new IndentCusAdapter();
-        lv_home.setAdapter(adapter);
     }
 
     @Override
     protected void initData() {
-
+        myAsyncTast = new MyAsyncTast(getActivity(), new HashMap<String, String>(), AppConfig.SHOWINDEX, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void send(String result) {
+                bean = GsonUtil.parseJsonWithGson(result, HomeListBean.class);
+                itemList = new ArrayList<>();
+                for (int i = 0; i < bean.getData().getAlarmList().size(); i++) {
+                    itemHash = new HashMap<>();
+                    itemHash.put("id", bean.getData().getAlarmList().get(i).getId() + "");
+                    itemHash.put("createTime", bean.getData().getAlarmList().get(i).getCreateTime() + "");
+                    itemHash.put("status", bean.getData().getAlarmList().get(i).getStatus() + "");
+                    itemHash.put("delayDay", bean.getData().getAlarmList().get(i).getDelayDay() + "");
+                    itemHash.put("type", bean.getData().getAlarmList().get(i).getType() + "");
+                    itemHash.put("alert_details", bean.getData().getAlarmList().get(i).getAlert_details() + "");
+                    itemHash.put("depart_name", bean.getData().getAlarmList().get(i).getDepart_name() + "");
+                    itemHash.put("itemType", "0");
+                    itemList.add(itemHash);
+                }
+                jg = itemList.size();
+                for (int i = 0; i < bean.getData().getOrderList().size(); i++) {
+                    itemHash = new HashMap<>();
+                    itemHash.put("id", bean.getData().getOrderList().get(i).getId() + "");
+                    itemHash.put("orderNum", bean.getData().getOrderList().get(i).getOrderNum() + "");
+                    itemHash.put("urgency", bean.getData().getOrderList().get(i).getUrgency() + "");
+                    itemHash.put("applyTime", bean.getData().getOrderList().get(i).getApplyTime() + "");
+                    itemHash.put("address", bean.getData().getOrderList().get(i).getAddress() + "");
+                    itemHash.put("beginTime", bean.getData().getOrderList().get(i).getBeginTime() + "");
+                    itemHash.put("endTime", bean.getData().getOrderList().get(i).getEndTime() + "");
+                    itemHash.put("delayTime", bean.getData().getOrderList().get(i).getDelayTime() + "");
+                    itemHash.put("status", bean.getData().getOrderList().get(i).getStatus() + "");
+                    itemHash.put("applyStatus", bean.getData().getOrderList().get(i).getApplyStatus() + "");
+                    itemHash.put("itemType", "1");
+                    itemList.add(itemHash);
+                }
+                if (itemList.size() > 0) {
+                    ll_home_null.setVisibility(View.GONE);
+                    lv_home.setVisibility(View.VISIBLE);
+                    adapter = new IndentCusAdapter();
+                    lv_home.setAdapter(adapter);
+                } else {
+                    ll_home_null.setVisibility(View.VISIBLE);
+                    lv_home.setVisibility(View.GONE);
+                }
+            }
+        });
+        myAsyncTast.execute();
     }
 
     @Override
@@ -145,12 +188,12 @@ public class HomeFragment extends BaseTitlFragment {
 
         @Override
         public int getCount() {
-            return alllist.size();
+            return itemList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return alllist.get(position);
+            return itemList.get(position);
         }
 
         @Override
@@ -160,19 +203,11 @@ public class HomeFragment extends BaseTitlFragment {
 
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
-            if (alllist.get(position) == 1) {
+            if (itemList.get(position).get("itemType").equals("0")) {
                 convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_home_jb, null);
-            } else {
-                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_home_gd, null);
-            }
-            convertView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    showToast(alllist.get(position) + "");
+                if (position == 0) {
+                    convertView.findViewById(R.id.item_tv_dcljb).setVisibility(View.VISIBLE);
                 }
-            });
-            if (alllist.get(position) == 1) {
-                convertView.findViewById(R.id.item_tv_dcljb).setVisibility(View.VISIBLE);
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -180,9 +215,15 @@ public class HomeFragment extends BaseTitlFragment {
                         startActivity(intent);
                     }
                 });
-            }
-            if (alllist.get(position) != 1) {
-                ((TextView) convertView.findViewById(R.id.item_hometv_code)).setText(alllist.get(position) + "");
+                ((TextView) (convertView.findViewById(R.id.tv_itemjb_adress))).setText(itemList.get(position).get("depart_name"));
+                ((TextView) (convertView.findViewById(R.id.tv_itemjb_creattime))).setText(itemList.get(position).get("createTime"));
+                ((TextView) (convertView.findViewById(R.id.tv_itemjb_con))).setText(itemList.get(position).get("alert_details"));
+
+            } else {
+                convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_home_gd, null);
+                if (position == jg) {
+                    convertView.findViewById(R.id.item_tv_dclgd).setVisibility(View.VISIBLE);
+                }
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -190,6 +231,7 @@ public class HomeFragment extends BaseTitlFragment {
                         startActivity(intent);
                     }
                 });
+
             }
             return convertView;
         }
