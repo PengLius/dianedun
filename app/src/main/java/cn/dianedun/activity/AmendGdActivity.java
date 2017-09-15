@@ -91,7 +91,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     private SimpleDateFormat mFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
     private List<String> nameList;
     private boolean includs = false;
-
+    //Log
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
