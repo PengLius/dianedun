@@ -168,7 +168,7 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Observable<T> post(final String url, final Map<String, String> parameters, Class<T> clazz) {
+    public <T> Observable<T> post(final String url, final Map<String, Object> parameters, Class<T> clazz) {
         return apiService.post(url, parameters).compose(this.norTransformer(clazz));
     }
     /**
@@ -204,7 +204,7 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Subscription post(String url, Map<String, String> maps,boolean showLoad, ApiCallback<T> callback) {
+    public <T> Subscription post(String url, Map<String, Object> maps,boolean showLoad, ApiCallback<T> callback) {
         return this.post(url, maps, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context,showLoad, callback));
     }
 
@@ -217,7 +217,7 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Observable<CacheResult<T>> cachePost(final String url, final Map<String, String> maps, Class<T> clazz) {
+    public <T> Observable<CacheResult<T>> cachePost(final String url, final Map<String, Object> maps, Class<T> clazz) {
         return this.post(url, maps, clazz).compose(apiCache.transformer(cacheMode, clazz));
     }
 
@@ -230,7 +230,7 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Subscription cachePost(String url, Map<String, String> maps,boolean showLoad, ApiCallback<T> callback) {
+    public <T> Subscription cachePost(String url, Map<String, Object> maps,boolean showLoad, ApiCallback<T> callback) {
         return this.cachePost(url, maps, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context,showLoad, callback));
     }
 
@@ -520,8 +520,8 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Subscription apiCacheGet(final String url, final Map<String, String> maps,boolean showLoad, ApiCallback<T> callback) {
-        return this.apiCacheGet(url, maps, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context,showLoad, callback));
+    public <T> Subscription apiCacheGet(final String url, final Map<String, Object> maps,boolean showLoad, ApiCallback<T> callback) {
+        return this.post(url, maps, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context,showLoad, callback));
     }
 
     /**
@@ -565,7 +565,7 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Observable<T> apiPost(final String url, final Map<String, String> parameters, Class<T> clazz) {
+    public <T> Observable<T> apiPost(final String url, final Map<String,Object> parameters, Class<T> clazz) {
         return apiService.post(url, parameters).map(new ApiResultFunc<T>(clazz)).compose(this.<T>apiTransformer());
     }
 
@@ -592,6 +592,11 @@ public class ViseApi {
         return this.apiPost(url,token, parameters, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context,showLoad, callback));
     }
 
+//    public <T> Subscription apiPost(final String url, final Map<String, Object> parameters,boolean showLoad, ApiCallback<T> callback) {
+//        return this.apiPost(url, parameters, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context,showLoad, callback));
+//    }
+
+
     public <T> Subscription apiPost(final String url,final String token,String[] strings, final Map<String, String> parameters,boolean showLoad, ApiCallback<T> callback) {
         return this.apiPost(url,token, strings,parameters, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context,showLoad, callback));
     }
@@ -611,7 +616,7 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Subscription apiPost(final String url, final Map<String, String> parameters, boolean showLoad,ApiCallback<T> callback) {
+    public <T> Subscription apiPost(final String url, final Map<String, Object> parameters, boolean showLoad,ApiCallback<T> callback) {
         return this.apiPost(url, parameters, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context, showLoad,callback));
     }
 
@@ -624,7 +629,7 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Observable<CacheResult<T>> apiCachePost(final String url, final Map<String, String> parameters, Class<T> clazz) {
+    public <T> Observable<CacheResult<T>> apiCachePost(final String url, final Map<String, Object> parameters, Class<T> clazz) {
         return this.apiPost(url, parameters, clazz).compose(apiCache.transformer(cacheMode, clazz));
     }
 
@@ -637,7 +642,7 @@ public class ViseApi {
      * @param <T>
      * @return
      */
-    public <T> Subscription apiCachePost(final String url, final Map<String, String> parameters,boolean showLoad, ApiCallback<T> callback) {
+    public <T> Subscription apiCachePost(final String url, final Map<String, Object> parameters,boolean showLoad, ApiCallback<T> callback) {
         return this.apiCachePost(url, parameters, ClassUtil.getTClass(callback)).subscribe(new ApiCallbackSubscriber(context,showLoad, callback));
     }
 

@@ -12,7 +12,15 @@
         <item name="android:windowEnterAnimation">@anim/basepopup_fade_in</item>
         <item name="android:windowExitAnimation">@anim/basepopup_fade_out</item>
     </style>
-
+    <style name="TitleBar">
+        <item name="textColor">@android:color/white</item>
+        <item name="background">@color/dark_bg_70p</item>
+        <item name="backButton">@drawable/message_back_selector</item>
+    </style>
+    <style name="popwindowUpAnim">
+        <item name="android:windowEnterAnimation">@anim/fade_up</item>
+        <item name="android:windowExitAnimation">@anim/fade_down</item>
+    </style>
     <declare-styleable name="SwitchView">
         <attr name="hasShadow" format="boolean"/>
         <attr name="primaryColor" format="color"/>

@@ -16,4 +16,7 @@ public class AppConfig {
     public static final String GETMESSAGELIST = PORTS + "/user/getMessageList";//我的消息全部
     public static final String UPLOADFILE = PORTS + "/handleorder/uploadFile";//上传文件
 
+
+    public static final String CARMERA_PORTS = "http://47.92.155.108:8082";//线上
+    public static final String GETACCESSTOKEN = CARMERA_PORTS + "/cameraController/getAccessTokenByDepartId";//
 }
