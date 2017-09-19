@@ -30,6 +30,7 @@ import cn.dianedun.bean.DetailsBean;
 import cn.dianedun.bean.HisOrderListBean;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
+import cn.dianedun.tools.DataUtil;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.NoScrollGridview;
@@ -79,9 +80,7 @@ public class HisDetailsActivity extends BaseTitlActivity {
     private HashMap<String, String> hashMap;
     private DetailsBean bean;
     private List<String> imgList;
-    private MediaPlayer player;
     private int type = 0;
-    private CountDownTimer countDownTimer;
     private AnimationDrawable animationDrawable;
 
     @Override
@@ -108,8 +107,10 @@ public class HisDetailsActivity extends BaseTitlActivity {
                     tv_hisdetails_urgency.setText("紧急");
                 }
                 tv_hisdetails_name.setText(bean.getData().getHandlePersion() + "");
-                tv_hisdetails_startime.setText(bean.getData().getBeginTime() + "");
-                tv_hisdetails_endtime.setText(bean.getData().getEndTime() + "");
+                String beginTime = bean.getData().getBeginTime() / 1000 + "";
+                String endTime = bean.getData().getEndTime() / 1000 + "";
+                tv_hisdetails_startime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm"));
+                tv_hisdetails_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm"));
                 tv_hisdetails_cause.setText(bean.getData().getCause() + "");
                 tv_hisdetails_adress.setText(bean.getData().getDepartName() + "");
                 tv_hisdetails_xxadress.setText(bean.getData().getAddress() + "");
@@ -165,8 +166,24 @@ public class HisDetailsActivity extends BaseTitlActivity {
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_fjyp, null);
                 final TextView tv_fjyp_time = (TextView) convertView.findViewById(R.id.tv_fjyp_time);
                 final ImageView img_fjyp_yy = (ImageView) convertView.findViewById(R.id.img_fjyp_yy);
-                player = MediaPlayer.create(getApplicationContext(), Uri.parse(bean.getData().getAlertOptionsArray().get(position).getContents()));
-                countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
+                final MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(bean.getData().getAlertOptionsArray().get(position).getContents()));
+
+                long f = player.getDuration() / 1000 / 60;
+                long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
+                if (f < 10) {
+                    if (m < 10) {
+                        tv_fjyp_time.setText("0" + f + "'" + "0" + m + "\"");
+                    } else {
+                        tv_fjyp_time.setText("0" + f + "'" + m + "\"");
+                    }
+                } else {
+                    if (m < 10) {
+                        tv_fjyp_time.setText(f + "'" + "0" + m + "\"");
+                    } else {
+                        tv_fjyp_time.setText(f + "'" + m + "\"");
+                    }
+                }
+                final CountDownTimer countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
                     @Override
                     public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
                         long f = millisUntilFinished / 1000 / 60;
@@ -225,7 +242,6 @@ public class HisDetailsActivity extends BaseTitlActivity {
                     @Override
                     public void onClick(View v) {
                         if (type == 0) {
-                            player = MediaPlayer.create(getApplicationContext(), Uri.parse(bean.getData().getAlertOptionsArray().get(position).getContents()));
                             player.start();
                             countDownTimer.start();
                             img_fjyp_yy.setImageResource(R.drawable.animation1);
@@ -238,6 +254,13 @@ public class HisDetailsActivity extends BaseTitlActivity {
                             countDownTimer.pause();
                             type = 2;
                             animationDrawable.stop();
+                        } else {
+                            player.start();
+                            countDownTimer.resume();
+                            img_fjyp_yy.setImageResource(R.drawable.animation1);
+                            animationDrawable = (AnimationDrawable) img_fjyp_yy.getDrawable();
+                            animationDrawable.start();
+                            type = 1;
                         }
                     }
                 });

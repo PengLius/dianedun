@@ -66,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:src="@mipmap/hoem_jg_yellow" />
+                    android:src="@mipmap/home_jg_yellow" />
             </RelativeLayout>
 
             <LinearLayout
@@ -201,7 +201,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="120dp"
                 android:layout_marginTop="10dp"
                 android:background="#6019246B">
                 <EditText

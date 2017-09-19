@@ -21,6 +21,7 @@ import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.BaseAdapter;
+import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,10 +51,13 @@ import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.bean.ApplyAdreesBean;
 import cn.dianedun.bean.ApplyPresonBean;
+import cn.dianedun.bean.DetailsBean;
+import cn.dianedun.bean.ResultBean;
 import cn.dianedun.bean.ToJsonBean;
 import cn.dianedun.bean.UpdataBean;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
+import cn.dianedun.tools.DataUtil;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.DateTimeDialog;
@@ -116,6 +120,12 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     @Bind(R.id.tv_amendgd_lytime)
     TextView tv_amendgd_lytime;
 
+    @Bind(R.id.ed_amendgd_xxadress)
+    EditText ed_amendgd_xxadress;
+
+    @Bind(R.id.ed_amendgd_sqyy)
+    EditText ed_amendgd_sqyy;
+
 
     private String beginTime, endTime;
     private GridView gv_amendgd;
@@ -156,6 +166,9 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     private UpdataBean updataBean;
     private ToJsonBean toJsonBean;
     private Date startTimer;
+    private HashMap<String, String> hashMap;
+    private DetailsBean bean;
+    private String handlePersion = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -215,13 +228,6 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
         drawable.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
         drawable1.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
         drawable2.setBounds(0, 0, drawable.getMinimumWidth(), drawable.getMinimumHeight());
-        if (level.equals("1")) {
-            tv_amendgd_pt.setCompoundDrawables(drawable, null, null, null);
-            tv_amendgd_jj.setCompoundDrawables(drawable2, null, null, null);
-        } else if (level.equals("2")) {
-            tv_amendgd_jj.setCompoundDrawables(drawable1, null, null, null);
-            tv_amendgd_pt.setCompoundDrawables(drawable2, null, null, null);
-        }
         countTimer = new CountTimer(1000) {
             @Override
             public void onTick(long millisFly) {
@@ -253,7 +259,114 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 }
             }
         };
+        hashMap = new HashMap<>();
+        hashMap.put("orderNum", getIntent().getStringExtra("orderNum"));
+        myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void send(String result) {
+                bean = GsonUtil.parseJsonWithGson(result, DetailsBean.class);
+                if (bean.getData().getUrgency() == 0) {
+                    tv_amendgd_pt.setCompoundDrawables(drawable, null, null, null);
+                    tv_amendgd_jj.setCompoundDrawables(drawable2, null, null, null);
+                    level = "0";
+                } else if (bean.getData().getUrgency() == 1) {
+                    tv_amendgd_jj.setCompoundDrawables(drawable1, null, null, null);
+                    tv_amendgd_pt.setCompoundDrawables(drawable2, null, null, null);
+                    level = "1";
+                }
+                String beginTime = bean.getData().getBeginTime() / 1000 + "";
+                String endTime = bean.getData().getEndTime() / 1000 + "";
+                beginTime = DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm");
+                endTime = DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm");
+                tv_amendgd_startime.setText(beginTime);
+                tv_amendgd_endtime.setText(endTime);
+                departId = bean.getData().getDepartId();
+                tv_amendgd_adress.setText(bean.getData().getDepartName());
+                ed_amendgd_xxadress.setText(bean.getData().getAddress());
+                handlePersion = bean.getData().getHandlePersion();
+                tv_amendgd_name.setText(handlePersion);
+                ed_amendgd_sqyy.setText(bean.getData().getCause());
+                if (bean.getData().getAlertOptionsArray().size() > 0) {
+                    rl_amendgd_ly.setVisibility(View.VISIBLE);
+                    player = MediaPlayer.create(getApplicationContext(), Uri.parse(bean.getData().getAlertOptionsArray().get(0).getContents()));
+                    long a = player.getDuration() / 1000 / 60;
+                    long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                    if (a < 10) {
+                        if (b < 10) {
+                            tv_amendgd_lytime.setText("0" + a + "'" + "0" + b + "\"");
+                        } else {
+                            tv_amendgd_lytime.setText("0" + a + "'" + b + "\"");
+                        }
+                    } else {
+                        if (b < 10) {
+                            tv_amendgd_lytime.setText(a + "'" + "0" + b + "\"");
+                        } else {
+                            tv_amendgd_lytime.setText(a + "'" + b + "\"");
+                        }
+                    }
+                    countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
+                            long f = millisUntilFinished / 1000 / 60;
+                            long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                            if (f < 10) {
+                                if (m < 10) {
+                                    tv_amendgd_lytime.setText("0" + f + "'" + "0" + m + "\"");
+                                } else {
+                                    tv_amendgd_lytime.setText("0" + f + "'" + m + "\"");
+                                }
+                            } else {
+                                if (m < 10) {
+                                    tv_amendgd_lytime.setText(f + "'" + "0" + m + "\"");
+                                } else {
+                                    tv_amendgd_lytime.setText(f + "'" + m + "\"");
+                                }
+                            }
+                        }
 
+                        @Override
+                        public void onCancel(long millisUntilFinished) {
+                        }
+
+                        @Override
+                        public void onPause(long millisUntilFinished) {
+
+                        }
+
+                        @Override
+                        public void onResume(long millisUntilFinished) {
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            long a = player.getDuration() / 1000 / 60;
+                            long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                            if (a < 10) {
+                                if (b < 10) {
+                                    tv_amendgd_lytime.setText("0" + a + "'" + "0" + b + "\"");
+                                } else {
+                                    tv_amendgd_lytime.setText("0" + a + "'" + b + "\"");
+                                }
+                            } else {
+                                if (b < 10) {
+                                    tv_amendgd_lytime.setText(a + "'" + "0" + b + "\"");
+                                } else {
+                                    tv_amendgd_lytime.setText(a + "'" + b + "\"");
+                                }
+                            }
+                            animationDrawable.stop();
+                            img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
+                            playTyp = 0;
+                        }
+                    };
+                } else {
+                    rl_amendgd_ly.setVisibility(View.GONE);
+
+                }
+
+            }
+        });
+        myAsyncTast.execute();
 
     }
 
@@ -274,14 +387,14 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
             case R.id.tv_amendgd_pt:
                 //普通
-                level = "1";
+                level = "0";
                 tv_amendgd_pt.setCompoundDrawables(drawable, null, null, null);
                 tv_amendgd_jj.setCompoundDrawables(drawable2, null, null, null);
 
                 break;
             case R.id.tv_amendgd_jj:
                 //紧急
-                level = "2";
+                level = "1";
                 tv_amendgd_jj.setCompoundDrawables(drawable1, null, null, null);
                 tv_amendgd_pt.setCompoundDrawables(drawable2, null, null, null);
                 break;
@@ -340,6 +453,63 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
             case R.id.img_amendgd_yuyin:
                 //语音
                 showDialog3();
+                break;
+            case R.id.rl_amendgd_tj:
+                //提交
+                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                String applyTime = formatter.format(curDate);
+                String handlePersion = "";
+                if (nameList.size() > 0) {
+                    for (int i = 0; i < nameList.size(); i++) {
+                        if ((i + 1) != nameList.size()) {
+                            handlePersion = handlePersion + nameList.get(i) + ",";
+                        } else {
+                            handlePersion = handlePersion + nameList.get(i);
+                        }
+                    }
+                }
+                HashMap hashMap = new HashMap();
+                if (departId != null) {
+                    hashMap.put("departId", departId);
+                }
+                if (level != null) {
+                    hashMap.put("urgency", level);
+                }
+                if (applyTime != null) {
+                    hashMap.put("applyTime", applyTime + ":00");
+                }
+                if (handlePersion != null) {
+                    hashMap.put("handlePersion", handlePersion);
+                }
+                if (ed_amendgd_xxadress.getText() != null) {
+                    hashMap.put("address", ed_amendgd_xxadress.getText().toString());
+                }
+                if (beginTime != null) {
+                    hashMap.put("beginTime", beginTime + ":00");
+                }
+                if (endTime != null) {
+                    hashMap.put("endTime", endTime + ":00");
+                }
+                if (ed_amendgd_sqyy.getText() != null) {
+                    hashMap.put("cause", ed_amendgd_sqyy.getText().toString());
+                }
+                if (!obj2.equals("")) {
+                    hashMap.put("jsonStr", obj2);
+                }
+                myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                    @Override
+                    public void send(String result) {
+                        ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
+                        if (bean.getCode() == 0) {
+                            showToast("工单修改成功");
+                            finish();
+                        } else {
+                            showToast(bean.getMsg());
+                        }
+                    }
+                });
+                myAsyncTast.execute();
                 break;
             case R.id.rl_luyin_type:
                 //开始录音
@@ -530,7 +700,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 cache = new Cache();
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_sqr, null);
                 cache.img_itemsqr_type = (ImageView) convertView.findViewById(R.id.img_itemsqr_type);
-                cache.ll_itemsqr = (LinearLayout) convertView.findViewById(R.id.ll_itemsqr);
+                cache.ll_itemsqr = (RelativeLayout) convertView.findViewById(R.id.ll_itemsqr);
                 cache.tv_itemsqr_name = (TextView) convertView.findViewById(R.id.tv_itemsqr_name);
                 convertView.setTag(cache);
             } else {
@@ -628,14 +798,14 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     class Cache {
         TextView tv_itemsqr_name;
         ImageView img_itemsqr_type;
-        LinearLayout ll_itemsqr;
+        RelativeLayout ll_itemsqr;
     }
 
     class ListViewCache {
         TextView tv_item_adress;
     }
 
-    class MyAsync extends AsyncTask<Object, Object, String> {
+    private class MyAsync extends AsyncTask<Object, Object, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

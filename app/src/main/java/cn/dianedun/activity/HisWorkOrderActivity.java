@@ -102,9 +102,9 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
             }
             cache.item_hometv_code.setText(bean.getData().getResult().get(position).getOrderNum() + "");
             String beginTime = bean.getData().getResult().get(position).getBeginTime() / 1000 + "";
-            String endTiem = bean.getData().getResult().get(position).getEndTime() / 1000 + "";
+            String endTime = bean.getData().getResult().get(position).getEndTime() / 1000 + "";
             cache.item_hometv_startime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm"));
-            cache.item_hometv_endtime.setText(DataUtil.timeStamp2Date(endTiem, "yyyy-MM-dd HH:mm"));
+            cache.item_hometv_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm"));
             cache.item_hometv_adress.setText(bean.getData().getResult().get(position).getAddress() + "");
             if (bean.getData().getResult().get(position).getUrgency() == 0) {
                 cache.item_homeitv_jg.setText("普通");

@@ -45,12 +45,15 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
     private String result;
     private Callback callback;
     private Intent intent;
+    private Boolean loding = true;
 
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        diaglog = createLoadingDialog(context, "正在加载");
-        diaglog.show();
+        if(loding){
+            diaglog = createLoadingDialog(context, "正在加载");
+            diaglog.show();
+        }
     }
 
     public MyAsyncTast(Context contexts, HashMap<String, String> hashMaps, String urls, Callback callbacks) {
@@ -68,9 +71,18 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
         callback = callbacks;
     }
 
+    public MyAsyncTast(Context contexts, HashMap<String, String> hashMaps, String urls, String tokens, Boolean lodings, Callback callbacks) {
+        hashMap = hashMaps;
+        context = contexts;
+        url = urls;
+        token = tokens;
+        callback = callbacks;
+        loding = lodings;
+    }
+
     @Override
     protected String doInBackground(Object... params) {
-        HttpUtils httpUtils = new HttpUtils(5000);
+        HttpUtils httpUtils = new HttpUtils(10000);
         RequestParams params1 = new RequestParams("UTF-8");
         if (hashMap.size() > 0) {
             for (Map.Entry<String, String> entry : hashMap.entrySet()) {
@@ -106,12 +118,16 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                diaglog.dismiss();
+                if(loding){
+                    diaglog.dismiss();
+                }
             }
 
             @Override
             public void onFailure(HttpException error, String msg) {
-                diaglog.dismiss();
+                if(loding){
+                    diaglog.dismiss();
+                }
                 Toast.makeText(context, "网络不可用", Toast.LENGTH_SHORT).show();
                 Log.e("msg", msg);
                 Log.e("error", error + "");

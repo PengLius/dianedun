@@ -20,5 +20,12 @@ public class AppConfig {
     public static final String GETHANDLEORDERBYSTATS = PORTS + "/handleorder/getHandleOrderByStats";//历史工单
     public static final String GETHANDLEORDERBYNUM = PORTS + "/handleorder/getHandleOrderByNum";//工单详情
     public static final String SHOWINDEX = PORTS + "/index/showIndex";// 首页列表
+    public static final String REVOKEDHANDLERORDER = PORTS + "/handleorder/revokedHandleOrder";// 工单撤销
+    public static final String FINDALARMBYID = PORTS + "/alarm/findAlarmById";//警报详情
+    public static final String HISTORYALARM = PORTS + "/alarm/historyAlarm";//历史警报
+    public static final String UPDATEALARMBYID = PORTS + "/alarm/updateAlarmById";//警报处理
+    public static final String FINDSWITCHROOMBYID = PORTS + "/monitor/findSwitchRoomByid";// 监测页_下拉框展示
+    public static final String FINDALLLATEST = PORTS + "/monitor/findAllLatest";// 监测页_配电室数据
+    public static final String INDEX = PORTS + "/monitor/index";// 概览(管理员)
 
 }

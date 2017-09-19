@@ -30,6 +30,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_detailsing_numb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -53,6 +54,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_detailsing_jjd"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -76,10 +78,10 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_detailsing_name"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_toRightOf="@+id/tv_annul_gdhs"
                     android:text="张三"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
@@ -99,6 +101,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_detailsing_startime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -122,6 +125,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_detailsing_endtime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -146,6 +150,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_detailsing_cause"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -169,6 +174,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_detailsing_adress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -192,6 +198,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_detailsing_xxadress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -246,7 +253,6 @@
                     android:textColor="#000"
                     android:textSize="@dimen/content_text_s18" />
             </RelativeLayout>
-
 
         </LinearLayout>
     </ScrollView>

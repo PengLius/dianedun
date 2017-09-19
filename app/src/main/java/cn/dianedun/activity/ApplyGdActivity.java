@@ -131,7 +131,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private List<String> alllist;
     int STARTTIME = 0;
     int ENDTTIME = 1;
-    private String level = "1";
+    private String level = "0";
     private View view, view2, view3;
     private PopupWindow pop, pop2, pop3;
     private GirdAdapter adapter;
@@ -269,7 +269,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
             case R.id.tv_amendgd_pt:
                 //普通
-                level = "1";
+                level = "0";
                 tv_amendgd_pt.setCompoundDrawables(drawable, null, null, null);
                 tv_amendgd_jj.setCompoundDrawables(drawable2, null, null, null);
                 break;
@@ -281,7 +281,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
 
             case R.id.tv_amendgd_jj:
                 //紧急
-                level = "2";
+                level = "1";
                 tv_amendgd_jj.setCompoundDrawables(drawable1, null, null, null);
                 tv_amendgd_pt.setCompoundDrawables(drawable2, null, null, null);
                 break;
@@ -694,7 +694,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
         TextView tv_item_adress;
     }
 
-    class MyAsync extends AsyncTask<Object, Object, String> {
+    private class MyAsync extends AsyncTask<Object, Object, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
