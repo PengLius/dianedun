@@ -48,7 +48,7 @@ dependencies {
         exclude group: 'com.android.support'
     })
     compile 'com.bigkoo:alertview:1.0.2'
-//    testCompile 'junit:junit:4.12'
+    //    testCompile 'junit:junit:4.12'
     compile project(':xsnow')
     compile('com.jiechic.library:xUtils:2.6.14', {
         exclude group: 'com.android.support'
@@ -60,5 +60,5 @@ dependencies {
     })
     compile files('libs/Amap_2DMap_V5.2.0_20170627.jar')
     compile 'com.github.xesam:AndroidTimer:v0.1'
-
+    compile files('libs/EZUIKit_1.2.jar')
 }

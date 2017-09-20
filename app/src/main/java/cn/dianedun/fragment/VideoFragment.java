@@ -41,6 +41,7 @@ import cn.dianedun.activity.VideoShowActivity;
 import cn.dianedun.base.BaseFragment;
 import cn.dianedun.base.BaseTitlFragment;
 import cn.dianedun.bean.AccesstokenBean;
+import cn.dianedun.bean.DepartPlacesListBean;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.EZUtils;
@@ -88,7 +89,7 @@ public class VideoFragment extends BaseTitlFragment {
         initRefreshLayout();
     }
 
-    private AccesstokenBean.DataBean mTokenBean;
+    private DepartPlacesListBean.DataBean mDataBean;
 
     @Override
     protected void initData() {
@@ -106,25 +107,68 @@ public class VideoFragment extends BaseTitlFragment {
     private Boolean mRefreshOrLoadMore = null;
     private void getData(final Boolean headOrLoadMore){
         ViseApi api = new ViseApi.Builder(_mActivity).build();
-        HashMap hashMap = new HashMap();
-        hashMap.put("departId","admin");
-        api.apiPost(AppConfig.GETACCESSTOKEN,hashMap,false,new ApiCallback<AccesstokenBean.DataBean>(){
+        api.apiPost(AppConfig.GETDEPARTPLACES,App.getInstance().getToken(),new HashMap(),false,new ApiCallback<DepartPlacesListBean.DataBean>(){
             @Override
             public void onStart() {
 
             }
 
             @Override
-            public void onNext(AccesstokenBean.DataBean accesstokenBean){
+            public void onNext(DepartPlacesListBean.DataBean dataBean){
                 mRlLoadFaild.setVisibility(GONE);
-                mTokenBean = accesstokenBean;
-                App.getOpenSDK().setAccessToken(mTokenBean.getAccessToken());
-                new GetCamersInfoListTask(headOrLoadMore).execute();
+                mDataBean = dataBean;
+//                App.getOpenSDK().setAccessToken(mTokenBean.getAccessToken());
+
+                if (headOrLoadMore == null) {
+                    //首次刷新
+                    if (dataBean.getResult().size() == 0){
+                        //没有数据
+                        mRlNodata.setVisibility(View.VISIBLE);
+                    }else{
+                        mRlNodata.setVisibility(View.GONE);
+                        addCameraList(dataBean.getResult());
+                    }
+                }else{
+                    if (headOrLoadMore){
+                        //下拉
+                        mRefreshLayout.finishRefresh();
+                        if (dataBean.getResult().size() == 0){
+                            mRlNodata.setVisibility(View.VISIBLE);
+                        }else{
+                            mRlNodata.setVisibility(View.GONE);
+                            mCameraAdapter.setDatas(dataBean.getResult());
+                            mCameraAdapter.notifyDataSetChanged();
+                        }
+
+                    }else{
+                        //上拉
+                        mRefreshLayout.finishLoadmore();
+                        if (dataBean.getResult().size() == 0){
+                            mRefreshLayout.setLoadmoreFinished(true);
+                        }else{
+                            mCameraAdapter.addDatas(dataBean.getResult());
+                            mCameraAdapter.notifyDataSetChanged();
+                        }
+                    }
+                }
+
+//                if (mErrorCode != 0) {
+//                    onError(mErrorCode);
+//                }else{
+//                    mRlLoadFaild.setVisibility(GONE);
+//                }
+//                new GetCamersInfoListTask(headOrLoadMore).execute();
             }
 
             @Override
             public void onError(ApiException e) {
                 showToast(e.getMessage());
+                if (headOrLoadMore!= null){
+                    if (headOrLoadMore)
+                        mRefreshLayout.finishRefresh();
+                    else if (headOrLoadMore == false)
+                        mRefreshLayout.finishLoadmore();
+                }
                 mRlLoadFaild.setVisibility(View.VISIBLE);
             }
 
@@ -154,155 +198,41 @@ public class VideoFragment extends BaseTitlFragment {
         });
     }
 
-    /**
-     * 获取事件消息任务
-     */
-    private class GetCamersInfoListTask extends AsyncTask<Void, Void, List<EZDeviceInfo>> {
-        private Boolean mHeaderOrFooter;
-        private int mErrorCode = 0;
-
-        public GetCamersInfoListTask(Boolean headerOrFooter) {
-            mHeaderOrFooter = headerOrFooter;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        @Override
-        protected List<EZDeviceInfo> doInBackground(Void... params) {
-            if (_mActivity.isFinishing()) {
-                return null;
-            }
-
-            if (!ConnectionDetector.isNetworkAvailable(_mActivity)) {
-                mErrorCode = ErrorCode.ERROR_WEB_NET_EXCEPTION;
-                return null;
-            }
-
-            try {
-                List<EZDeviceInfo> result = null;
-                if (mHeaderOrFooter == null || mHeaderOrFooter) {
-                    result = getOpenSDK().getDeviceList(0, 20);
-                } else {
-                    result = getOpenSDK().getDeviceList((mCameraAdapter.getItemCount() / 20)+(mCameraAdapter.getItemCount() % 20>0?1:0), 20);
-                }
-                return result;
-
-            } catch (BaseException e) {
-                ErrorInfo errorInfo = (ErrorInfo) e.getObject();
-                mErrorCode = errorInfo.errorCode;
-                LogUtil.debugLog(TAG, errorInfo.toString());
-
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(List<EZDeviceInfo> result) {
-            super.onPostExecute(result);
-            if (_mActivity.isFinishing()) {
-                return;
-            }
-
-            if (result != null) {
-                if (mHeaderOrFooter == null) {
-                    //首次刷新
-                    if (result.size() == 0){
-                        //没有数据
-                        mRlNodata.setVisibility(View.VISIBLE);
-                    }else{
-                        mRlNodata.setVisibility(View.GONE);
-                        addCameraList(result);
-                    }
-                }else{
-                    if (mHeaderOrFooter){
-                        //下拉
-                        mRefreshLayout.finishRefresh();
-                        if (result.size() == 0){
-                            mRlNodata.setVisibility(View.VISIBLE);
-                        }else{
-                            mRlNodata.setVisibility(View.GONE);
-                            mCameraAdapter.setDatas(result);
-                            mCameraAdapter.notifyDataSetChanged();
-                        }
-
-                    }else{
-                        //上拉
-                        mRefreshLayout.finishLoadmore();
-                        if (result.size() == 0){
-                            mRefreshLayout.setLoadmoreFinished(true);
-                        }else{
-                            mCameraAdapter.addDatas(result);
-                            mCameraAdapter.notifyDataSetChanged();
-                        }
-                    }
-                }
-            }
-
-            if (mErrorCode != 0) {
-                onError(mErrorCode);
-            }else{
-                mRlLoadFaild.setVisibility(GONE);
-            }
-        }
-
-        protected void onError(int errorCode) {
-            switch (errorCode) {
-                case ErrorCode.ERROR_WEB_SESSION_ERROR:
-                case ErrorCode.ERROR_WEB_SESSION_EXPIRE:
-                    showToast("已过期，请重新登录");
-                    startActivity(new Intent(_mActivity,LoginActivity.class));
-                    break;
-                default:
-                    if (mCameraAdapter !=null && mCameraAdapter.getItemCount() == 0) {
-                        mRlLoadFaild.setVisibility(View.VISIBLE);
-                    } else {
-                        showToast("获取设备列表失败");
-                    }
-                    if (mHeaderOrFooter){
-                        mRefreshLayout.finishRefresh();
-                    }else{
-                        mRefreshLayout.finishLoadmore();
-                    }
-                    break;
-            }
-        }
-    }
 
     private CommonAdapter mCameraAdapter;
-    private void addCameraList(List<EZDeviceInfo> result) {
+    private void addCameraList(List<DepartPlacesListBean.DataBean.ResultBean> result) {
         if (mCameraAdapter == null){
             mInitLoad = true;
-            mCameraAdapter = new CommonAdapter<EZDeviceInfo>(_mActivity,R.layout.item_cameralist,result) {
+            mCameraAdapter = new CommonAdapter<DepartPlacesListBean.DataBean.ResultBean>(_mActivity,R.layout.item_cameralist,result) {
                 @Override
-                protected void convert(ViewHolder holder, EZDeviceInfo bean, final int position) {
-                    holder.setText(R.id.ic_tv_camerastatus,bean.getStatus() == 1 ? "在线" : "离线");
-                    holder.setText(R.id.ic_tv_places,bean.getDeviceName());
-                    holder.setText(R.id.ic_tv_recenttime,bean.getDeviceCover());
+                protected void convert(ViewHolder holder, final DepartPlacesListBean.DataBean.ResultBean bean, final int position) {
+//                    holder.setText(R.id.ic_tv_camerastatus,bean.getStatus() == 1 ? "在线" : "离线");
+                    holder.setText(R.id.ic_tv_places,bean.getAddress() + bean.getDepartname());
+//                    holder.setText(R.id.ic_tv_recenttime,bean.getDeviceCover());
                     holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            final EZDeviceInfo deviceInfo = getDatas().get(position);
-                            if (deviceInfo.getCameraNum() <= 0 || deviceInfo.getCameraInfoList() == null || deviceInfo.getCameraInfoList().size() <= 0) {
-                                LogUtil.d(TAG, "cameralist is null or cameralist size is 0");
-                                return;
-                            }
-                            if (deviceInfo.getCameraNum() == 1 && deviceInfo.getCameraInfoList() != null && deviceInfo.getCameraInfoList().size() == 1) {
-                                LogUtil.d(TAG, "cameralist have one camera");
-                                final EZCameraInfo cameraInfo = EZUtils.getCameraInfoFromDevice(deviceInfo, 0);
-                                if (cameraInfo == null) {
-                                    return;
-                                }
-
-                                Intent intent = new Intent(_mActivity, VideoShowActivity.class);
-                                intent.putExtra(IntentConsts.EXTRA_CAMERA_INFO, cameraInfo);
-                                intent.putExtra(IntentConsts.EXTRA_DEVICE_INFO, deviceInfo);
-                                startActivity(intent);
-                                return;
-                            }
-
+//                            final EZDeviceInfo deviceInfo = getDatas().get(position);
+//                            if (deviceInfo.getCameraNum() <= 0 || deviceInfo.getCameraInfoList() == null || deviceInfo.getCameraInfoList().size() <= 0) {
+//                                LogUtil.d(TAG, "cameralist is null or cameralist size is 0");
+//                                return;
+//                            }
+//                            if (deviceInfo.getCameraNum() == 1 && deviceInfo.getCameraInfoList() != null && deviceInfo.getCameraInfoList().size() == 1) {
+//                                LogUtil.d(TAG, "cameralist have one camera");
+//                                final EZCameraInfo cameraInfo = EZUtils.getCameraInfoFromDevice(deviceInfo, 0);
+//                                if (cameraInfo == null) {
+//                                    return;
+//                                }
+//
+//                                Intent intent = new Intent(_mActivity, VideoShowActivity.class);
+//                                intent.putExtra(IntentConsts.EXTRA_CAMERA_INFO, cameraInfo);
+//                                intent.putExtra(IntentConsts.EXTRA_DEVICE_INFO, deviceInfo);
+//                                startActivity(intent);
+//                                return;
+//                            }
+                            Intent intent = new Intent(_mActivity, VideoShowActivity.class);
+                            intent.putExtra("id", bean.getId());
+                            startActivity(intent);
                         }
                     });
                 }

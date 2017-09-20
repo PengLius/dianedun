@@ -21,6 +21,10 @@
         <item name="android:windowEnterAnimation">@anim/fade_up</item>
         <item name="android:windowExitAnimation">@anim/fade_down</item>
     </style>
+    <style name="popwindowTopInAnim">
+        <item name="android:windowEnterAnimation">@anim/fade_up</item>
+        <item name="android:windowExitAnimation">@anim/fade_down</item>
+    </style>
     <declare-styleable name="SwitchView">
         <attr name="hasShadow" format="boolean"/>
         <attr name="primaryColor" format="color"/>

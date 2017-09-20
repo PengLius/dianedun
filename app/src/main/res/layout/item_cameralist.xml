@@ -14,14 +14,15 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:background="@mipmap/ic_nor_greentop"
-            android:text="在线"
             android:id="@+id/ic_tv_camerastatus"
-            android:gravity="center"
-            android:textSize="@dimen/content_text_s12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_height="wrap_content" />
+            android:background="@mipmap/ic_nor_greentop"
+            android:gravity="center"
+            android:text="在线"
+            android:textSize="@dimen/content_text_s12"
+            android:visibility="gone" />
 
         <ImageView
             android:layout_width="wrap_content"

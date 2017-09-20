@@ -15,6 +15,7 @@
         android:background="@mipmap/home_backg_has">
 
         <ImageView
+            android:id="@+id/av_img_back"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/bt_back" />
@@ -28,13 +29,15 @@
             android:textSize="@dimen/content_text_s16" />
 
         <ImageView
+            android:id="@+id/av_img_spit"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/ic_nor_greenfunction" />
 
     </RelativeLayout>
 
-    <android.support.percent.PercentRelativeLayout
-        android:id="@+id/av_rl_videocontainer"
+    <FrameLayout
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_gravity="center"
@@ -42,226 +45,244 @@
         app:layout_heightPercent="45%"
         app:layout_widthPercent="100%">
 
-        <SurfaceView
-            android:id="@+id/realplay_sv"
+        <android.support.percent.PercentRelativeLayout
+            android:id="@+id/av_rl_videocontainer"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_alignParentTop="true"
-            android:layout_centerInParent="false"
-            android:layout_margin="5dp"
-            android:background="@android:color/transparent" />
+            android:layout_gravity="center"
+            android:background="@color/black_bg">
 
-        <RelativeLayout
-            android:id="@+id/realplay_loading_rl"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_margin="5dp"
-            android:background="@color/black_bg"
-            android:visibility="visible">
+            <SurfaceView
+                android:id="@+id/realplay_sv"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="false"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent" />
 
-            <TextView
-                android:id="@+id/realplay_tip_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:text="设备不在线"
-                android:textColor="@color/white"
-                android:textSize="@dimen/content_text_s12"
-                android:visibility="gone" />
+            <RelativeLayout
+                android:id="@+id/realplay_loading_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:background="@color/black_bg"
+                android:visibility="visible">
 
-            <ImageView
-                android:id="@+id/realplay_play_iv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:onClick="onClick"
-                android:scaleType="fitXY"
-                android:src="@drawable/ez_leave_message_play_selector"
-                android:visibility="gone" />
+                <TextView
+                    android:id="@+id/realplay_tip_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="设备不在线"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/content_text_s12"
+                    android:visibility="gone" />
 
-            <ProgressBar
-                android:id="@+id/realplay_loading"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
+                <ImageView
+                    android:id="@+id/realplay_play_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:onClick="onClick"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/ez_leave_message_play_selector"
+                    android:visibility="gone" />
 
-            <LinearLayout
-                android:id="@+id/realplay_privacy_ly"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:orientation="vertical"
+                <ProgressBar
+                    android:id="@+id/realplay_loading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true" />
+
+                <LinearLayout
+                    android:id="@+id/realplay_privacy_ly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:visibility="gone">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@mipmap/preview_close1_video_ico"
+                        android:scaleType="fitXY" />
+
+                    <TextView
+                        android:id="@+id/realplay_privacy_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:text="镜头遮蔽中"
+                        android:textColor="#929292"
+                        android:textSize="@dimen/content_text_s16" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/realplay_page_anim_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/realplay_capture_rl"
+                android:layout_width="65dp"
+                android:layout_height="45dp"
+                android:layout_above="@+id/av_rl_bottomlayout"
+                android:layout_alignLeft="@+id/realplay_sv"
+                android:background="@color/white"
+                android:padding="1dp"
                 android:visibility="gone">
 
                 <ImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:background="@mipmap/preview_close1_video_ico"
+                    android:id="@+id/realplay_capture_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:scaleType="fitXY" />
 
+                <ImageView
+                    android:id="@+id/realplay_capture_watermark_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/video_file_watermark"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/av_rl_bottomlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/realplay_sv"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="#88e9e9e9"
+                android:padding="5dp">
+
                 <TextView
-                    android:id="@+id/realplay_privacy_tv"
+                    android:id="@+id/av_tv_places"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    android:text="镜头遮蔽中"
-                    android:textColor="#929292"
-                    android:textSize="@dimen/content_text_s16" />
-            </LinearLayout>
+                    android:layout_centerVertical="true"
+                    android:text="炫彩SOHO大厦B座1号配电室-1号机"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/content_text_s12" />
+
+                <com.videogo.widget.CheckTextButton
+                    android:id="@+id/av_ctb_fullscreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@mipmap/ic_nor_fullscreen" />
+            </RelativeLayout>
+
+            <!--<include-->
+                <!--layout="@layout/view_realplay_full_operate"-->
+                <!--android:visibility="visible" />-->
 
             <ImageView
-                android:id="@+id/realplay_page_anim_iv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:visibility="gone" />
-
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/realplay_capture_rl"
-            android:layout_width="65dp"
-            android:layout_height="45dp"
-            android:layout_above="@+id/av_rl_bottomlayout"
-            android:layout_alignLeft="@+id/realplay_sv"
-            android:background="@color/white"
-            android:padding="1dp"
-            android:visibility="gone">
-
-            <ImageView
-                android:id="@+id/realplay_capture_iv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY" />
-
-            <ImageView
-                android:id="@+id/realplay_capture_watermark_iv"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="fitXY"
-                android:src="@drawable/video_file_watermark"
-                android:visibility="gone" />
-        </RelativeLayout>
-
-
-        <RelativeLayout
-            android:id="@+id/av_rl_bottomlayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/realplay_sv"
-            android:layout_marginLeft="5dp"
-            android:layout_marginRight="5dp"
-            android:background="#88e9e9e9"
-            android:padding="5dp">
-
-            <TextView
-                android:id="@+id/av_tv_places"
+                android:id="@+id/realplay_ptz_direction_iv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:text="炫彩SOHO大厦B座1号配电室-1号机"
-                android:textColor="@color/white"
-                android:textSize="@dimen/content_text_s12" />
-
-            <com.videogo.widget.CheckTextButton
-                android:id="@+id/av_ctb_fullscreen"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:background="@mipmap/ic_nor_fullscreen" />
-        </RelativeLayout>
-
-        <include
-            layout="@layout/view_realplay_full_operate"
-            android:visibility="visible" />
-
-        <ImageView
-            android:id="@+id/realplay_ptz_direction_iv"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignBottom="@+id/realplay_sv"
-            android:layout_centerHorizontal="true"
-            android:background="@drawable/left_twinkle"
-            android:scaleType="fitXY"
-            android:visibility="gone" />
-
-        <ImageButton
-            android:id="@+id/realplay_full_anim_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@drawable/yuntai_pressed"
-            android:visibility="gone" />
-
-        <RelativeLayout
-            android:id="@+id/realplay_prompt_rl"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:visibility="gone">
-
-            <com.videogo.widget.TitleBar
-                android:id="@+id/title_bar_landscape"
-                style="@style/TitleBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:visibility="gone" />
-
-            <TextView
-                android:id="@+id/realplay_ratio_tv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="70dp"
-                android:layout_marginTop="20dp"
-                android:text="2.0X"
-                android:textColor="@color/white"
-                android:textSize="@dimen/content_text_s24"
-                android:visibility="gone" />
-
-
-            <LinearLayout
-                android:id="@+id/realplay_record_ly"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="false"
+                android:layout_alignBottom="@+id/realplay_sv"
                 android:layout_centerHorizontal="true"
-                android:layout_centerVertical="false"
-                android:layout_marginRight="15dp"
-                android:layout_marginTop="15dp"
-                android:background="@drawable/circle_graybg"
-                android:gravity="center"
-                android:visibility="visible">
+                android:background="@drawable/left_twinkle"
+                android:scaleType="fitXY"
+                android:visibility="gone" />
+
+            <!--<ImageButton-->
+                <!--android:id="@+id/realplay_full_anim_btn"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:background="@drawable/yuntai_pressed"-->
+                <!--android:visibility="gone" />-->
+
+            <RelativeLayout
+                android:id="@+id/realplay_prompt_rl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone">
+
+                <com.videogo.widget.TitleBar
+                    android:id="@+id/title_bar_landscape"
+                    style="@style/TitleBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/realplay_ratio_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginTop="20dp"
+                    android:text="2.0X"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/content_text_s24"
+                    android:visibility="gone" />
+
+
+                <LinearLayout
+                    android:id="@+id/realplay_record_ly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="false"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="false"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/circle_graybg"
+                    android:gravity="center"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/realplay_record_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/play_video_record" />
+
+                    <TextView
+                        android:id="@+id/realplay_record_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:text="00:25"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/title_text_s12" />
+                </LinearLayout>
 
                 <ImageView
-                    android:id="@+id/realplay_record_iv"
+                    android:id="@+id/realplay_full_ptz_prompt_iv"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    android:background="@drawable/play_video_record" />
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/ptz_prompt"
+                    android:scaleType="fitXY"
+                    android:visibility="gone" />
+            </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/realplay_record_tv"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginRight="10dp"
-                    android:text="00:25"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/title_text_s12" />
-            </LinearLayout>
+        </android.support.percent.PercentRelativeLayout>
 
-            <ImageView
-                android:id="@+id/realplay_full_ptz_prompt_iv"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:background="@drawable/ptz_prompt"
-                android:scaleType="fitXY"
-                android:visibility="gone" />
-        </RelativeLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/av_rv_spitscreen"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/black_bg"
+            android:visibility="gone">
 
-    </android.support.percent.PercentRelativeLayout>
+        </android.support.v7.widget.RecyclerView>
+
+    </FrameLayout>
 
     <cn.dianedun.view.PercentLinearLayout
         android:id="@+id/av_ll_fccontainer"
