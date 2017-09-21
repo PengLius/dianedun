@@ -18,11 +18,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
 import android.provider.MediaStore;
+import android.support.annotation.DimenRes;
+import android.support.annotation.NonNull;
+import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,7 +56,6 @@ import com.bigkoo.alertview.AlertView;
 import com.bigkoo.alertview.OnItemClickListener;
 import com.ezvizuikit.open.EZUIError;
 import com.ezvizuikit.open.EZUIKit;
-import com.ezvizuikit.open.EZUIPlayer;
 import com.videogo.constant.Config;
 import com.videogo.constant.Constant;
 import com.videogo.constant.IntentConsts;
@@ -95,13 +99,18 @@ import cn.dianedun.bean.AccesstokenBean;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.AudioPlayUtil;
+import cn.dianedun.tools.CommonUtil;
 import cn.dianedun.tools.DataManager;
 import cn.dianedun.tools.EZUtils;
 import cn.dianedun.tools.ScreenOrientationHelper;
 import cn.dianedun.tools.VerifyCodeInput;
+import cn.dianedun.tools.ViewServer;
+import cn.dianedun.view.EZUIPlayer.EZUIPlayer;
 import cn.dianedun.view.WaitDialog;
 
+import static android.view.View.GONE;
 import static cn.dianedun.tools.App.AppKey;
+import static cn.dianedun.tools.App.AppSecret;
 import static cn.dianedun.tools.App.getOpenSDK;
 
 /**
@@ -322,8 +331,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Bind(R.id.realplay_capture_watermark_iv)
     ImageView mRealPlayCaptureWatermarkIv;
 
-    @Bind(R.id.av_rv_spitscreen)
-    RecyclerView mRvSpit;
+    @Bind(R.id.av_viewpager_spitscreen)
+    ViewPager mViewPagerSpit;
 
     private RelativeLayout.LayoutParams mRealPlayCaptureRlLp = null;
 
@@ -331,10 +340,14 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videoshow);
+        ViewServer.get(this).addWindow(this);
     }
 
     @Bind(R.id.av_rl_videocontainer)
     RelativeLayout mRealPlayPlayRl;
+
+    @Bind(R.id.av_fl_displaycontainer)
+    FrameLayout mFlDisplayContainer;
 
     @Bind(R.id.realplay_ptz_direction_iv)
     ImageView mRealPlayPtzDirectionIv;
@@ -360,6 +373,11 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //    @Bind(R.id.realplay_full_flow_ly)
 //    LinearLayout mRealPlayFullFlowLy;
 
+    //测试
+//    @Bind(R.id.av_ezplayer_1)
+//    EZUIPlayer av_ezplayer_1;
+//    @Bind(R.id.av_ezplayer_2)
+//    EZUIPlayer av_ezplayer_2;
 
     private SurfaceHolder mRealPlaySh = null;
     private CustomTouchListener mRealPlayTouchListener = null;
@@ -406,6 +424,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mDeviceInfo != null && mDeviceInfo.getIsEncrypt() == 1) {
             mVerifyCode = DataManager.getInstance().getDeviceSerialVerifyCode(mCameraInfo.getDeviceSerial());
         }
+        mRealPlayPlayRl.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                mSpitLayoutHeight = mRealPlayPlayRl.getHeight() - CommonUtil.dip2px(VideoShowActivity.this,10);
+                mSpitLayoutWidth = mRealPlayPlayRl.getWidth() - CommonUtil.dip2px(VideoShowActivity.this,10);
+            }
+        });
     }
     private void startZoom(float scale) {
         if (mEZPlayer == null) {
@@ -444,13 +469,14 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
+        ViewServer.get(this).setFocusedWindow(this);
         if (m4BoxOr9Box != null){
             for (int i= 0;i < mSpitPlayerArr.size(); i++){
                 EZUIPlayer ezuiPlayer = mSpitPlayerArr.get(i);
                 if (ezuiPlayer!=null)
                     ezuiPlayer.resumePlay();
             }
-        }else{
+        }else if (mEzDeviceInfo!=null && mDeviceInfo!=null && mEzDeviceInfo!=null){
             setDeviceUiInfo();
         }
     }
@@ -458,7 +484,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
+        ViewServer.get(this).removeWindow(this);
         for (int i= 0;i < mSpitPlayerArr.size(); i++){
             EZUIPlayer ezuiPlayer = mSpitPlayerArr.get(i);
             if (ezuiPlayer!=null)
@@ -515,10 +541,10 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     private void initCaptureUI() {
         mCaptureDisplaySec = 0;
-        mRealPlayCaptureRl.setVisibility(View.GONE);
+        mRealPlayCaptureRl.setVisibility(GONE);
         mRealPlayCaptureIv.setImageURI(null);
         mRealPlayCaptureWatermarkIv.setTag(null);
-        mRealPlayCaptureWatermarkIv.setVisibility(View.GONE);
+        mRealPlayCaptureWatermarkIv.setVisibility(GONE);
     }
 
     private void setRealPlaySvLayout() {
@@ -562,7 +588,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             if (mPlayScale == scale) {
                 return;
             }
-            mRealPlayRatioTv.setVisibility(View.GONE);
+            mRealPlayRatioTv.setVisibility(GONE);
             try {
                 if (mEZPlayer != null) {
                     mEZPlayer.setDisplayRegion(false, null, null);
@@ -594,7 +620,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             String sacleStr = String.valueOf(scale);
             mRealPlayRatioTv.setText(sacleStr.subSequence(0, Math.min(3, sacleStr.length())) + "X");
             //mj mRealPlayRatioTv.setVisibility(View.VISIBLE);
-            mRealPlayRatioTv.setVisibility(View.GONE);
+            mRealPlayRatioTv.setVisibility(GONE);
             hideControlRlAndFullOperateBar(false);
             try {
                 if (mEZPlayer != null) {
@@ -625,7 +651,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 mLandscapeTitleBar.setVisibility(View.VISIBLE);
             }
         } else {
-            mLandscapeTitleBar.setVisibility(View.GONE);
+            mLandscapeTitleBar.setVisibility(GONE);
         }
     }
     private PopupWindow mQualityPopupWindow = null;
@@ -831,11 +857,10 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Override
     protected void onActivityLoadFinish() {
         super.onActivityLoadFinish();
-
         ViseApi api = new ViseApi.Builder(this).build();
         HashMap hashMap = new HashMap();
         hashMap.put("departId","admin");
-        api.apiPost(AppConfig.GETACCESSTOKEN,hashMap,false,new ApiCallback<AccesstokenBean.DataBean>(){
+        api.apiPost(AppConfig.GETACCESSTOKEN,App.getInstance().getToken(),hashMap,false,new ApiCallback<AccesstokenBean.DataBean>(){
             @Override
             public void onNext(AccesstokenBean.DataBean dataBean) {
                 mAccessTokenBean = dataBean;
@@ -844,7 +869,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 EZUIKit.initWithAppKey(App.getInstance(),AppKey);
                 //设置授权accesstoken
                 EZUIKit.setAccessToken(mAccessTokenBean.getAccessToken());
-                App.getOpenSDK().setAccessToken(dataBean.getAccessToken());
+                App.getOpenSDK().setAccessToken(mAccessTokenBean.getAccessToken());
                 new GetCamersInfoListTask().execute();
             }
 
@@ -863,6 +888,38 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             }
         });
+//        ViseApi api = new ViseApi.Builder(this).build();
+//        HashMap hashMap = new HashMap();
+//        hashMap.put("appKey",AppKey);
+//        hashMap.put("appSecret",AppSecret);
+//        api.apiPost(AppConfig.GETTOKENKEY,hashMap,false,new ApiCallback<AccesstokenBean.DataBean>(){
+//            @Override
+//            public void onNext(AccesstokenBean.DataBean dataBean) {
+//                mAccessTokenBean = dataBean;
+//                EZUIKit.setDebug(true);
+//                //appkey初始化
+//                EZUIKit.initWithAppKey(App.getInstance(),AppKey);
+//                //设置授权accesstoken
+//                EZUIKit.setAccessToken(mAccessTokenBean.getAccessToken());
+//                App.getOpenSDK().setAccessToken(mAccessTokenBean.getAccessToken());
+//                new GetCamersInfoListTask().execute();
+//            }
+//
+//            @Override
+//            public void onError(ApiException e) {
+//                showToast(e.getMessage());
+//            }
+//
+//            @Override
+//            public void onStart() {
+//
+//            }
+//
+//            @Override
+//            public void onCompleted() {
+//
+//            }
+//        });
     }
 
     @Bind(R.id.av_img_sound)
@@ -895,7 +952,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //            mRealPlayQualityBtn.setVisibility(View.VISIBLE);
 //            mRealPlayFullSoundBtn.setVisibility(View.VISIBLE);
 //            mRealPlayFullPtzAnimBtn.setVisibility(View.GONE);
-            mRealPlayFullPtzPromptIv.setVisibility(View.GONE);
+            mRealPlayFullPtzPromptIv.setVisibility(GONE);
 
             updateUI();
         } else if (mRtspUrl != null) {
@@ -903,7 +960,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //                mPortraitTitleBar.setTitle(mRealPlaySquareInfo.mCameraName);
                 mLandscapeTitleBar.setTitle(mRealPlaySquareInfo.mCameraName);
             }
-            mRealPlaySoundBtn.setVisibility(View.GONE);
+            mRealPlaySoundBtn.setVisibility(GONE);
 //            mRealPlayQualityBtn.setVisibility(View.GONE);
         }
 
@@ -941,16 +998,16 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 ////                    mRealPlayRecordStartBtn.setVisibility(View.GONE);
 //                }
 //            }
-            mRealPlayPlayRl.setLayoutParams(mSvLayoutParams);
+            mFlDisplayContainer.setLayoutParams(mSvLayoutParams);
         } else {
             // 隐藏状态栏
             fullScreen(true);
-            mRlTitleLayout.setVisibility(View.GONE);
-            LinearLayout.LayoutParams realPlayPlayRlLp = new LinearLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT,
-                    RelativeLayout.LayoutParams.MATCH_PARENT);
+            mRlTitleLayout.setVisibility(GONE);
+            LinearLayout.LayoutParams realPlayPlayRlLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
             realPlayPlayRlLp.gravity = Gravity.CENTER;
 //            realPlayPlayRlLp.weight = 1;
-            mRealPlayPlayRl.setLayoutParams(realPlayPlayRlLp);
+            mFlDisplayContainer.setLayoutParams(realPlayPlayRlLp);
 //            mLlFcContainer.setVisibility(View.GONE);
 //            mPortraitTitleBar.setVisibility(View.GONE);
             // hide the
@@ -1123,7 +1180,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                     mLandscapeTitleBar.setVisibility(View.VISIBLE);
                 }
             } else {
-                mLandscapeTitleBar.setVisibility(View.GONE);
+                mLandscapeTitleBar.setVisibility(GONE);
             }
             mControlDisplaySec = 0;
         } else {
@@ -1137,11 +1194,11 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     }
     private void setStartloading() {
         mRealPlayLoadingRl.setVisibility(View.VISIBLE);
-        mRealPlayTipTv.setVisibility(View.GONE);
+        mRealPlayTipTv.setVisibility(GONE);
 //        mImgReplay.setVisibility(View.GONE);
         mRealPlayPlayLoading.setVisibility(View.VISIBLE);
-        mRealPlayPlayIv.setVisibility(View.GONE);
-        mRealPlayPlayPrivacyLy.setVisibility(View.GONE);
+        mRealPlayPlayIv.setVisibility(GONE);
+        mRealPlayPlayPrivacyLy.setVisibility(GONE);
     }
     private void setRealPlayFailUI(String errorStr) {
         mStopTime = System.currentTimeMillis();
@@ -1190,9 +1247,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mRealPlayTipTv.setVisibility(View.VISIBLE);
         mRealPlayTipTv.setText(errorStr);
 //        mImgReplay.setVisibility(View.VISIBLE);
-        mRealPlayPlayLoading.setVisibility(View.GONE);
-        mRealPlayPlayIv.setVisibility(View.GONE);
-        mRealPlayPlayPrivacyLy.setVisibility(View.GONE);
+        mRealPlayPlayLoading.setVisibility(GONE);
+        mRealPlayPlayIv.setVisibility(GONE);
+        mRealPlayPlayPrivacyLy.setVisibility(GONE);
     }
 
     /**
@@ -1285,16 +1342,16 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 ////            mRealPlayFullPtzAnimBtn.setVisibility(View.GONE);
 ////            mFullscreenFullButton.setVisibility(View.GONE);
 //        }
-        mRealPlayFullPtzPromptIv.setVisibility(View.GONE);
+        mRealPlayFullPtzPromptIv.setVisibility(GONE);
         mHandler.removeMessages(MSG_CLOSE_PTZ_PROMPT);
     }
 
     public void setStopLoading() {
         mRealPlayLoadingRl.setVisibility(View.VISIBLE);
-        mRealPlayTipTv.setVisibility(View.GONE);
-        mRealPlayPlayLoading.setVisibility(View.GONE);
+        mRealPlayTipTv.setVisibility(GONE);
+        mRealPlayPlayLoading.setVisibility(GONE);
         mRealPlayPlayIv.setVisibility(View.VISIBLE);
-        mRealPlayPlayPrivacyLy.setVisibility(View.GONE);
+        mRealPlayPlayPrivacyLy.setVisibility(GONE);
     }
 
     private void updateOrientation() {
@@ -1481,7 +1538,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             }
         };
 
-        mSvLayoutParams = mRealPlayPlayRl.getLayoutParams();
+        mSvLayoutParams = mFlDisplayContainer.getLayoutParams();
         initCaptureUI();
         mScreenOrientationHelper = new ScreenOrientationHelper(this, mCtbFullscreen, /*mFullscreenFullButton*/mFullScreenTitleBarBackBtn);
 
@@ -1591,7 +1648,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mLandscapeTitleBar.getVisibility() == View.VISIBLE){
 //                || mRealPlayControlRl.getVisibility() == View.VISIBLE) {
             //            mRealPlayControlRl.setVisibility(View.GONE);
-            mLandscapeTitleBar.setVisibility(View.GONE);
+            mLandscapeTitleBar.setVisibility(GONE);
             closeQualityPopupWindow();
         } else {
 //            mRealPlayControlRl.setVisibility(View.VISIBLE);
@@ -1600,7 +1657,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                     mLandscapeTitleBar.setVisibility(View.VISIBLE);
                 }
             } else {
-                mLandscapeTitleBar.setVisibility(View.GONE);
+                mLandscapeTitleBar.setVisibility(GONE);
             }
             mControlDisplaySec = 0;
         }
@@ -1611,7 +1668,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //            if (!mIsOnTalk && !mIsOnPtz) {
 //                mFullscreenFullButton.setVisibility(View.GONE);
 //            }
-            mLandscapeTitleBar.setVisibility(View.GONE);
+            mLandscapeTitleBar.setVisibility(GONE);
         } else {
             if (!mIsOnTalk && !mIsOnPtz) {
                 //mj mRealPlayFullOperateBar.setVisibility(View.VISIBLE);
@@ -1745,7 +1802,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 startRealPlay();
                 break;
             case MSG_CLOSE_PTZ_PROMPT:
-                mRealPlayFullPtzPromptIv.setVisibility(View.GONE);
+                mRealPlayFullPtzPromptIv.setVisibility(GONE);
                 break;
             case MSG_HIDE_PTZ_DIRECTION:
                 handleHidePtzDirection(msg);
@@ -1757,7 +1814,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 initUI();
                 break;
             case MSG_PREVIEW_START_PLAY:
-                mPageAnimIv.setVisibility(View.GONE);
+                mPageAnimIv.setVisibility(GONE);
 //                mRealPlayPreviewTv.setVisibility(View.GONE);
                 mStatus = RealPlayStatus.STATUS_INIT;
                 startRealPlay();
@@ -1773,9 +1830,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
         mHandler.removeMessages(MSG_HIDE_PTZ_DIRECTION);
         if (msg.arg1 > 2) {
-            mRealPlayPtzDirectionIv.setVisibility(View.GONE);
+            mRealPlayPtzDirectionIv.setVisibility(GONE);
         } else {
-            mRealPlayPtzDirectionIv.setVisibility(msg.arg1 == 1 ? View.GONE : View.VISIBLE);
+            mRealPlayPtzDirectionIv.setVisibility(msg.arg1 == 1 ? GONE : View.VISIBLE);
             Message message = new Message();
             message.what = MSG_HIDE_PTZ_DIRECTION;
             message.arg1 = msg.arg1 + 1;
@@ -1998,7 +2055,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             msg.arg1 = 1;
             mHandler.sendMessageDelayed(msg, 500);
         } else {
-            mRealPlayPtzDirectionIv.setVisibility(View.GONE);
+            mRealPlayPtzDirectionIv.setVisibility(GONE);
             mHandler.removeMessages(MSG_HIDE_PTZ_DIRECTION);
         }
     }
@@ -2121,7 +2178,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //        }
         if (mPageAnimIv != null) {
             mPageAnimIv.setBackgroundDrawable(null);
-            mPageAnimIv.setVisibility(View.GONE);
+            mPageAnimIv.setVisibility(GONE);
         }
     }
     /**
@@ -2290,7 +2347,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                     switch (view.getId()) {
                         case R.id.talkback_control_btn:
                             mEZPlayer.setVoiceTalkStatus(false);
-                            mTalkRingView.setVisibility(View.GONE);
+                            mTalkRingView.setVisibility(GONE);
                             break;
                         case R.id.ptz_top_btn:
 //                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_bg);
@@ -2556,6 +2613,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //                vrs_tv_9box.setTextColor(getResources().getColor(R.color.grayfont));
                 stopCurPlayer();
                 m4BoxOr9Box = true;
+                mFlDisplayContainer.removeView(mRealPlayPlayRl);
+//                mRealPlayPlayRl.setVisibility(GONE);
                 showSpitLayout();
                 closeSpitPopupWindow();
             }
@@ -2566,6 +2625,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 //9分
                 stopCurPlayer();
                 m4BoxOr9Box = false;
+//                mRealPlayPlayRl.setVisibility(GONE);
+                mFlDisplayContainer.removeView(mRealPlayPlayRl);
                 showSpitLayout();
                 closeSpitPopupWindow();
             }
@@ -2594,6 +2655,92 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     private void showSpitLayout(){
         initSpitRecycleView();
         mRvSpit.setVisibility(View.VISIBLE);
+
+//        测试
+//        av_ezplayer_1.setLoadingView(initProgressBar());
+//        findViewById(R.id.test).setVisibility(View.VISIBLE);
+//        av_ezplayer_1.setZOrderMediaOverlay(true);
+//        av_ezplayer_1.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
+//            @Override
+//            public void onPlaySuccess() {
+//                Log.e("ezuiplayer","onPlaySuccess");
+//            }
+//
+//            @Override
+//            public void onPlayFail(EZUIError ezuiError) {
+//                if (ezuiError.getErrorString().equals(EZUIError.UE_ERROR_INNER_VERIFYCODE_ERROR)){
+//
+//                }else if(ezuiError.getErrorString().equalsIgnoreCase(EZUIError.UE_ERROR_NOT_FOUND_RECORD_FILES)){
+//                    // TODO: 2017/5/12
+//                    //未发现录像文件
+//                    showToast("未找到录像文件");
+//                }
+//            }
+//
+//            @Override
+//            public void onVideoSizeChange(int width, int height) {
+//                Log.d(TAG,"onVideoSizeChange  width = "+width+"   height = "+height);
+//            }
+//
+//            @Override
+//            public void onPrepared() {
+//                av_ezplayer_1.startPlay();
+//            }
+//
+//            @Override
+//            public void onPlayTime(Calendar calendar) {
+//
+//            }
+//
+//            @Override
+//            public void onPlayFinish() {
+//                Log.e("ezuiplayer","onPlayFinish");
+//            }
+//        });
+//        String ezopenUrl = "ezopen://open.ys7.com/" + mEzDeviceInfo.get(1).getDeviceSerial() + "/1.live";
+//        av_ezplayer_1.setUrl(ezopenUrl);
+
+        //测试
+//        av_ezplayer_2.setLoadingView(initProgressBar());
+//        av_ezplayer_2.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
+//            @Override
+//            public void onPlaySuccess() {
+//                Log.e("ezuiplayer","onPlaySuccess");
+//            }
+//
+//            @Override
+//            public void onPlayFail(EZUIError ezuiError) {
+//                if (ezuiError.getErrorString().equals(EZUIError.UE_ERROR_INNER_VERIFYCODE_ERROR)){
+//
+//                }else if(ezuiError.getErrorString().equalsIgnoreCase(EZUIError.UE_ERROR_NOT_FOUND_RECORD_FILES)){
+//                    // TODO: 2017/5/12
+//                    //未发现录像文件
+//                    showToast("未找到录像文件");
+//                }
+//            }
+//
+//            @Override
+//            public void onVideoSizeChange(int width, int height) {
+//                Log.d(TAG,"onVideoSizeChange  width = "+width+"   height = "+height);
+//            }
+//
+//            @Override
+//            public void onPrepared() {
+//                av_ezplayer_2.startPlay();
+//            }
+//
+//            @Override
+//            public void onPlayTime(Calendar calendar) {
+//
+//            }
+//
+//            @Override
+//            public void onPlayFinish() {
+//                Log.e("ezuiplayer","onPlayFinish");
+//            }
+//        });
+//        String ezopenUrl2 = "ezopen://open.ys7.com/" + mEzDeviceInfo.get(1).getDeviceSerial() + "/1.live";
+//        av_ezplayer_2.setUrl(ezopenUrl2);
     }
 
     //暂停播放
@@ -2604,25 +2751,52 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             setRealPlayStopUI();
         }
     }
+    public class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
 
+        private int mItemOffset;
+
+        public ItemOffsetDecoration(int itemOffset) {
+            mItemOffset = itemOffset;
+        }
+
+        public ItemOffsetDecoration(@NonNull Context context, @DimenRes int itemOffsetId) {
+            this(context.getResources().getDimensionPixelSize(itemOffsetId));
+        }
+
+        @Override
+        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
+                                   RecyclerView.State state) {
+            super.getItemOffsets(outRect, view, parent, state);
+            outRect.set(mItemOffset, mItemOffset, mItemOffset, mItemOffset);
+        }
+    }
     private CommonAdapter mSpitAdapter;
     private SparseArray<EZUIPlayer> mSpitPlayerArr = new SparseArray<>();
+    private int mSpitLayoutHeight,mSpitLayoutWidth;
+    private int mSpitTagCount;
     private void initSpitRecycleView(){
-        if (m4BoxOr9Box)
-            mRvSpit.setLayoutManager(new GridLayoutManager(this,2));
-        else
-            mRvSpit.setLayoutManager(new GridLayoutManager(this,3));
-
+        if (m4BoxOr9Box) {
+            mSpitTagCount = 2;
+            mRvSpit.setLayoutManager(new GridLayoutManager(this, 2));
+        }else {
+            mSpitTagCount = 3;
+            mRvSpit.setLayoutManager(new GridLayoutManager(this, 3));
+        }
+//        mRvSpit.setLayoutManager(new LinearLayoutManager(this));
         if (mSpitAdapter == null){
             mSpitAdapter = new CommonAdapter<EZDeviceInfo>(VideoShowActivity.this,R.layout.item_ezplaykit,mEzDeviceInfo) {
                 @Override
                 protected void convert(ViewHolder holder, EZDeviceInfo bean, int position) {
                     final EZUIPlayer ezUIPlayer = holder.getView(R.id.ie_ezplayer);
-                    ezUIPlayer.setLoadingView(initProgressBar());
+//                    ezUIPlayer.setLoadingView(initProgressBar());
+//                    ezUIPlayer.setSurfaceSize(0, mSpitLayoutHeight/mSpitTagCount);
+                    ezUIPlayer.setSurfaceSize(mSpitLayoutWidth/mSpitTagCount, mSpitLayoutHeight/mSpitTagCount);
+                    ezUIPlayer.setOpenSound(false);
                     ezUIPlayer.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
                         @Override
                         public void onPlaySuccess() {
-
+                            Log.e("ezuiplayer","onPlaySuccess");
+//                            ezUIPlayer.setZOrderOnTop(true);
                         }
 
                         @Override
@@ -2637,8 +2811,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                         }
 
                         @Override
-                        public void onVideoSizeChange(int i, int i1) {
-
+                        public void onVideoSizeChange(int width, int height) {
+                            Log.d(TAG,"onVideoSizeChange  width = "+width+"   height = "+height);
                         }
 
                         @Override
@@ -2653,7 +2827,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
                         @Override
                         public void onPlayFinish() {
-
+                            Log.e("ezuiplayer","onPlayFinish");
                         }
                     });
                     String ezopenUrl = "ezopen://open.ys7.com/" + bean.getDeviceSerial() + "/1.live";
@@ -2662,6 +2836,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                         mSpitPlayerArr.put(position,ezUIPlayer);
                 }
             };
+//            mRvSpit.addItemDecoration(new ItemOffsetDecoration(CommonUtil.dip2px(this,1)));
             mRvSpit.setAdapter(mSpitAdapter);
         }else {
             mSpitAdapter.notifyDataSetChanged();
@@ -2868,9 +3043,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     private void setLoadingSuccess() {
         mRealPlayLoadingRl.setVisibility(View.INVISIBLE);
-        mRealPlayTipTv.setVisibility(View.GONE);
-        mRealPlayPlayLoading.setVisibility(View.GONE);
-        mRealPlayPlayIv.setVisibility(View.GONE);
+        mRealPlayTipTv.setVisibility(GONE);
+        mRealPlayPlayLoading.setVisibility(GONE);
+        mRealPlayPlayIv.setVisibility(GONE);
     }
     private void setRealPlaySound() {
         if (mEZPlayer != null) {
@@ -3123,7 +3298,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
                         mImgVideoStop, 0, 90);
             } else {
-                mImgVideoStart.setVisibility(View.GONE);
+                mImgVideoStart.setVisibility(GONE);
                 mImgVideoStop.setVisibility(View.VISIBLE);
             }
 //            mRealPlayFullRecordBtn.setVisibility(View.GONE);
@@ -3136,7 +3311,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //                mRealPlayFullRecordBtn.setVisibility(View.GONE);
 //                mRealPlayFullRecordStartBtn.setVisibility(View.VISIBLE);
             }
-            mImgVideoStart.setVisibility(View.GONE);
+            mImgVideoStart.setVisibility(GONE);
             mImgVideoStop.setVisibility(View.VISIBLE);
         }
         mIsRecording = true;
@@ -3235,7 +3410,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStop,
                         mImgVideoStart, 0, 90);
             } else {
-                mImgVideoStop.setVisibility(View.GONE);
+                mImgVideoStop.setVisibility(GONE);
                 mImgVideoStart.setVisibility(View.VISIBLE);
             }
 //            mRealPlayFullRecordStartBtn.setVisibility(View.GONE);
@@ -3249,15 +3424,15 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //                mRealPlayFullRecordBtn.setVisibility(View.VISIBLE);
 
             }
-            mImgVideoStop.setVisibility(View.GONE);
+            mImgVideoStop.setVisibility(GONE);
             mImgVideoStart.setVisibility(View.VISIBLE);
         }
         mAudioPlayUtil.playAudioFile(AudioPlayUtil.RECORD_SOUND);
         mEZPlayer.stopLocalRecord();
 
         // 计时按钮不可见
-        mRlPrompt.setVisibility(View.GONE);
-        mRealPlayRecordLy.setVisibility(View.GONE);
+        mRlPrompt.setVisibility(GONE);
+        mRealPlayRecordLy.setVisibility(GONE);
         //        mRealPlayCaptureRl.setVisibility(View.VISIBLE);
         mCaptureDisplaySec = 0;
         //        try {
@@ -3488,7 +3663,15 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             mEzDeviceInfo = result;
 
-            if (mEzDeviceInfo.size() > 0){
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+
+            if (mEzDeviceInfo != null && mEzDeviceInfo.size() > 0){
                 onGetDeviceInfoSucess();
             }else{
                 showToast("暂无设备信息");

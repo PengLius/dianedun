@@ -14,8 +14,8 @@ public class App extends Application {
     private String token;
     private String isAdmin;
 
-    public static String AppKey = "e41e8e905bad4fb8a5788892d639e0a2";
-
+    public static String AppKey = "0f74e3ed04794788a1b2ac9e45109031";
+    public static String AppSecret = "53f55b1e13a13452dbb078fd2ea6fcae";
     public static EZOpenSDK getOpenSDK() {
         return EZOpenSDK.getInstance();
     }
@@ -61,3 +61,4 @@ public class App extends Application {
     }
 
 }
+

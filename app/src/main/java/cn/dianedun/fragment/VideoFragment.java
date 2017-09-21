@@ -136,8 +136,7 @@ public class VideoFragment extends BaseTitlFragment {
                             mRlNodata.setVisibility(View.VISIBLE);
                         }else{
                             mRlNodata.setVisibility(View.GONE);
-                            mCameraAdapter.setDatas(dataBean.getResult());
-                            mCameraAdapter.notifyDataSetChanged();
+                            addCameraList(dataBean.getResult());
                         }
 
                     }else{
@@ -146,8 +145,9 @@ public class VideoFragment extends BaseTitlFragment {
                         if (dataBean.getResult().size() == 0){
                             mRefreshLayout.setLoadmoreFinished(true);
                         }else{
-                            mCameraAdapter.addDatas(dataBean.getResult());
-                            mCameraAdapter.notifyDataSetChanged();
+                            addCameraList(dataBean.getResult());
+//                            mCameraAdapter.addDatas(dataBean.getResult());
+//                            mCameraAdapter.notifyDataSetChanged();
                         }
                     }
                 }

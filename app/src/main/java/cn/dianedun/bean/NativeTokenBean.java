@@ -4,7 +4,7 @@ package cn.dianedun.bean;
  * Created by Administrator on 2017/9/15.
  */
 
-public class AccesstokenBean {
+public class NativeTokenBean {
 
     /**
      * data : {"accessToken":"at.7jrcjmna8qnqg8d3dgnzs87m4v2dme3l-32enpqgusd-1jvdfe4-uxo15ik0s","expireTime":1470810222045}
@@ -13,7 +13,7 @@ public class AccesstokenBean {
      */
 
     private DataBean data;
-    private String code;
+    private int code;
     private String msg;
 
     public DataBean getData() {
@@ -24,11 +24,11 @@ public class AccesstokenBean {
         this.data = data;
     }
 
-    public String getCode() {
+    public int getCode() {
         return code;
     }
 
-    public void setCode(String code) {
+    public void setCode(int code) {
         this.code = code;
     }
 

@@ -16,7 +16,7 @@ public class ViseConfig {
     public static final int MAX_AGE_ONLINE = 60;//默认最大在线缓存时间（秒）
     public static final int MAX_AGE_OFFLINE = 24 * 60 * 60;//默认最大离线缓存时间（秒）
 
-    public static String API_HOST = "https://api.yiyiyaya.cc";//默认API主机地址
+    public static String API_HOST = "https://47.92.155.108:8081";//默认API主机地址
 
     public static final String COOKIE_PREFS = "Cookies_Prefs";//默认Cookie缓存目录
 
