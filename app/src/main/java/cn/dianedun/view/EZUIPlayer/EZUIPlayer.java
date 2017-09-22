@@ -253,7 +253,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                     }
 
                     EZUIPlayer.this.mHolder = holder;
-                    if(!EZUIPlayer.this.isSurfaceInit.getAndSet(true)) {
+                    if(!EZUIPlayer.this.isSurfaceInit.getAndSet(true) && mAutoPlay) {
                         EZUIPlayer.this.startPlay();
                     }
 
@@ -278,6 +278,11 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 //    public void setCallBack(com.ezvizuikit.open.EZUIPlayer.EZUIPlayerCallBack var1) {
 //
 //    }
+
+    private boolean mAutoPlay = false;
+    public void setAutoPlay(boolean autoPlay){
+        mAutoPlay = autoPlay;
+    }
 
     public void setCallBack(EZUIPlayer.EZUIPlayerCallBack callBack) {
         this.mEzUIPlayerCallBack = callBack;
@@ -662,6 +667,8 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
             this.mEZPlayer.release();
             this.mEZPlayer = null;
         }
+        if (this.mHolder!=null)
+            this.mHolder.getSurface().release();
 
     }
 

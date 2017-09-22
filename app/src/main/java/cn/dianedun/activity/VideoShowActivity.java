@@ -8,7 +8,6 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -17,13 +16,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
-import android.provider.MediaStore;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.LinearLayoutCompat;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -86,6 +82,7 @@ import com.vise.xsnow.net.exception.ApiException;
 import com.vise.xsnow.ui.adapter.recycleview.CommonAdapter;
 import com.vise.xsnow.ui.adapter.recycleview.base.ViewHolder;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -94,8 +91,10 @@ import java.util.TimerTask;
 
 import butterknife.Bind;
 import cn.dianedun.R;
+import cn.dianedun.adapter.SpitFragmentAdapter;
 import cn.dianedun.base.BaseActivity;
 import cn.dianedun.bean.AccesstokenBean;
+import cn.dianedun.fragment.SpitVideoFragment;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.AudioPlayUtil;
@@ -110,7 +109,6 @@ import cn.dianedun.view.WaitDialog;
 
 import static android.view.View.GONE;
 import static cn.dianedun.tools.App.AppKey;
-import static cn.dianedun.tools.App.AppSecret;
 import static cn.dianedun.tools.App.getOpenSDK;
 
 /**
@@ -424,13 +422,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mDeviceInfo != null && mDeviceInfo.getIsEncrypt() == 1) {
             mVerifyCode = DataManager.getInstance().getDeviceSerialVerifyCode(mCameraInfo.getDeviceSerial());
         }
-        mRealPlayPlayRl.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mSpitLayoutHeight = mRealPlayPlayRl.getHeight() - CommonUtil.dip2px(VideoShowActivity.this,10);
-                mSpitLayoutWidth = mRealPlayPlayRl.getWidth() - CommonUtil.dip2px(VideoShowActivity.this,10);
-            }
-        });
+//        mRealPlayPlayRl.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                mSpitLayoutHeight = mRealPlayPlayRl.getHeight() - CommonUtil.dip2px(VideoShowActivity.this,10);
+//                mSpitLayoutWidth = mRealPlayPlayRl.getWidth() - CommonUtil.dip2px(VideoShowActivity.this,10);
+//            }
+//        });
     }
     private void startZoom(float scale) {
         if (mEZPlayer == null) {
@@ -491,10 +489,18 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 ezuiPlayer.releasePlayer();
         }
 
+        if (mSpitFragments!=null){
+            for (int i=0; i<mSpitFragments.length;i++){
+                mSpitFragments[i].releasePlay();
+            }
+        }
+
+        closeSpitPopupWindow();
+
         if (mEZPlayer != null) {
             mEZPlayer.release();
-
         }
+
         mHandler.removeMessages(MSG_AUTO_START_PLAY);
         mHandler.removeMessages(MSG_HIDE_PTZ_DIRECTION);
         mHandler.removeMessages(MSG_CLOSE_PTZ_PROMPT);
@@ -2611,8 +2617,11 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 //                vrs_tv_4box.setTextColor(getResources().getColor(R.color.grayfont));
 //                vrs_img_9box.setImageResource(R.mipmap.ic_nor_9box);
 //                vrs_tv_9box.setTextColor(getResources().getColor(R.color.grayfont));
+                if (mEzDeviceInfo == null || mEzDeviceInfo.size() == 0)
+                    return;
                 stopCurPlayer();
                 m4BoxOr9Box = true;
+                removeSpitPlayer();
                 mFlDisplayContainer.removeView(mRealPlayPlayRl);
 //                mRealPlayPlayRl.setVisibility(GONE);
                 showSpitLayout();
@@ -2623,8 +2632,11 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //9分
+                if (mEzDeviceInfo == null || mEzDeviceInfo.size() == 0)
+                    return;
                 stopCurPlayer();
                 m4BoxOr9Box = false;
+                removeSpitPlayer();
 //                mRealPlayPlayRl.setVisibility(GONE);
                 mFlDisplayContainer.removeView(mRealPlayPlayRl);
                 showSpitLayout();
@@ -2653,9 +2665,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     //显示分屏视图
     private void showSpitLayout(){
-        initSpitRecycleView();
-        mRvSpit.setVisibility(View.VISIBLE);
-
+        initSpitViewPager();
+        mViewPagerSpit.setVisibility(View.VISIBLE);
 //        测试
 //        av_ezplayer_1.setLoadingView(initProgressBar());
 //        findViewById(R.id.test).setVisibility(View.VISIBLE);
@@ -2770,90 +2781,49 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             outRect.set(mItemOffset, mItemOffset, mItemOffset, mItemOffset);
         }
     }
-    private CommonAdapter mSpitAdapter;
+
+    private SpitFragmentAdapter mSpitAdapter;
     private SparseArray<EZUIPlayer> mSpitPlayerArr = new SparseArray<>();
-    private int mSpitLayoutHeight,mSpitLayoutWidth;
-    private int mSpitTagCount;
-    private void initSpitRecycleView(){
-        if (m4BoxOr9Box) {
-            mSpitTagCount = 2;
-            mRvSpit.setLayoutManager(new GridLayoutManager(this, 2));
-        }else {
-            mSpitTagCount = 3;
-            mRvSpit.setLayoutManager(new GridLayoutManager(this, 3));
-        }
-//        mRvSpit.setLayoutManager(new LinearLayoutManager(this));
-        if (mSpitAdapter == null){
-            mSpitAdapter = new CommonAdapter<EZDeviceInfo>(VideoShowActivity.this,R.layout.item_ezplaykit,mEzDeviceInfo) {
-                @Override
-                protected void convert(ViewHolder holder, EZDeviceInfo bean, int position) {
-                    final EZUIPlayer ezUIPlayer = holder.getView(R.id.ie_ezplayer);
-//                    ezUIPlayer.setLoadingView(initProgressBar());
-//                    ezUIPlayer.setSurfaceSize(0, mSpitLayoutHeight/mSpitTagCount);
-                    ezUIPlayer.setSurfaceSize(mSpitLayoutWidth/mSpitTagCount, mSpitLayoutHeight/mSpitTagCount);
-                    ezUIPlayer.setOpenSound(false);
-                    ezUIPlayer.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
-                        @Override
-                        public void onPlaySuccess() {
-                            Log.e("ezuiplayer","onPlaySuccess");
-//                            ezUIPlayer.setZOrderOnTop(true);
-                        }
+    private SpitVideoFragment[] mSpitFragments;
 
-                        @Override
-                        public void onPlayFail(EZUIError ezuiError) {
-                            if (ezuiError.getErrorString().equals(EZUIError.UE_ERROR_INNER_VERIFYCODE_ERROR)){
-
-                            }else if(ezuiError.getErrorString().equalsIgnoreCase(EZUIError.UE_ERROR_NOT_FOUND_RECORD_FILES)){
-                                // TODO: 2017/5/12
-                                //未发现录像文件
-                                showToast("未找到录像文件");
-                            }
-                        }
-
-                        @Override
-                        public void onVideoSizeChange(int width, int height) {
-                            Log.d(TAG,"onVideoSizeChange  width = "+width+"   height = "+height);
-                        }
-
-                        @Override
-                        public void onPrepared() {
-                            ezUIPlayer.startPlay();
-                        }
-
-                        @Override
-                        public void onPlayTime(Calendar calendar) {
-
-                        }
-
-                        @Override
-                        public void onPlayFinish() {
-                            Log.e("ezuiplayer","onPlayFinish");
-                        }
-                    });
-                    String ezopenUrl = "ezopen://open.ys7.com/" + bean.getDeviceSerial() + "/1.live";
-                    ezUIPlayer.setUrl(ezopenUrl);
-                    if (mSpitPlayerArr.get(position) == null)
-                        mSpitPlayerArr.put(position,ezUIPlayer);
-                }
-            };
-//            mRvSpit.addItemDecoration(new ItemOffsetDecoration(CommonUtil.dip2px(this,1)));
-            mRvSpit.setAdapter(mSpitAdapter);
-        }else {
-            mSpitAdapter.notifyDataSetChanged();
+    private void removeSpitPlayer(){
+        if (mSpitFragments==null) return;
+        for (int i=0; i<mSpitFragments.length; i++){
+            mSpitFragments[i].releasePlay();
         }
     }
-
-    /**
-     * 创建加载view
-     * @return
-     */
-    private ProgressBar initProgressBar() {
-        ProgressBar progressBar = new ProgressBar(this);
-        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-        progressBar.setLayoutParams(lp);
-        return progressBar;
+    private void initSpitViewPager(){
+        int tag = 0;
+        if (m4BoxOr9Box) {
+            tag = 4;
+        }else{
+            tag = 9;
+        }
+        int pagerSize = (int)Math.ceil(mEzDeviceInfo.size() / (tag+0.0f));
+        mSpitFragments = new SpitVideoFragment[pagerSize];
+        for (int i=0; i < pagerSize; i++){
+            mSpitFragments[i] = SpitVideoFragment.getInstance();
+            Bundle bundle = mSpitFragments[i].getArguments();
+            if (i == 0){
+                bundle.putBoolean("auto",true);
+            }
+            if (tag == 4)
+                bundle.putInt("type",0);
+            else
+                bundle.putInt("type",1);
+            // 4*i+1     4*(i+1)
+            int left = tag * (i);
+            int right = tag * (i+1) - 1;
+            int max = right > mEzDeviceInfo.size()-1 ? mEzDeviceInfo.size()-1 : right;
+            ArrayList<EZDeviceInfo> deviceList = new ArrayList<>();
+            for ( int j=left; j<= max ;j++){
+                deviceList.add(mEzDeviceInfo.get(j));
+            }
+            bundle.putParcelableArrayList("device",deviceList);
+        }
+        mViewPagerSpit.setOffscreenPageLimit(mSpitFragments.length);
+        mSpitAdapter = new SpitFragmentAdapter(getSupportFragmentManager(),mSpitFragments);
+        mViewPagerSpit.setAdapter(mSpitAdapter);
     }
     /**
      * 打开云台控制窗口
@@ -3663,7 +3633,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             mEzDeviceInfo = result;
 
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
             mEzDeviceInfo.add(mEzDeviceInfo.get(0));
             mEzDeviceInfo.add(mEzDeviceInfo.get(0));
             mEzDeviceInfo.add(mEzDeviceInfo.get(0));
