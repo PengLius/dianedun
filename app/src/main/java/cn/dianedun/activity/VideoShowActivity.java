@@ -7,6 +7,7 @@ import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.PixelFormat;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
@@ -116,7 +117,7 @@ import static cn.dianedun.tools.App.getOpenSDK;
  */
 
 public class VideoShowActivity extends BaseActivity  implements View.OnClickListener, SurfaceHolder.Callback,
-        Handler.Callback, View.OnTouchListener, VerifyCodeInput.VerifyCodeInputListener {
+        Handler.Callback, View.OnTouchListener, VerifyCodeInput.VerifyCodeInputListener,SpitVideoFragment.OnSpitVideoSelect {
 
     @Bind(R.id.av_ll_voice)
     LinearLayout mLLVoice;
@@ -336,6 +337,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        getWindow().setFormat(PixelFormat.TRANSLUCENT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videoshow);
         ViewServer.get(this).addWindow(this);
@@ -479,10 +481,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
     }
 
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
         ViewServer.get(this).removeWindow(this);
+        //防止黑色遮罩
         for (int i= 0;i < mSpitPlayerArr.size(); i++){
             EZUIPlayer ezuiPlayer = mSpitPlayerArr.get(i);
             if (ezuiPlayer!=null)
@@ -518,7 +522,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     @Override
     public void onBackPressedSupport() {
-        super.onBackPressedSupport();
         if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
             mScreenOrientationHelper.portrait();
             return;
@@ -541,6 +544,11 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             unregisterReceiver(mBroadcastReceiver);
             mBroadcastReceiver = null;
         }
+
+        if (mFlDisplayContainer.findViewById(R.id.av_viewpager_spitscreen) != null)
+            mFlDisplayContainer.removeView(mViewPagerSpit);
+
+
         finish();
     }
 
@@ -815,8 +823,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     }
 
     private void onGetDeviceInfoSucess(){
-        setDeviceInfo();
-        setDeviceUiInfo();
+        if (setDeviceInfo()){
+            setDeviceUiInfo();
+        }
     }
 
     private void setDeviceUiInfo() {
@@ -854,9 +863,21 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     }
 
     //默认显示列表第一个摄像头
-    private void setDeviceInfo() {
-        mDeviceInfo = mEzDeviceInfo.get(0);
-        mCameraInfo = EZUtils.getCameraInfoFromDevice(mDeviceInfo, 0);
+    private boolean setDeviceInfo() {
+        int spitId = getIntent().getIntExtra("spit",0);
+        if (spitId >= 0){
+            mDeviceInfo = mEzDeviceInfo.get(spitId);
+            mCameraInfo = EZUtils.getCameraInfoFromDevice(mDeviceInfo, spitId);
+            return true;
+        }else{
+            //进入分屏
+            if (spitId == -1){
+                show4SpitLayout();
+            }else{
+                show9SpitLayout();
+            }
+            return false;
+        }
     }
 
     private AccesstokenBean.DataBean mAccessTokenBean;
@@ -1391,6 +1412,18 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mScreenOrientationHelper.enableSensorOrientation();
         else
             mScreenOrientationHelper.disableSensorOrientation();
+    }
+
+    @Override
+    public void onVideoSelect(EZDeviceInfo deviceInfo) {
+        removeSpitPlayer();
+        closeSpitPopupWindow();
+        mFlDisplayContainer.removeView(mViewPagerSpit);
+        mFlDisplayContainer.addView(mRealPlayPlayRl);
+        mDeviceInfo = deviceInfo;
+        mCameraInfo = EZUtils.getCameraInfoFromDevice(mDeviceInfo, 0);
+        mEZPlayer = getOpenSDK().createPlayer(mCameraInfo.getDeviceSerial(), mCameraInfo.getCameraNo());
+        startRealPlay();
     }
 
     /**
@@ -2613,34 +2646,14 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //4分
-//                vrs_img_4box.setImageResource(R.mipmap.ic_nor_4box);
-//                vrs_tv_4box.setTextColor(getResources().getColor(R.color.grayfont));
-//                vrs_img_9box.setImageResource(R.mipmap.ic_nor_9box);
-//                vrs_tv_9box.setTextColor(getResources().getColor(R.color.grayfont));
-                if (mEzDeviceInfo == null || mEzDeviceInfo.size() == 0)
-                    return;
-                stopCurPlayer();
-                m4BoxOr9Box = true;
-                removeSpitPlayer();
-                mFlDisplayContainer.removeView(mRealPlayPlayRl);
-//                mRealPlayPlayRl.setVisibility(GONE);
-                showSpitLayout();
-                closeSpitPopupWindow();
+                show4SpitLayout();
             }
         });
         vrs_ll_9box.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //9分
-                if (mEzDeviceInfo == null || mEzDeviceInfo.size() == 0)
-                    return;
-                stopCurPlayer();
-                m4BoxOr9Box = false;
-                removeSpitPlayer();
-//                mRealPlayPlayRl.setVisibility(GONE);
-                mFlDisplayContainer.removeView(mRealPlayPlayRl);
-                showSpitLayout();
-                closeSpitPopupWindow();
+                show9SpitLayout();
             }
         });
 
@@ -2662,6 +2675,35 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         });
         mSpitPopupWindow.update();
     }
+
+    private void show9SpitLayout(){
+        if (mEzDeviceInfo == null || mEzDeviceInfo.size() == 0)
+            return;
+        stopCurPlayer();
+        m4BoxOr9Box = false;
+        removeSpitPlayer();
+//                mRealPlayPlayRl.setVisibility(GONE);
+        mFlDisplayContainer.removeView(mRealPlayPlayRl);
+        if (mFlDisplayContainer.findViewById(R.id.av_viewpager_spitscreen) == null)
+            mFlDisplayContainer.addView(mViewPagerSpit);
+        showSpitLayout();
+        closeSpitPopupWindow();
+    }
+
+    private void show4SpitLayout(){
+        if (mEzDeviceInfo == null || mEzDeviceInfo.size() == 0)
+            return;
+        stopCurPlayer();
+        m4BoxOr9Box = true;
+        removeSpitPlayer();
+        mFlDisplayContainer.removeView(mRealPlayPlayRl);
+        if (mFlDisplayContainer.findViewById(R.id.av_viewpager_spitscreen) == null)
+            mFlDisplayContainer.addView(mViewPagerSpit);
+//                mRealPlayPlayRl.setVisibility(GONE);
+        showSpitLayout();
+        closeSpitPopupWindow();
+    }
+
 
     //显示分屏视图
     private void showSpitLayout(){
@@ -2756,11 +2798,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     //暂停播放
     private void stopCurPlayer(){
-        if (m4BoxOr9Box==null){
-            //切换分屏状态
-            stopRealPlay();
-            setRealPlayStopUI();
-        }
+        stopRealPlay();
+        setRealPlayStopUI();
     }
     public class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
 
@@ -2791,6 +2830,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         for (int i=0; i<mSpitFragments.length; i++){
             mSpitFragments[i].releasePlay();
         }
+        mSpitFragments = null;
     }
     private void initSpitViewPager(){
         int tag = 0;
@@ -2803,14 +2843,16 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mSpitFragments = new SpitVideoFragment[pagerSize];
         for (int i=0; i < pagerSize; i++){
             mSpitFragments[i] = SpitVideoFragment.getInstance();
-            Bundle bundle = mSpitFragments[i].getArguments();
+            int type;
+            boolean autoPlay = false;
+//            Bundle bundle = mSpitFragments[i].getArguments();
             if (i == 0){
-                bundle.putBoolean("auto",true);
+                autoPlay = true;
             }
             if (tag == 4)
-                bundle.putInt("type",0);
+                type = 0;
             else
-                bundle.putInt("type",1);
+                type = 1;
             // 4*i+1     4*(i+1)
             int left = tag * (i);
             int right = tag * (i+1) - 1;
@@ -2819,11 +2861,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             for ( int j=left; j<= max ;j++){
                 deviceList.add(mEzDeviceInfo.get(j));
             }
-            bundle.putParcelableArrayList("device",deviceList);
+            mSpitFragments[i].setData(type,autoPlay,deviceList);
+            mSpitFragments[i].setOnSpitVideoSelect(this);
         }
         mViewPagerSpit.setOffscreenPageLimit(mSpitFragments.length);
         mSpitAdapter = new SpitFragmentAdapter(getSupportFragmentManager(),mSpitFragments);
         mViewPagerSpit.setAdapter(mSpitAdapter);
+        mSpitAdapter.notifyDataSetChanged();
     }
     /**
      * 打开云台控制窗口
@@ -3633,6 +3677,27 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             mEzDeviceInfo = result;
 
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
+            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
             mEzDeviceInfo.add(mEzDeviceInfo.get(0));
             mEzDeviceInfo.add(mEzDeviceInfo.get(0));
             mEzDeviceInfo.add(mEzDeviceInfo.get(0));

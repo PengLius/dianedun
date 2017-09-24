@@ -763,12 +763,13 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
             this.mLoadView.setVisibility(VISIBLE);
         } else {
-            this.mLoadView = new ProgressBar(this.mContext);
-            LayoutParams lp = new LayoutParams(-2, -2);
-            lp.addRule(13);
-            this.mLoadView.setLayoutParams(lp);
-            this.addView(this.mLoadView);
-            this.mLoadView.setVisibility(VISIBLE);
+            EZUIPlayer.this.mEzUIPlayerCallBack.onShowLoading();
+//            this.mLoadView = new ProgressBar(this.mContext);
+//            LayoutParams lp = new LayoutParams(-2, -2);
+//            lp.addRule(13);
+//            this.mLoadView.setLayoutParams(lp);
+//            this.addView(this.mLoadView);
+//            this.mLoadView.setVisibility(VISIBLE);
         }
 
     }
@@ -855,6 +856,9 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
     }
 
     public interface EZUIPlayerCallBack {
+
+        void onShowLoading();
+
         void onPlaySuccess();
 
         void onPlayFail(EZUIError var1);

@@ -1,54 +1,38 @@
 package cn.dianedun.fragment;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.format.DateFormat;
-import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
-import com.videogo.constant.IntentConsts;
-import com.videogo.errorlayer.ErrorInfo;
-import com.videogo.exception.BaseException;
-import com.videogo.exception.ErrorCode;
-import com.videogo.openapi.bean.EZCameraInfo;
-import com.videogo.openapi.bean.EZDeviceInfo;
-import com.videogo.util.ConnectionDetector;
-import com.videogo.util.LogUtil;
-import com.videogo.util.Utils;
-import com.vise.log.ViseLog;
 import com.vise.xsnow.net.api.ViseApi;
 import com.vise.xsnow.net.callback.ApiCallback;
 import com.vise.xsnow.net.exception.ApiException;
 import com.vise.xsnow.ui.adapter.recycleview.CommonAdapter;
 import com.vise.xsnow.ui.adapter.recycleview.base.ViewHolder;
 
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
 import cn.dianedun.R;
-import cn.dianedun.activity.LoginActivity;
 import cn.dianedun.activity.VideoShowActivity;
-import cn.dianedun.base.BaseFragment;
 import cn.dianedun.base.BaseTitlFragment;
-import cn.dianedun.bean.AccesstokenBean;
 import cn.dianedun.bean.DepartPlacesListBean;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
-import cn.dianedun.tools.EZUtils;
-import rx.Observable;
+import cn.dianedun.view.SpitVideoPopView;
 
 import static android.view.View.GONE;
-import static cn.dianedun.tools.App.getOpenSDK;
 
 /**
  * Created by Administrator on 2017/8/3.
@@ -103,7 +87,6 @@ public class VideoFragment extends BaseTitlFragment {
             mRefreshLayout.autoRefresh();
         }
     }
-
     private Boolean mRefreshOrLoadMore = null;
     private void getData(final Boolean headOrLoadMore){
         ViseApi api = new ViseApi.Builder(_mActivity).build();
@@ -206,30 +189,28 @@ public class VideoFragment extends BaseTitlFragment {
             mCameraAdapter = new CommonAdapter<DepartPlacesListBean.DataBean.ResultBean>(_mActivity,R.layout.item_cameralist,result) {
                 @Override
                 protected void convert(ViewHolder holder, final DepartPlacesListBean.DataBean.ResultBean bean, final int position) {
-//                    holder.setText(R.id.ic_tv_camerastatus,bean.getStatus() == 1 ? "在线" : "离线");
+                    holder.setOnClickListener(R.id.ic_img_spitVideo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+
+                            SpitVideoPopView spitVideoPopView = new SpitVideoPopView(LayoutInflater.from(_mActivity).inflate(R.layout.view_pop_spitvideo,null),
+                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                            spitVideoPopView.setOnVideoSelect(new SpitVideoPopView.OnVideoSelect() {
+                                @Override
+                                public void onVideoSelect(int tag) {
+                                    Intent intent = new Intent(_mActivity, VideoShowActivity.class);
+                                    intent.putExtra("id", bean.getId());
+                                    intent.putExtra("spit", tag);
+                                    startActivity(intent);
+                                }
+                            });
+                            spitVideoPopView.showPopupWindow(v);
+                        }
+                    });
                     holder.setText(R.id.ic_tv_places,bean.getAddress() + bean.getDepartname());
-//                    holder.setText(R.id.ic_tv_recenttime,bean.getDeviceCover());
                     holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-//                            final EZDeviceInfo deviceInfo = getDatas().get(position);
-//                            if (deviceInfo.getCameraNum() <= 0 || deviceInfo.getCameraInfoList() == null || deviceInfo.getCameraInfoList().size() <= 0) {
-//                                LogUtil.d(TAG, "cameralist is null or cameralist size is 0");
-//                                return;
-//                            }
-//                            if (deviceInfo.getCameraNum() == 1 && deviceInfo.getCameraInfoList() != null && deviceInfo.getCameraInfoList().size() == 1) {
-//                                LogUtil.d(TAG, "cameralist have one camera");
-//                                final EZCameraInfo cameraInfo = EZUtils.getCameraInfoFromDevice(deviceInfo, 0);
-//                                if (cameraInfo == null) {
-//                                    return;
-//                                }
-//
-//                                Intent intent = new Intent(_mActivity, VideoShowActivity.class);
-//                                intent.putExtra(IntentConsts.EXTRA_CAMERA_INFO, cameraInfo);
-//                                intent.putExtra(IntentConsts.EXTRA_DEVICE_INFO, deviceInfo);
-//                                startActivity(intent);
-//                                return;
-//                            }
                             Intent intent = new Intent(_mActivity, VideoShowActivity.class);
                             intent.putExtra("id", bean.getId());
                             startActivity(intent);

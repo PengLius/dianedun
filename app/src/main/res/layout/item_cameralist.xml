@@ -25,10 +25,11 @@
             android:visibility="gone" />
 
         <ImageView
+            android:id="@+id/ic_img_spitVideo"
             android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:src="@mipmap/ic_nor_carmera"
-            android:layout_height="wrap_content" />
+            android:src="@mipmap/ic_nor_carmera" />
 
     </RelativeLayout>
     <LinearLayout

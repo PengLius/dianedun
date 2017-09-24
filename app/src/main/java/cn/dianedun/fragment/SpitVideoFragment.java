@@ -1,5 +1,6 @@
 package cn.dianedun.fragment;
 
+import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -7,16 +8,20 @@ import android.util.SparseArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.ezvizuikit.open.EZUIError;
 import com.videogo.openapi.bean.EZDeviceInfo;
+import com.videogo.openapi.bean.resp.DeviceInfo;
 
 import java.util.Calendar;
 import java.util.List;
 
 import butterknife.Bind;
+import butterknife.ButterKnife;
 import cn.dianedun.R;
 import cn.dianedun.view.EZUIPlayer.EZUIPlayer;
 import me.yokeyword.fragmentation.SupportFragment;
@@ -66,13 +71,21 @@ public class SpitVideoFragment extends SupportFragment {
         mSpitPlayerArr.clear();
     }
 
+    public void setData(int type,boolean autoPlay,List<EZDeviceInfo> deviceInfoList){
+        mType = type;
+        mAutoPlay = autoPlay;
+        mEZDeviceInfoList = deviceInfoList;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mType = getArguments().getInt("type");
+        View view;
         if (mType == BOX_4)
-            return inflater.inflate(R.layout.fragment_spitvideo_4box,container,false);
+            view = inflater.inflate(R.layout.fragment_spitvideo_4box,container,false);
         else
-            return inflater.inflate(R.layout.fragment_spitvideo_9box,container,false);
+            view = inflater.inflate(R.layout.fragment_spitvideo_9box,container,false);
+        ButterKnife.bind(this,view);
+        return view;
     }
 
     @Override
@@ -82,11 +95,23 @@ public class SpitVideoFragment extends SupportFragment {
     }
 
     private boolean mAutoPlay = false;
-    protected void initView(View contentView) {
+    protected void initView(final View contentView) {
 
-        mEZDeviceInfoList = getArguments().getParcelableArrayList("device");
-        mAutoPlay = getArguments().getBoolean("auto");
+//        mEZDeviceInfoList = getArguments().getParcelableArrayList("device");
+//        mAutoPlay = getArguments().getBoolean("auto");
+        contentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                initVideo(contentView);
+            }
+        });
+    }
 
+    private boolean mInit = false;
+
+    private void initVideo(final View contentView){
+        if (mInit) return;
+        mInit =true;
         if (mType == BOX_4){
             for (int i=0;i < mEZDeviceInfoList.size(); i++){
                 switch (i){
@@ -146,7 +171,10 @@ public class SpitVideoFragment extends SupportFragment {
 //            if (view == null)
 //                mLLRootView.addView(mLlVideoContainer);
             for (int i=0; i<mSpitPlayerArr.size(); i++){
-                mSpitPlayerArr.get(i).startPlay();
+                int key = mSpitPlayerArr.keyAt(i);
+                VideoBrother videoBrother = mSpitPlayerArr.get(key);
+                if (videoBrother!=null && videoBrother.mEzUiPlayer!=null)
+                    videoBrother.mEzUiPlayer.startPlay();
             }
         }
     }
@@ -157,34 +185,81 @@ public class SpitVideoFragment extends SupportFragment {
             mIsPlay = false;
 //            mLLRootView.removeView(mLlVideoContainer);
             for (int i=0; i<mSpitPlayerArr.size(); i++){
-                if (mSpitPlayerArr.get(i)!=null)
-                    mSpitPlayerArr.get(i).stopPlay();
+                int key = mSpitPlayerArr.keyAt(i);
+                VideoBrother videoBrother = mSpitPlayerArr.get(key);
+                if (videoBrother!=null && videoBrother.mEzUiPlayer!=null) {
+                    if (videoBrother.mLoadingView!=null)
+                        videoBrother.mLoadingView.setVisibility(View.VISIBLE);
+                    videoBrother.mEzUiPlayer.stopPlay();
+                }
             }
         }
     }
 
     public void releasePlay(){
         for (int i=0; i<mSpitPlayerArr.size(); i++){
-            EZUIPlayer ezuiPlayer = mSpitPlayerArr.get(i);
-            if (ezuiPlayer!=null) {
-                ezuiPlayer.releasePlayer();
+            int key = mSpitPlayerArr.keyAt(i);
+            VideoBrother videoBrother = mSpitPlayerArr.get(key);
+            if (videoBrother!=null && videoBrother.mEzUiPlayer!=null) {
+                videoBrother.mEzUiPlayer.stopPlay();
+                videoBrother.mEzUiPlayer.releasePlayer();
                 mSpitPlayerArr.put(i,null);
             }
         }
     }
 
-    private SparseArray<EZUIPlayer> mSpitPlayerArr = new SparseArray<>();
-    private void buildChildPlayer(int key,int parentId,View contentView,EZDeviceInfo deviceInfo){
+    private OnSpitVideoSelect mOnSpitVideoSelect;
+
+    public void setOnSpitVideoSelect(OnSpitVideoSelect OnSpitVideoSelect) {
+        this.mOnSpitVideoSelect = OnSpitVideoSelect;
+    }
+
+    public interface OnSpitVideoSelect {
+        void onVideoSelect(EZDeviceInfo deviceInfo);
+    }
+
+    private SparseArray<VideoBrother> mSpitPlayerArr = new SparseArray<>();
+    private void buildChildPlayer(int key, int parentId, View contentView, final EZDeviceInfo deviceInfo){
         RelativeLayout rlVideoContainer = (RelativeLayout)contentView.findViewById(parentId);
+
+        if (deviceInfo.getStatus() != 1){
+            //设备不在线
+            TextView errTip = new TextView(_mActivity);
+            errTip.setText("设备不在线");
+            errTip.setTextColor(getResources().getColor(R.color.white));
+            errTip.setTextSize(12);
+            rlVideoContainer.addView(errTip);
+            return;
+        }
+
+        rlVideoContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOnSpitVideoSelect!=null){
+                    mOnSpitVideoSelect.onVideoSelect(deviceInfo);
+                }
+            }
+        });
+
+        final View laodingView = LayoutInflater.from(_mActivity).inflate(R.layout.view_video_loading,rlVideoContainer,false);
+        rlVideoContainer.addView(laodingView);
+
         final EZUIPlayer ezuiPlayer = new EZUIPlayer(_mActivity);
-//        ezuiPlayer.setSurfaceSize(mSpitLayoutWidth/mSpitTagCount, mSpitLayoutHeight/mSpitTagCount);
+        ezuiPlayer.setSurfaceSize(rlVideoContainer.getWidth(),0);
         ezuiPlayer.setOpenSound(false);
         ezuiPlayer.setAutoPlay(mAutoPlay);
         ezuiPlayer.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
+
+            @Override
+            public void onShowLoading() {
+                laodingView.setVisibility(View.VISIBLE);
+            }
+
             @Override
             public void onPlaySuccess() {
                 Log.e("ezuiplayer","onPlaySuccess");
 //                            ezUIPlayer.setZOrderOnTop(true);
+                laodingView.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -217,11 +292,19 @@ public class SpitVideoFragment extends SupportFragment {
             }
         });
         String ezopenUrl = "ezopen://open.ys7.com/" + deviceInfo.getDeviceSerial() + "/1.live";
-        rlVideoContainer.addView(ezuiPlayer);
+        rlVideoContainer.addView(ezuiPlayer,0);
 
         ezuiPlayer.setUrl(ezopenUrl);
-        mSpitPlayerArr.put(key,ezuiPlayer);
+        mSpitPlayerArr.put(key,new VideoBrother(ezuiPlayer,laodingView));
+    }
 
+    class VideoBrother {
+        public EZUIPlayer mEzUiPlayer;
+        public View mLoadingView;
+        public VideoBrother(EZUIPlayer ezuiPlayer,View loadingView){
+            mEzUiPlayer = ezuiPlayer;
+            mLoadingView = loadingView;
+        }
     }
 }
 

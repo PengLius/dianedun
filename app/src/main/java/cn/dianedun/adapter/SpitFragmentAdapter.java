@@ -20,12 +20,11 @@ public class SpitFragmentAdapter extends FragmentPagerAdapter {
 
     public void setData(SpitVideoFragment ... fragments){
         mFragment = fragments;
-        notifyDataSetChanged();
     }
 
     @Override
     public long getItemId(int position) {
-        return super.getItemId(position);
+        return mFragment[position].hashCode();
     }
 
     @Override

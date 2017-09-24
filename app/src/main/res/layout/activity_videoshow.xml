@@ -7,7 +7,7 @@
     android:background="@mipmap/backall"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
-
+    
     <RelativeLayout
         android:id="@+id/av_rl_titlelayout"
         android:layout_width="match_parent"
