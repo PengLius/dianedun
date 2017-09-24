@@ -126,7 +126,7 @@ public class HisDetailsActivity extends BaseTitlActivity {
         imgList = new ArrayList<String>();
     }
 
-    class GirdAdapter extends BaseAdapter {
+    private class GirdAdapter extends BaseAdapter {
 
         @Override
         public int getCount() {
@@ -155,8 +155,9 @@ public class HisDetailsActivity extends BaseTitlActivity {
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                        Intent intent = new Intent(getApplicationContext(), ImagActivity.class);
                         intent.putStringArrayListExtra("imgList", (ArrayList<String>) imgList);
+                        intent.putExtra("pos", position + "");
                         startActivity(intent);
                     }
                 });

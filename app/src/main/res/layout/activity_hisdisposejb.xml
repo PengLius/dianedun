@@ -137,9 +137,14 @@
                 android:text="阿打算打算打算打算打算打算打算打算打算打算打算的按时打算打算打算打算打算的按时打算打算打按时打算打算打按时打算打算打"
                 android:textColor="#FFF"
                 android:textSize="@dimen/content_text_s14" />
-
+            <cn.dianedun.view.NoScrollGridview
+                android:id="@+id/gv_hisdetauls"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:numColumns="5"
+                android:verticalSpacing="10dp"></cn.dianedun.view.NoScrollGridview>
         </LinearLayout>
     </ScrollView>
-
-
 </LinearLayout>

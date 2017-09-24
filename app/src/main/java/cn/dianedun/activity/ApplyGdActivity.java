@@ -30,12 +30,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
+
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +48,7 @@ import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.bean.ApplyAdreesBean;
 import cn.dianedun.bean.ApplyPresonBean;
+import cn.dianedun.bean.JbUpBean;
 import cn.dianedun.bean.ResultBean;
 import cn.dianedun.bean.ToJsonBean;
 import cn.dianedun.bean.UpdataBean;
@@ -146,7 +145,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private List<String> nameList;
     private boolean includs = false;
     private int type = 0;
-    private UpdataBean updataBean;
+    private JbUpBean updataBean;
     private RelativeLayout rl_luyin_type;
     private String fileName = "/sdcard/myHead/audiorecordtest.mp3";
     private Dialog diaglog;
@@ -704,35 +703,25 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
 
         @Override
         protected String doInBackground(Object... params) {
-            HttpUtils httpUtils = new HttpUtils();
-            RequestParams param = new RequestParams();
+            RequestParams param = new RequestParams(AppConfig.UPLOADFILE);
             param.addBodyParameter("file", new File(fileName));
-            param.addBodyParameter("type", "1");
+            param.addBodyParameter("optionType", "1");
             param.addHeader("token", App.getInstance().getToken());
-            httpUtils.send(HttpRequest.HttpMethod.POST, AppConfig.UPLOADFILE, param,
-                    new RequestCallBack<String>() {
+            x.http().post(param,
+                    new Callback.CommonCallback<String>() {
                         @Override
-                        public void onFailure(HttpException error, String msg) {
+                        public void onSuccess(String result) {
                             // TODO Auto-generated method stub
-                            showToast("上传失败");
-                            Log.e("error", error + "");
-                            Log.e("msg", msg + "");
-                            diaglog.dismiss();
-                        }
-
-                        @Override
-                        public void onSuccess(ResponseInfo<String> responseInfo) {
-                            // TODO Auto-generated method stub
-                            Log.e("result", responseInfo.result);
-                            updataBean = GsonUtil.parseJsonWithGson(responseInfo.result, UpdataBean.class);
+                            Log.e("result", result);
+                            updataBean = GsonUtil.parseJsonWithGson(result, JbUpBean.class);
                             if (updataBean.getCode() == 0) {
-                                player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData()));
+                                player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData().get(0)));
                                 showToast("上传成功");
                                 rl_amendgd_ly.setVisibility(View.VISIBLE);
                                 pop3.dismiss();
                                 toJsonBean = new ToJsonBean();
                                 toJsonBean.setOptionType(1);
-                                toJsonBean.setContents(updataBean.getData());
+                                toJsonBean.setContents(updataBean.getData().get(0));
                                 toJsonBean.setType(4);
                                 Gson gson = new Gson();
                                 obj2 = "[" + gson.toJson(toJsonBean) + "]";
@@ -808,6 +797,21 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                                 };
                             }
                             diaglog.dismiss();
+                        }
+
+                        @Override
+                        public void onError(Throwable ex, boolean isOnCallback) {
+                            showToast("上传失败");
+                            diaglog.dismiss();
+                        }
+
+                        @Override
+                        public void onCancelled(CancelledException cex) {
+
+                        }
+
+                        @Override
+                        public void onFinished() {
                         }
                     });
             return null;

@@ -5,7 +5,8 @@ package cn.dianedun.tools;
  */
 
 public class AppConfig {
-    //    public static final String PORTS = "http://192.168.0.11:8081";//线下
+//    public static final String PORTS = "http://192.168.0.11:8081";//线下
+//    public static final String PORTS = "http://192.168.0.11:8080";//线下2
     public static final String PORTS = "http://47.92.155.108:8081";//线上
 
     public static final String LOGIN = PORTS + "/user/login";//登陆接口
@@ -27,5 +28,8 @@ public class AppConfig {
     public static final String FINDSWITCHROOMBYID = PORTS + "/monitor/findSwitchRoomByid";// 监测页_下拉框展示
     public static final String FINDALLLATEST = PORTS + "/monitor/findAllLatest";// 监测页_配电室数据
     public static final String INDEX = PORTS + "/monitor/index";// 概览(管理员)
+    public static final String JBUPLOADFILE = PORTS + "/alarm/upLoadFile";//  附件上传警报
+    public static final String FEEDBACKHANDLEORDER = PORTS + "/handleorder/feedbackHandleOrder";//工单反馈
+    public static final String GETUSERINFO = PORTS + "/user/getUserInfo";//个人资料
 
 }

@@ -2,6 +2,9 @@ package cn.dianedun.tools;
 
 import android.app.Application;
 
+import org.xutils.BuildConfig;
+import org.xutils.x;
+
 /**
  * Created by Administrator on 2017/9/2.
  */
@@ -17,6 +20,8 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
+        x.Ext.init(this);
+        x.Ext.setDebug(BuildConfig.DEBUG);
     }
 
     public static App getInstance() {

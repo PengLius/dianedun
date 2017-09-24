@@ -1,5 +1,6 @@
 package cn.dianedun.bean;
 
+
 /**
  * Created by Administrator on 2017/9/8.
  */

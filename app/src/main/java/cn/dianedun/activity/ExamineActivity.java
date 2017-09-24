@@ -140,7 +140,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
             case R.id.rl_examine_sub:
                 //提交
                 hashMap = new HashMap<>();
-                hashMap.put("Num", "");
+                hashMap.put("Num", getIntent().getStringExtra("orderNum"));
                 hashMap.put("applyStatus", applyStatus);
                 if (ed_examine_cause.getText() != null) {
                     hashMap.put("rejectCause", ed_examine_cause.getText().toString());
@@ -155,6 +155,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                         }
                     }
                 });
+                myAsyncTast.execute();
                 break;
 
             default:

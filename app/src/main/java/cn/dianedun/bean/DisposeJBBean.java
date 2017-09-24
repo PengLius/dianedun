@@ -11,7 +11,7 @@ public class DisposeJBBean {
     /**
      * code : 0
      * msg : 成功
-     * data : {"id":"402823815dc47a36015dc47b4ed90071","departId":"8a8ab0b246dc81120146dc8180bd0018","pointId":16,"departName":"尚达豪庭1号配电室","alertDetails":"温度6号异常","type":2,"address":"保定市炫彩SOHO B座704","result":"柯南加的","status":0,"createTime":"2017-08-09 08:52:50","confirmTime":"","createName":"","createBy":"","createDate":"","updateName":"","updateBy":"","updateDate":"","sysOrgCode":"","sysCompanyCode":"","bpmStatus":"","options":[]}
+     * data : {"id":"402823815dc47a36015dc47b4ed90000","departId":"8a8ab0b246dc81120146dc8180ba0017","departName":"炫彩SOHO2号配电室","alertDetails":"高压侧电流a异常","type":1,"address":"保定市炫彩SOHO B座704","result":"配电室线路故障","status":1,"createTime":"2017-08-09 08:52:52","options":[{"id":5,"optionId":"402823815dc47a36015dc47b4ed90000","optionType":0,"contents":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/skttest"},{"id":6,"optionId":"402823815dc47a36015dc47b4ed90000","optionType":0,"contents":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/20170822143004ArpDFjG7.jpg"}]}
      */
 
     private int code;
@@ -44,32 +44,20 @@ public class DisposeJBBean {
 
     public static class DataBean {
         /**
-         * id : 402823815dc47a36015dc47b4ed90071
-         * departId : 8a8ab0b246dc81120146dc8180bd0018
-         * pointId : 16
-         * departName : 尚达豪庭1号配电室
-         * alertDetails : 温度6号异常
-         * type : 2
+         * id : 402823815dc47a36015dc47b4ed90000
+         * departId : 8a8ab0b246dc81120146dc8180ba0017
+         * departName : 炫彩SOHO2号配电室
+         * alertDetails : 高压侧电流a异常
+         * type : 1
          * address : 保定市炫彩SOHO B座704
-         * result : 柯南加的
-         * status : 0
-         * createTime : 2017-08-09 08:52:50
-         * confirmTime :
-         * createName :
-         * createBy :
-         * createDate :
-         * updateName :
-         * updateBy :
-         * updateDate :
-         * sysOrgCode :
-         * sysCompanyCode :
-         * bpmStatus :
-         * options : []
+         * result : 配电室线路故障
+         * status : 1
+         * createTime : 2017-08-09 08:52:52
+         * options : [{"id":5,"optionId":"402823815dc47a36015dc47b4ed90000","optionType":0,"contents":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/skttest"},{"id":6,"optionId":"402823815dc47a36015dc47b4ed90000","optionType":0,"contents":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/20170822143004ArpDFjG7.jpg"}]
          */
 
         private String id;
         private String departId;
-        private int pointId;
         private String departName;
         private String alertDetails;
         private int type;
@@ -77,17 +65,7 @@ public class DisposeJBBean {
         private String result;
         private int status;
         private String createTime;
-        private String confirmTime;
-        private String createName;
-        private String createBy;
-        private String createDate;
-        private String updateName;
-        private String updateBy;
-        private String updateDate;
-        private String sysOrgCode;
-        private String sysCompanyCode;
-        private String bpmStatus;
-        private List<?> options;
+        private List<OptionsBean> options;
 
         public String getId() {
             return id;
@@ -103,14 +81,6 @@ public class DisposeJBBean {
 
         public void setDepartId(String departId) {
             this.departId = departId;
-        }
-
-        public int getPointId() {
-            return pointId;
-        }
-
-        public void setPointId(int pointId) {
-            this.pointId = pointId;
         }
 
         public String getDepartName() {
@@ -169,92 +139,58 @@ public class DisposeJBBean {
             this.createTime = createTime;
         }
 
-        public String getConfirmTime() {
-            return confirmTime;
-        }
-
-        public void setConfirmTime(String confirmTime) {
-            this.confirmTime = confirmTime;
-        }
-
-        public String getCreateName() {
-            return createName;
-        }
-
-        public void setCreateName(String createName) {
-            this.createName = createName;
-        }
-
-        public String getCreateBy() {
-            return createBy;
-        }
-
-        public void setCreateBy(String createBy) {
-            this.createBy = createBy;
-        }
-
-        public String getCreateDate() {
-            return createDate;
-        }
-
-        public void setCreateDate(String createDate) {
-            this.createDate = createDate;
-        }
-
-        public String getUpdateName() {
-            return updateName;
-        }
-
-        public void setUpdateName(String updateName) {
-            this.updateName = updateName;
-        }
-
-        public String getUpdateBy() {
-            return updateBy;
-        }
-
-        public void setUpdateBy(String updateBy) {
-            this.updateBy = updateBy;
-        }
-
-        public String getUpdateDate() {
-            return updateDate;
-        }
-
-        public void setUpdateDate(String updateDate) {
-            this.updateDate = updateDate;
-        }
-
-        public String getSysOrgCode() {
-            return sysOrgCode;
-        }
-
-        public void setSysOrgCode(String sysOrgCode) {
-            this.sysOrgCode = sysOrgCode;
-        }
-
-        public String getSysCompanyCode() {
-            return sysCompanyCode;
-        }
-
-        public void setSysCompanyCode(String sysCompanyCode) {
-            this.sysCompanyCode = sysCompanyCode;
-        }
-
-        public String getBpmStatus() {
-            return bpmStatus;
-        }
-
-        public void setBpmStatus(String bpmStatus) {
-            this.bpmStatus = bpmStatus;
-        }
-
-        public List<?> getOptions() {
+        public List<OptionsBean> getOptions() {
             return options;
         }
 
-        public void setOptions(List<?> options) {
+        public void setOptions(List<OptionsBean> options) {
             this.options = options;
+        }
+
+        public static class OptionsBean {
+            /**
+             * id : 5
+             * optionId : 402823815dc47a36015dc47b4ed90000
+             * optionType : 0
+             * contents : http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/skttest
+             */
+
+            private int id;
+            private String optionId;
+            private int optionType;
+            private String contents;
+
+            public int getId() {
+                return id;
+            }
+
+            public void setId(int id) {
+                this.id = id;
+            }
+
+            public String getOptionId() {
+                return optionId;
+            }
+
+            public void setOptionId(String optionId) {
+                this.optionId = optionId;
+            }
+
+            public int getOptionType() {
+                return optionType;
+            }
+
+            public void setOptionType(int optionType) {
+                this.optionType = optionType;
+            }
+
+            public String getContents() {
+                return contents;
+            }
+
+            public void setContents(String contents) {
+                this.contents = contents;
+            }
         }
     }
 }

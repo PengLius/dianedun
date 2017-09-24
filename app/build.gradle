@@ -28,6 +28,9 @@ android {
     android {
         useLibrary 'org.apache.http.legacy'
     }
+    packagingOptions {
+        exclude 'META-INF/rxjava.properties'
+    }
 }
 allprojects {
     repositories {
@@ -40,16 +43,18 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    compile ('com.scwang.smartrefresh:SmartRefreshLayout:1.0.2-alpha-6',{
+    compile('com.scwang.smartrefresh:SmartRefreshLayout:1.0.2-alpha-6', {
         exclude group: 'com.android.support'
     })
     compile 'com.android.support:appcompat-v7:25.3.1'
     testCompile 'junit:junit:4.12'
     compile project(':xsnow')
-    compile 'com.jiechic.library:xUtils:2.6.14'
+    compile 'org.xutils:xutils:3.5.0'
     compile 'com.yanzhenjie:permission:1.0.5'
     compile 'com.github.thinkcool:circletextimageview:1.0.20151218'
     compile files('libs/Amap_2DMap_V5.2.0_20170627.jar')
     compile 'com.github.xesam:AndroidTimer:v0.1'
-
+    compile 'com.github.LuckSiege.PictureSelector:picture_library:v2.1.1'
+    compile 'com.github.nanchen2251:CompressHelper:1.0.5'
 }
+

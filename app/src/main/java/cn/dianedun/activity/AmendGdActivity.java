@@ -3,7 +3,6 @@ package cn.dianedun.activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -13,7 +12,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +29,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
+
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.io.File;
 import java.io.IOException;
@@ -52,6 +48,7 @@ import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.bean.ApplyAdreesBean;
 import cn.dianedun.bean.ApplyPresonBean;
 import cn.dianedun.bean.DetailsBean;
+import cn.dianedun.bean.JbUpBean;
 import cn.dianedun.bean.ResultBean;
 import cn.dianedun.bean.ToJsonBean;
 import cn.dianedun.bean.UpdataBean;
@@ -163,7 +160,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     private AnimationDrawable animationDrawable;
     private String obj2 = "";
     private Dialog diaglog;
-    private UpdataBean updataBean;
+    private JbUpBean updataBean;
     private ToJsonBean toJsonBean;
     private Date startTimer;
     private HashMap<String, String> hashMap;
@@ -815,38 +812,75 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
 
         @Override
         protected String doInBackground(Object... params) {
-            HttpUtils httpUtils = new HttpUtils();
-            RequestParams param = new RequestParams();
+            RequestParams param = new RequestParams(AppConfig.UPLOADFILE);
             param.addBodyParameter("file", new File(fileName));
-            param.addBodyParameter("type", "1");
+            param.addBodyParameter("optionType", "1");
             param.addHeader("token", App.getInstance().getToken());
-            httpUtils.send(HttpRequest.HttpMethod.POST, AppConfig.UPLOADFILE, param,
-                    new RequestCallBack<String>() {
-                        @Override
-                        public void onFailure(HttpException error, String msg) {
-                            // TODO Auto-generated method stub
-                            showToast("上传失败");
-                            Log.e("error", error + "");
-                            Log.e("msg", msg + "");
-                            diaglog.dismiss();
+            x.http().post(param, new Callback.CommonCallback<String>() {
+                @Override
+                public void onSuccess(String result) {
+                    updataBean = GsonUtil.parseJsonWithGson(result, JbUpBean.class);
+                    if (updataBean.getCode() == 0) {
+                        player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData().get(0)));
+                        showToast("上传成功");
+                        rl_amendgd_ly.setVisibility(View.VISIBLE);
+                        pop3.dismiss();
+                        toJsonBean = new ToJsonBean();
+                        toJsonBean.setOptionType(1);
+                        toJsonBean.setContents(updataBean.getData().get(0));
+                        toJsonBean.setType(4);
+                        Gson gson = new Gson();
+                        obj2 = "[" + gson.toJson(toJsonBean) + "]";
+                        long a = player.getDuration() / 1000 / 60;
+                        long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                        if (a < 10) {
+                            if (b < 10) {
+                                tv_amendgd_lytime.setText("0" + a + "'" + "0" + b + "\"");
+                            } else {
+                                tv_amendgd_lytime.setText("0" + a + "'" + b + "\"");
+                            }
+                        } else {
+                            if (b < 10) {
+                                tv_amendgd_lytime.setText(a + "'" + "0" + b + "\"");
+                            } else {
+                                tv_amendgd_lytime.setText(a + "'" + b + "\"");
+                            }
                         }
+                        countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
+                            @Override
+                            public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
+                                long f = millisUntilFinished / 1000 / 60;
+                                long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                                if (f < 10) {
+                                    if (m < 10) {
+                                        tv_amendgd_lytime.setText("0" + f + "'" + "0" + m + "\"");
+                                    } else {
+                                        tv_amendgd_lytime.setText("0" + f + "'" + m + "\"");
+                                    }
+                                } else {
+                                    if (m < 10) {
+                                        tv_amendgd_lytime.setText(f + "'" + "0" + m + "\"");
+                                    } else {
+                                        tv_amendgd_lytime.setText(f + "'" + m + "\"");
+                                    }
+                                }
+                            }
 
-                        @Override
-                        public void onSuccess(ResponseInfo<String> responseInfo) {
-                            // TODO Auto-generated method stub
-                            Log.e("result", responseInfo.result);
-                            updataBean = GsonUtil.parseJsonWithGson(responseInfo.result, UpdataBean.class);
-                            if (updataBean.getCode() == 0) {
-                                player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData()));
-                                showToast("上传成功");
-                                rl_amendgd_ly.setVisibility(View.VISIBLE);
-                                pop3.dismiss();
-                                toJsonBean = new ToJsonBean();
-                                toJsonBean.setOptionType(1);
-                                toJsonBean.setContents(updataBean.getData());
-                                toJsonBean.setType(4);
-                                Gson gson = new Gson();
-                                obj2 = "[" + gson.toJson(toJsonBean) + "]";
+                            @Override
+                            public void onCancel(long millisUntilFinished) {
+                            }
+
+                            @Override
+                            public void onPause(long millisUntilFinished) {
+
+                            }
+
+                            @Override
+                            public void onResume(long millisUntilFinished) {
+                            }
+
+                            @Override
+                            public void onFinish() {
                                 long a = player.getDuration() / 1000 / 60;
                                 long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
                                 if (a < 10) {
@@ -862,65 +896,31 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                                         tv_amendgd_lytime.setText(a + "'" + b + "\"");
                                     }
                                 }
-                                countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
-                                    @Override
-                                    public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
-                                        long f = millisUntilFinished / 1000 / 60;
-                                        long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
-                                        if (f < 10) {
-                                            if (m < 10) {
-                                                tv_amendgd_lytime.setText("0" + f + "'" + "0" + m + "\"");
-                                            } else {
-                                                tv_amendgd_lytime.setText("0" + f + "'" + m + "\"");
-                                            }
-                                        } else {
-                                            if (m < 10) {
-                                                tv_amendgd_lytime.setText(f + "'" + "0" + m + "\"");
-                                            } else {
-                                                tv_amendgd_lytime.setText(f + "'" + m + "\"");
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancel(long millisUntilFinished) {
-                                    }
-
-                                    @Override
-                                    public void onPause(long millisUntilFinished) {
-
-                                    }
-
-                                    @Override
-                                    public void onResume(long millisUntilFinished) {
-                                    }
-
-                                    @Override
-                                    public void onFinish() {
-                                        long a = player.getDuration() / 1000 / 60;
-                                        long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
-                                        if (a < 10) {
-                                            if (b < 10) {
-                                                tv_amendgd_lytime.setText("0" + a + "'" + "0" + b + "\"");
-                                            } else {
-                                                tv_amendgd_lytime.setText("0" + a + "'" + b + "\"");
-                                            }
-                                        } else {
-                                            if (b < 10) {
-                                                tv_amendgd_lytime.setText(a + "'" + "0" + b + "\"");
-                                            } else {
-                                                tv_amendgd_lytime.setText(a + "'" + b + "\"");
-                                            }
-                                        }
-                                        animationDrawable.stop();
-                                        img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
-                                        playTyp = 0;
-                                    }
-                                };
+                                animationDrawable.stop();
+                                img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
+                                playTyp = 0;
                             }
-                            diaglog.dismiss();
-                        }
-                    });
+                        };
+                    }
+                    diaglog.dismiss();
+                }
+
+                @Override
+                public void onError(Throwable ex, boolean isOnCallback) {
+                    showToast("上传失败");
+                    diaglog.dismiss();
+                }
+
+                @Override
+                public void onCancelled(CancelledException cex) {
+
+                }
+
+                @Override
+                public void onFinished() {
+
+                }
+            });
             return null;
         }
 

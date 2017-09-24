@@ -5,6 +5,11 @@
     android:background="@mipmap/backall"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/tv_amendgd_headView"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -153,11 +158,21 @@
                         android:textSize="@dimen/content_text_s12" />
 
                     <ImageView
+                        android:id="@+id/img_disposejb_add"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@mipmap/home_add_white" />
                 </LinearLayout>
             </RelativeLayout>
+
+            <cn.dianedun.view.NoScrollGridview
+                android:id="@+id/gv_disposejb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:numColumns="5"
+                android:verticalSpacing="10dp"></cn.dianedun.view.NoScrollGridview>
 
             <RelativeLayout
                 android:id="@+id/rl_disposejb_ok"
@@ -182,8 +197,5 @@
                     android:textSize="@dimen/content_text_s18" />
             </RelativeLayout>
         </LinearLayout>
-
     </ScrollView>
-
-
 </LinearLayout>

@@ -17,15 +17,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,7 +46,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
-        if(loding){
+        if (loding) {
             diaglog = createLoadingDialog(context, "正在加载");
             diaglog.show();
         }
@@ -82,8 +78,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
 
     @Override
     protected String doInBackground(Object... params) {
-        HttpUtils httpUtils = new HttpUtils(10000);
-        RequestParams params1 = new RequestParams("UTF-8");
+        RequestParams params1 = new RequestParams(url);
         if (hashMap.size() > 0) {
             for (Map.Entry<String, String> entry : hashMap.entrySet()) {
                 params1.addBodyParameter(entry.getKey(), entry.getValue());
@@ -93,10 +88,10 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
         if (token != null && !token.equals("")) {
             params1.addHeader("token", token);
         }
-        httpUtils.send(HttpRequest.HttpMethod.POST, url, params1, new RequestCallBack<String>() {
+
+        x.http().post(params1, new org.xutils.common.Callback.CommonCallback<String>() {
             @Override
-            public void onSuccess(ResponseInfo<String> responseInfo) {
-                result = responseInfo.result;
+            public void onSuccess(String result) {
                 Log.e("result", result);
                 try {
                     JSONObject jsonObject = new JSONObject(result);
@@ -118,20 +113,29 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-                if(loding){
+                if (loding) {
                     diaglog.dismiss();
                 }
             }
 
             @Override
-            public void onFailure(HttpException error, String msg) {
-                if(loding){
+            public void onError(Throwable ex, boolean isOnCallback) {
+                if (loding) {
                     diaglog.dismiss();
                 }
-                Toast.makeText(context, "网络不可用", Toast.LENGTH_SHORT).show();
-                Log.e("msg", msg);
-                Log.e("error", error + "");
+                Log.e("ex", ex.getMessage());
             }
+
+            @Override
+            public void onCancelled(CancelledException cex) {
+
+            }
+
+            @Override
+            public void onFinished() {
+
+            }
+
         });
         return result;
     }

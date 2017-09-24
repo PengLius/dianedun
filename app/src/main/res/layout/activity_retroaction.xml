@@ -4,6 +4,10 @@
     android:layout_height="match_parent"
     android:background="@mipmap/backall"
     android:orientation="vertical">
+    <TextView
+        android:id="@+id/tv_retroaction_headView"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
 
     <ScrollView
         android:layout_width="match_parent"
@@ -35,7 +39,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_retroaction_gdhs"
-                    android:text="123456789"
+                    android:text="0841324765"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -130,6 +134,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_retroaction_cause"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -205,6 +210,7 @@
                 android:layout_marginTop="10dp"
                 android:background="#6019246B">
                 <EditText
+                    android:id="@+id/ed_retroaction_cause"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_above="@+id/ll_retroaction"
@@ -237,14 +243,23 @@
                         android:textSize="@dimen/content_text_s12" />
 
                     <ImageView
+                        android:id="@+id/img_retroaction_add"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@mipmap/home_add_white" />
                 </LinearLayout>
-
             </RelativeLayout>
+            <cn.dianedun.view.NoScrollGridview
+                android:id="@+id/gv_disposejb"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:numColumns="5"
+                android:verticalSpacing="10dp"></cn.dianedun.view.NoScrollGridview>
 
             <RelativeLayout
+                android:id="@+id/rl_retroaction_ok"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">
