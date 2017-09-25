@@ -1,15 +1,26 @@
 apply plugin: 'com.android.application'
 
 android {
+    sourceSets {
+        main {
+            jniLibs.srcDirs = ['libs']
+        }
+    }
+    lintOptions {
+        abortOnError false
+    }
     compileSdkVersion 25
     buildToolsVersion "25.0.3"
     defaultConfig {
         applicationId "cn.dianedun"
         minSdkVersion 16
-        targetSdkVersion 25
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        ndk {
+            abiFilters "armeabi-v7a"
+        }
     }
     buildTypes {
         release {
@@ -43,17 +54,27 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+
+    compile 'com.android.support:appcompat-v7:25.2.0'
+    compile 'com.bigkoo:alertview:1.0.2'
+    //    testCompile 'junit:junit:4.12'
+    compile project(':xsnow')
+    compile('com.jiechic.library:xUtils:2.6.14', {
+        exclude group: 'com.android.support'
+    })
+    compile 'com.android.support:percent:25.2.0'
     compile('com.scwang.smartrefresh:SmartRefreshLayout:1.0.2-alpha-6', {
         exclude group: 'com.android.support'
     })
-    compile 'com.android.support:appcompat-v7:25.3.1'
-    testCompile 'junit:junit:4.12'
     compile project(':xsnow')
     compile 'org.xutils:xutils:3.5.0'
     compile 'com.yanzhenjie:permission:1.0.5'
-    compile 'com.github.thinkcool:circletextimageview:1.0.20151218'
+    compile('com.github.thinkcool:circletextimageview:1.0.20151218', {
+        exclude group: 'com.android.support'
+    })
     compile files('libs/Amap_2DMap_V5.2.0_20170627.jar')
     compile 'com.github.xesam:AndroidTimer:v0.1'
+    compile files('libs/EZUIKit_1.2.jar')
     compile 'com.github.LuckSiege.PictureSelector:picture_library:v2.1.1'
     compile 'com.github.nanchen2251:CompressHelper:1.0.5'
 }

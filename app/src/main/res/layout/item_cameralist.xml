@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:id="@+id/ia_ll_container"
+    android:layout_width="match_parent"
+    android:background="#172565"
+    android:layout_margin="10dp"
+    android:layout_height="120dp">
+
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1.5"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/ic_tv_camerastatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:background="@mipmap/ic_nor_greentop"
+            android:gravity="center"
+            android:text="在线"
+            android:textSize="@dimen/content_text_s12"
+            android:visibility="gone" />
+
+        <ImageView
+            android:id="@+id/ic_img_spitVideo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/ic_nor_carmera" />
+
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:padding="10dp"
+        android:layout_weight="4"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textSize="@dimen/content_text_s14"
+            android:textColor="@color/white"
+            android:id="@+id/ic_tv_places"
+            android:maxLines="2"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="0dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:textColor="@color/grayfont_1"
+            android:id="@+id/ic_tv_recenttime"
+            android:textSize="@dimen/content_text_s12"
+            android:maxLines="2"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+    <RelativeLayout
+        android:layout_width="0dp"
+        android:orientation="vertical"
+        android:layout_weight="1.3"
+        android:layout_height="match_parent">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_centerInParent="true"
+            android:src="@mipmap/ic_nor_bluelightright"
+            android:layout_height="wrap_content" />
+
+    </RelativeLayout>
+
+</LinearLayout>

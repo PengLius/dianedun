@@ -28,7 +28,7 @@ import rx.Observable;
 public interface ApiService {
     @POST()
     @FormUrlEncoded
-    Observable<ResponseBody> post(@Url() String url, @FieldMap Map<String, String> maps);
+    Observable<ResponseBody> post(@Url() String url, @FieldMap Map<String, Object> maps);
 
 //    @POST()
 //    @FormUrlEncoded

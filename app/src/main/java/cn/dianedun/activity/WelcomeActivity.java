@@ -25,6 +25,10 @@ public class WelcomeActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0){
+            finish();
+            return;
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_welcome);
         //创建Timer对象
