@@ -1,5 +1,6 @@
 package com.vise.xsnow.common;
 
+
 import com.google.gson.Gson;
 
 /**
