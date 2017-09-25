@@ -20,11 +20,11 @@ import android.os.SystemClock;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
-import android.support.v7.widget.GridLayoutManager;
+
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
-import android.util.Log;
+
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -51,7 +51,7 @@ import android.widget.Toast;
 
 import com.bigkoo.alertview.AlertView;
 import com.bigkoo.alertview.OnItemClickListener;
-import com.ezvizuikit.open.EZUIError;
+
 import com.ezvizuikit.open.EZUIKit;
 import com.videogo.constant.Config;
 import com.videogo.constant.Constant;
@@ -77,11 +77,11 @@ import com.videogo.widget.CustomRect;
 import com.videogo.widget.CustomTouchListener;
 import com.videogo.widget.RingView;
 import com.videogo.widget.TitleBar;
+import com.vise.xsnow.manager.AppManager;
 import com.vise.xsnow.net.api.ViseApi;
 import com.vise.xsnow.net.callback.ApiCallback;
 import com.vise.xsnow.net.exception.ApiException;
-import com.vise.xsnow.ui.adapter.recycleview.CommonAdapter;
-import com.vise.xsnow.ui.adapter.recycleview.base.ViewHolder;
+
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -99,7 +99,7 @@ import cn.dianedun.fragment.SpitVideoFragment;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.AudioPlayUtil;
-import cn.dianedun.tools.CommonUtil;
+
 import cn.dianedun.tools.DataManager;
 import cn.dianedun.tools.EZUtils;
 import cn.dianedun.tools.ScreenOrientationHelper;
@@ -158,47 +158,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Bind(R.id.realplay_capture_rl)
     RelativeLayout mRealPlayCaptureRl;
 
-//    @Bind(R.id.realplay_full_operate_bar)
-//    RelativeLayout mRealPlayFullOperateBar;
-//
-//    @Bind(R.id.realplay_full_play_btn)
-//    ImageButton mRealPlayFullPlayBtn;
-//
-//    @Bind(R.id.realplay_full_sound_btn)
-//    ImageButton mRealPlayFullSoundBtn;
-//
-//    @Bind(R.id.realplay_full_talk_btn)
-//    ImageButton mRealPlayFullTalkBtn;
-//
-//    @Bind(R.id.realplay_full_previously_btn)
-//    ImageButton mRealPlayFullCaptureBtn;
-//
-//    @Bind(R.id.realplay_full_ptz_btn)
-//    ImageButton mRealPlayFullPtzBtn;
-//
-//    @Bind(R.id.realplay_full_video_container)
-//    View mRealPlayFullRecordContainer;
-//
-//    @Bind(R.id.realplay_full_video_btn)
-//    ImageButton mRealPlayFullRecordBtn;
-//
-//    @Bind(R.id.realplay_full_video_start_btn)
-//    ImageButton mRealPlayFullRecordStartBtn;
-//
-//    @Bind(R.id.realplay_full_ptz_anim_btn)
-//    ImageButton mRealPlayFullPtzAnimBtn;
-//
     @Bind(R.id.realplay_full_ptz_prompt_iv)
     ImageView mRealPlayFullPtzPromptIv;
-//
-//    @Bind(R.id.realplay_full_talk_anim_btn)
-//    ImageButton mRealPlayFullTalkAnimBtn;
 
-//    @Bind(R.id.realplay_full_anim_btn)
-//    ImageButton mRealPlayFullAnimBtn;
-
-//    @Bind(R.id.fullscreen_full_button)
-//    CheckTextButton mFullscreenFullButton;
 
     @Bind(R.id.realplay_loading_rl)
     RelativeLayout mRealPlayLoadingRl;
@@ -285,21 +247,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
      * 演示点预览控制对象
      */
     private EZPlayer mEZPlayer = null;
-    private CheckTextButton mFullScreenTitleBarBackBtn;
+
     private EZConstants.EZVideoLevel mCurrentQulityMode = EZConstants.EZVideoLevel.VIDEO_LEVEL_HD;
     private EZDeviceInfo mDeviceInfo = null;
     private EZCameraInfo mCameraInfo = null;
     private String mVerifyCode;
 
-    /**
-     * 存放上一次的流量
-     */
-    private long mStreamFlow = 0;
 
-    /**
-     * 当前流量
-     */
-    private int mRealFlow = 0;
     // 对讲模式
     private boolean mIsOnTalk = false;
 
@@ -309,7 +263,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     // 云台控制状态
     private float mZoomScale = 0;
-    private int mCommand = -1;
+
 
     /**
      * 监听锁屏解锁的事件
@@ -424,13 +378,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mDeviceInfo != null && mDeviceInfo.getIsEncrypt() == 1) {
             mVerifyCode = DataManager.getInstance().getDeviceSerialVerifyCode(mCameraInfo.getDeviceSerial());
         }
-//        mRealPlayPlayRl.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                mSpitLayoutHeight = mRealPlayPlayRl.getHeight() - CommonUtil.dip2px(VideoShowActivity.this,10);
-//                mSpitLayoutWidth = mRealPlayPlayRl.getWidth() - CommonUtil.dip2px(VideoShowActivity.this,10);
-//            }
-//        });
     }
     private void startZoom(float scale) {
         if (mEZPlayer == null) {
@@ -633,7 +580,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mRealPlayRatioTv.setLayoutParams(realPlayRatioTvLp);
             String sacleStr = String.valueOf(scale);
             mRealPlayRatioTv.setText(sacleStr.subSequence(0, Math.min(3, sacleStr.length())) + "X");
-            //mj mRealPlayRatioTv.setVisibility(View.VISIBLE);
             mRealPlayRatioTv.setVisibility(GONE);
             hideControlRlAndFullOperateBar(false);
             try {
@@ -648,18 +594,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mPlayScale = scale;
     }
     private void hideControlRlAndFullOperateBar(boolean excludeLandscapeTitle) {
-        //        mRealPlayControlRl.setVisibility(View.GONE);
         closeQualityPopupWindow();
-//        if (mRealPlayFullOperateBar != null) {
-//            mRealPlayFullOperateBar.setVisibility(View.GONE);
-//            if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
-//                mFullscreenFullButton.setVisibility(View.GONE);
-//            } else {
-//                if (!mIsOnTalk && !mIsOnPtz) {
-//                    mFullscreenFullButton.setVisibility(View.GONE);
-//                }
-//            }
-//        }
         if (excludeLandscapeTitle && mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
             if (!mIsOnTalk && !mIsOnPtz) {
                 mLandscapeTitleBar.setVisibility(View.VISIBLE);
@@ -675,97 +610,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mQualityPopupWindow = null;
         }
     }
-//    @Bind(R.id.realplay_full_operate_bar)
-//    RelativeLayout mRealPlayFullOperateBar;
-////
-//    @Bind(R.id.realplay_full_play_btn)
-//    ImageButton mRealPlayFullPlayBtn;
-////
-//    @Bind(R.id.realplay_full_sound_btn)
-//    ImageButton mRealPlayFullSoundBtn;
-////
 
-    private void initFullOperateBarUI() {
-//        mRealPlayFullOperateBar = (RelativeLayout) findViewById(R.id.realplay_full_operate_bar);
-//        mRealPlayFullPlayBtn = (ImageButton) findViewById(R.id.realplay_full_play_btn);
-//        mRealPlayFullSoundBtn = (ImageButton) findViewById(R.id.realplay_full_sound_btn);
-//        mRealPlayFullTalkBtn = (ImageButton) findViewById(R.id.realplay_full_talk_btn);
-//        mRealPlayFullCaptureBtn = (ImageButton) findViewById(R.id.realplay_full_previously_btn);
-//        mRealPlayFullPtzBtn = (ImageButton) findViewById(R.id.realplay_full_ptz_btn);
-//        mRealPlayFullRecordContainer = findViewById(R.id.realplay_full_video_container);
-//        mRealPlayFullRecordBtn = (ImageButton) findViewById(R.id.realplay_full_video_btn);
-//        mRealPlayFullRecordStartBtn = (ImageButton) findViewById(R.id.realplay_full_video_start_btn);
-//        mRealPlayFullOperateBar.setOnTouchListener(this);
-//
-//        mRealPlayFullPtzAnimBtn = (ImageButton) findViewById(R.id.realplay_full_ptz_anim_btn);
-//        mRealPlayFullPtzPromptIv = (ImageView) findViewById(R.id.realplay_full_ptz_prompt_iv);
-//
-//        mRealPlayFullTalkAnimBtn = (ImageButton) findViewById(R.id.realplay_full_talk_anim_btn);
-//
-//        mRealPlayFullAnimBtn = (ImageButton) findViewById(R.id.realplay_full_anim_btn);
-    }
 
 
 
     private void initOperateBarUI(boolean bigScreen) {
-        bigScreen = false;
-//        if (mRealPlayOperateBar != null) {
-//            mRealPlayOperateBar.setVisibility(View.GONE);
-//            mRealPlayOperateBar = null;
-//        }
-        if (bigScreen) {
-//            mRealPlayOperateBar = (HorizontalScrollView) findViewById(R.id.ezopen_realplay_operate_bar2);
-//            findViewById(R.id.ezopen_realplay_operate_bar).setVisibility(View.GONE);
-//
-//            mRealPlayPtzBtnLy = (LinearLayout) findViewById(R.id.realplay_ptz_btn_ly2);
-//            mRealPlayTalkBtnLy = (LinearLayout) findViewById(R.id.realplay_talk_btn_ly2);
-//            mRealPlaySslBtnLy = (LinearLayout) findViewById(R.id.realplay_ssl_btn_ly2);
-//            mRealPlayCaptureBtnLy = (LinearLayout) findViewById(R.id.realplay_previously_btn_ly2);
-//            mRealPlayRecordContainerLy = (LinearLayout) findViewById(R.id.realplay_video_container_ly2);
-//
-//            mRealPlayTalkBtn = (ImageButton) findViewById(R.id.realplay_talk_btn2);
-//            mRealPlaySslBtn = (Button) findViewById(R.id.realplay_ssl_btn2);
-//            mRealPlayPrivacyBtn = (ImageButton) findViewById(R.id.realplay_privacy_btn2);
-//            mRealPlayCaptureBtn = (ImageButton) findViewById(R.id.realplay_previously_btn2);
-//            mRealPlayRecordContainer = findViewById(R.id.realplay_video_container2);
-//            mRealPlayRecordBtn = (ImageButton) findViewById(R.id.realplay_video_btn2);
-//            mRealPlayRecordStartBtn = (ImageButton) findViewById(R.id.realplay_video_start_btn2);
-//            mRealPlayPtzBtn = (ImageButton) findViewById(R.id.realplay_ptz_btn2);
-        } else {
-//            mRealPlayOperateBar = (HorizontalScrollView) findViewById(R.id.ezopen_realplay_operate_bar);
-//            findViewById(R.id.ezopen_realplay_operate_bar2).setVisibility(View.GONE);
 
-//            mRealPlayPtzBtnLy = (LinearLayout) findViewById(R.id.realplay_ptz_btn_ly);
-//            mRealPlayTalkBtnLy = (LinearLayout) findViewById(R.id.realplay_talk_btn_ly);
-//            mRealPlaySslBtnLy = (LinearLayout) findViewById(R.id.realplay_ssl_btn_ly);
-//            mRealPlayCaptureBtnLy = (LinearLayout) findViewById(R.id.realplay_previously_btn_ly);
-//            mRealPlayRecordContainerLy = (LinearLayout) findViewById(R.id.realplay_video_container_ly);
-//
-//            mRealPlayTalkBtn = (ImageButton) findViewById(R.id.realplay_talk_btn);
-//            mRealPlaySslBtn = (Button) findViewById(R.id.realplay_ssl_btn);
-//            mRealPlayPrivacyBtn = (ImageButton) findViewById(R.id.realplay_privacy_btn);
-//            mRealPlayCaptureBtn = (ImageButton) findViewById(R.id.realplay_previously_btn);
-//            mRealPlayRecordContainer = findViewById(R.id.realplay_video_container);
-//            mRealPlayRecordBtn = (ImageButton) findViewById(R.id.realplay_video_btn);
-//            mRealPlayRecordStartBtn = (ImageButton) findViewById(R.id.realplay_video_start_btn);
-//            mRealPlayPtzBtn = (ImageButton) findViewById(R.id.realplay_ptz_btn);
-        }
-//        mRealPlayTalkBtn.setEnabled(false);
-//        mRealPlayOperateBar.setVisibility(View.VISIBLE);
-    }
-
-    private void initLoadingUI() {
-//        mRealPlayLoadingRl = (RelativeLayout) findViewById(R.id.realplay_loading_rl);
-//        mRealPlayTipTv = (TextView) findViewById(R.id.realplay_tip_tv);
-//        mRealPlayPlayIv = (ImageView) findViewById(R.id.realplay_play_iv);
-//        mRealPlayPlayLoading = (LoadingTextView) findViewById(R.id.realplay_loading);
-//        mRealPlayPlayPrivacyLy = (LinearLayout) findViewById(R.id.realplay_privacy_ly);
-
-        // 设置点击图标的监听响应函数
-//        mRealPlayPlayIv.setOnClickListener(this);
-
-
-//        mPageAnimIv = (ImageView) findViewById(R.id.realplay_page_anim_iv);
     }
 
     /**
@@ -867,7 +717,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         int spitId = getIntent().getIntExtra("spit",0);
         if (spitId >= 0){
             mDeviceInfo = mEzDeviceInfo.get(spitId);
-            mCameraInfo = EZUtils.getCameraInfoFromDevice(mDeviceInfo, spitId);
+            mCameraInfo = EZUtils.getCameraInfoFromDevice(mDeviceInfo, 0);
             return true;
         }else{
             //进入分屏
@@ -1182,6 +1032,10 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mCameraInfo != null  && mDeviceInfo != null) {
             mRealPlayCaptureBtn.setEnabled(false);
             mRealPlayRecordBtn.setEnabled(false);
+            mLLVoice.setEnabled(false);
+            mLLStream.setEnabled(false);
+            mLLTalkBack.setEnabled(false);
+            mLLControl.setEnabled(false);
             if (mDeviceInfo.getStatus() == 1) {
 //                mRealPlayQualityBtn.setEnabled(true);
             } else {
@@ -1248,6 +1102,10 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             mRealPlayCaptureBtn.setEnabled(false);
             mRealPlayRecordBtn.setEnabled(false);
+            mLLVoice.setEnabled(false);
+            mLLStream.setEnabled(false);
+            mLLTalkBack.setEnabled(false);
+            mLLControl.setEnabled(false);
             if (mDeviceInfo.getStatus() == 1 && (mEZPlayer == null)) {
 //                mRealPlayQualityBtn.setEnabled(true);
             } else {
@@ -1307,7 +1165,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             mEZPlayer.stopRealPlay();
         }
-        mStreamFlow = 0;
     }
 
     private void setRealPlayStopUI() {
@@ -1322,6 +1179,10 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             setFullPtzStopUI(false);
             mRealPlayCaptureBtn.setEnabled(false);
             mRealPlayRecordBtn.setEnabled(false);
+            mLLVoice.setEnabled(false);
+            mLLStream.setEnabled(false);
+            mLLTalkBack.setEnabled(false);
+            mLLControl.setEnabled(false);
             if (mDeviceInfo.getStatus() == 1) {
 //                mRealPlayQualityBtn.setEnabled(true);
             } else {
@@ -1416,6 +1277,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     @Override
     public void onVideoSelect(EZDeviceInfo deviceInfo) {
+        m4BoxOr9Box = null;
         removeSpitPlayer();
         closeSpitPopupWindow();
         mFlDisplayContainer.removeView(mViewPagerSpit);
@@ -1475,6 +1337,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             initCaptureUI();
         }
     }
+
+
 
     @Override
     protected void initData() {
@@ -1579,7 +1443,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
         mSvLayoutParams = mFlDisplayContainer.getLayoutParams();
         initCaptureUI();
-        mScreenOrientationHelper = new ScreenOrientationHelper(this, mCtbFullscreen, /*mFullscreenFullButton*/mFullScreenTitleBarBackBtn);
+        mScreenOrientationHelper = new ScreenOrientationHelper(this, mCtbFullscreen, /*mFullscreenFullButton*/null);
 
         mWaitDialog = new WaitDialog(this, android.R.style.Theme_Translucent_NoTitleBar);
         mWaitDialog.setCancelable(false);
@@ -2260,19 +2124,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }else{
             mLLTalkBack.setEnabled(false);
         }
-        if (mEZPlayer != null) {
-            mStreamFlow = mEZPlayer.getStreamFlow();
-        }
     }
     private void updateTalkUI() {
         if (!mIsOnTalk) {
             return;
         }
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
-//            if (mRealPlayFullTalkAnimBtn != null) {
-//                mRealPlayFullTalkAnimBtn.setVisibility(View.GONE);
-//                mFullscreenFullButton.setVisibility(View.GONE);
-//            }
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -2280,25 +2137,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 }
             });
         } else {
-//            if (mRealPlayFullTalkAnimBtn != null) {
-//                mRealPlayFullOperateBar.setVisibility(View.VISIBLE);
-//                mRealPlayFullOperateBar.post(new Runnable() {
-//
-//                    @Override
-//                    public void run() {
-//                        mRealPlayFullTalkBtn.getLocationInWindow(mStartXy);
-//                        mEndXy[0] = Utils.dip2px(VideoShowActivity.this, 20);
-//                        mEndXy[1] = mStartXy[1];
-
-//                        mRealPlayFullOperateBar.setVisibility(View.GONE);
-//                        mRealPlayFullTalkAnimBtn.setVisibility(View.VISIBLE);
-                        //                        mFullscreenFullButton.setVisibility(View.VISIBLE);
-//                        ((AnimationDrawable) mRealPlayFullTalkAnimBtn.getBackground()).start();
-//                    }
-
-//                });
-//            }
-
             closeTalkPopupWindow(false, false);
         }
     }
@@ -2306,20 +2144,10 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-//                case R.id.quality_hd_btn:
-//                    setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_HD);
-//                    break;
-//                case R.id.quality_balanced_btn:
-//                    setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_BALANCED);
-//                    break;
-//                case R.id.quality_flunet_btn:
-//                    setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_FLUNET);
-//                    break;
                 case R.id.ptz_close_btn:
                     closePtzPopupWindow();
                     break;
                 case R.id.ptz_flip_btn:
-                    //                    setPtzFlip();
                     break;
                 case R.id.talkback_close_btn:
                     closeTalkPopupWindow(true, false);
@@ -2333,9 +2161,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
         @Override
         public boolean onTouch(View view, MotionEvent motionevent) {
-            boolean ptz_result = false;
             int action = motionevent.getAction();
-            final int speed = EZConstants.PTZ_SPEED_DEFAULT;
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
                     switch (view.getId()) {
@@ -2344,22 +2170,18 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                             mEZPlayer.setVoiceTalkStatus(true);
                             break;
                         case R.id.ptz_top_btn:
-//                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_up_sel);
                             setPtzDirectionIv(RealPlayStatus.PTZ_UP);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandUp, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
                         case R.id.ptz_bottom_btn:
-//                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_bottom_sel);
                             setPtzDirectionIv(RealPlayStatus.PTZ_DOWN);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandDown, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
                         case R.id.ptz_left_btn:
-//                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_left_sel);
                             setPtzDirectionIv(RealPlayStatus.PTZ_LEFT);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandLeft, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
                         case R.id.ptz_right_btn:
-//                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_right_sel);
                             setPtzDirectionIv(RealPlayStatus.PTZ_RIGHT);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandRight, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
@@ -2389,19 +2211,15 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                             mTalkRingView.setVisibility(GONE);
                             break;
                         case R.id.ptz_top_btn:
-//                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_bg);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandUp, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             break;
                         case R.id.ptz_bottom_btn:
-//                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_bg);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandDown, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             break;
                         case R.id.ptz_left_btn:
-//                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_bg);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandLeft, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             break;
                         case R.id.ptz_right_btn:
-//                            mPtzControlLy.setBackgroundResource(R.drawable.ptz_bg);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandRight, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             break;
                         case R.id.rpw_ib_multiple_del:
@@ -2451,68 +2269,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
      * @since V1.8.3
      */
     private void openTalkPopupWindow(boolean showAnimation) {
-//        if (mEZPlayer == null && mDeviceInfo == null) {
-//            return;
-//        }
         showToast("对讲中…");
-//        closeTalkPopupWindow(false, false);
-//        LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        ViewGroup layoutView = (ViewGroup) layoutInflater.inflate(R.layout.realplay_talkback_wnd, null, true);
-//        layoutView.setFocusable(true);
-//        layoutView.setFocusableInTouchMode(true);
-//        layoutView.setOnKeyListener(new View.OnKeyListener() {
-//            @Override
-//            public boolean onKey(View arg0, int arg1, KeyEvent arg2) {
-//                if (arg1 == KeyEvent.KEYCODE_BACK) {
-//                    LogUtil.infoLog(TAG, "KEYCODE_BACK DOWN");
-//                    closeTalkPopupWindow(true, false);
-//                }
-//                return false;
-//            }
-//        });
-//
-//        ImageButton talkbackCloseBtn = (ImageButton) layoutView.findViewById(R.id.talkback_close_btn);
-//        talkbackCloseBtn.setOnClickListener(mOnPopWndClickListener);
-//        mTalkRingView = (RingView) layoutView.findViewById(R.id.talkback_rv);
-//        mTalkBackControlBtn = (Button) layoutView.findViewById(R.id.talkback_control_btn);
-//        mTalkBackControlBtn.setOnTouchListener(mOnTouchListener);
-//
-//        if (mDeviceInfo.isSupportTalk() == EZConstants.EZTalkbackCapability.EZTalkbackFullDuplex) {
-//            mTalkRingView.setVisibility(View.VISIBLE);
-//            mTalkBackControlBtn.setEnabled(false);
-//            mTalkBackControlBtn.setText(R.string.talking);
-//        }
-//
-//        int height = mLocalInfo.getScreenHeight() - mRealPlayPlayRl.getHeight()
-//                - (mRealPlayRect != null ? mRealPlayRect.top : mLocalInfo.getNavigationBarHeight());
-//        mTalkPopupWindow = new PopupWindow(layoutView, RelativeLayout.LayoutParams.MATCH_PARENT, height, true);
-//        // mTalkPopupWindow.setBackgroundDrawable(new BitmapDrawable());
-//        if (showAnimation) {
-//            mTalkPopupWindow.setAnimationStyle(R.style.popwindowUpAnim);
-//        }
-//        mTalkPopupWindow.setFocusable(false);
-//        mTalkPopupWindow.setOutsideTouchable(false);
-////        mTalkPopupWindow.showAtLocation(parent, Gravity.BOTTOM, 0, 0);
-//        mTalkPopupWindow.showAsDropDown(mRealPlayPlayRl);
-//        // mTalkPopupWindow.setOnDismissListener(new OnDismissListener() {
-//        //
-//        // @Override
-//        // public void onDismiss() {
-//        // LogUtil.infoLog(TAG, "KEYCODE_BACK DOWN");
-//        // mTalkPopupWindow = null;
-//        // closeTalkPopupWindow();
-//        // }
-//        // });
-//        mTalkPopupWindow.update();
-//        mTalkRingView.post(new Runnable() {
-//            @Override
-//            public void run() {
-//                if (mTalkRingView != null) {
-//                    mTalkRingView.setMinRadiusAndDistance(mTalkBackControlBtn.getHeight() / 2f,
-//                            Utils.dip2px(VideoShowActivity.this, 22));
-//                }
-//            }
-//        });
     }
     private void initRealPlayPageLy() {
         /** 测量状态栏高度 **/
@@ -2538,9 +2295,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     }
 
     private void onOrientationChanged() {
-//        mRealPlaySv.setVisibility(View.INVISIBLE);
-//        mRealPlaySv.setVisibility(View.VISIBLE);
-
         updateOperatorUI();
         setRealPlaySvLayout();
         updateCaptureUI();
@@ -2556,7 +2310,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    openPtzPopupWindow(mRealPlayPlayRl);
+                    openPtzPopupWindow(mFlDisplayContainer);
                 }
             });
         } else {
@@ -2575,46 +2329,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mHandler.removeMessages(MSG_CLOSE_PTZ_PROMPT);
             mHandler.sendEmptyMessageDelayed(MSG_CLOSE_PTZ_PROMPT, 2000);
         }
-        if (startAnim) {
-//            mRealPlayFullAnimBtn.setBackgroundResource(R.drawable.yuntai_pressed);
-//            mRealPlayFullPtzBtn.getLocationInWindow(mStartXy);
-//            mEndXy[0] = Utils.dip2px(this, 20);
-//            mEndXy[1] = mStartXy[1];
-//            startFullBtnAnim(mRealPlayFullAnimBtn, mStartXy, mEndXy, new Animation.AnimationListener() {
-//
-//                @Override
-//                public void onAnimationStart(Animation animation) {
-//                }
-//
-//                @Override
-//                public void onAnimationRepeat(Animation animation) {
-//                }
-//
-//                @Override
-//                public void onAnimationEnd(Animation animation) {
-////                    mRealPlayFullPtzAnimBtn.setVisibility(View.VISIBLE);
-////                    mRealPlayFullAnimBtn.setVisibility(View.GONE);
-//                    onRealPlaySvClick();
-//                    //                    mFullscreenFullButton.setVisibility(View.VISIBLE);
-//                }
-//            });
-        } else {
-//            mRealPlayFullOperateBar.setVisibility(View.VISIBLE);
-//            mRealPlayFullOperateBar.post(new Runnable() {
-//
-//                @Override
-//                public void run() {
-//                    mRealPlayFullPtzBtn.getLocationInWindow(mStartXy);
-//                    mEndXy[0] = Utils.dip2px(VideoShowActivity.this, 20);
-//                    mEndXy[1] = mStartXy[1];
-//
-//                    mRealPlayFullOperateBar.setVisibility(View.GONE);
-//                    mRealPlayFullPtzAnimBtn.setVisibility(View.VISIBLE);
-                    //                    mFullscreenFullButton.setVisibility(View.VISIBLE);
-//                }
 
-//            });
-        }
     }
 
     @Bind(R.id.av_rl_titlelayout)
@@ -2682,7 +2397,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         stopCurPlayer();
         m4BoxOr9Box = false;
         removeSpitPlayer();
-//                mRealPlayPlayRl.setVisibility(GONE);
         mFlDisplayContainer.removeView(mRealPlayPlayRl);
         if (mFlDisplayContainer.findViewById(R.id.av_viewpager_spitscreen) == null)
             mFlDisplayContainer.addView(mViewPagerSpit);
@@ -2699,7 +2413,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mFlDisplayContainer.removeView(mRealPlayPlayRl);
         if (mFlDisplayContainer.findViewById(R.id.av_viewpager_spitscreen) == null)
             mFlDisplayContainer.addView(mViewPagerSpit);
-//                mRealPlayPlayRl.setVisibility(GONE);
         showSpitLayout();
         closeSpitPopupWindow();
     }
@@ -2801,25 +2514,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         stopRealPlay();
         setRealPlayStopUI();
     }
-    public class ItemOffsetDecoration extends RecyclerView.ItemDecoration {
-
-        private int mItemOffset;
-
-        public ItemOffsetDecoration(int itemOffset) {
-            mItemOffset = itemOffset;
-        }
-
-        public ItemOffsetDecoration(@NonNull Context context, @DimenRes int itemOffsetId) {
-            this(context.getResources().getDimensionPixelSize(itemOffsetId));
-        }
-
-        @Override
-        public void getItemOffsets(Rect outRect, View view, RecyclerView parent,
-                                   RecyclerView.State state) {
-            super.getItemOffsets(outRect, view, parent, state);
-            outRect.set(mItemOffset, mItemOffset, mItemOffset, mItemOffset);
-        }
-    }
 
     private SpitFragmentAdapter mSpitAdapter;
     private SparseArray<EZUIPlayer> mSpitPlayerArr = new SparseArray<>();
@@ -2899,11 +2593,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         ImageButton ptzMultipletDelBtn = (ImageButton) layoutView.findViewById(R.id.rpw_ib_multiple_del);
         ptzMultipletDelBtn.setOnTouchListener(mOnTouchListener);
 
-//        ImageButton ptzFocalizeDelBtn = (ImageButton) layoutView.findViewById(R.id.rpw_ib_focalize_del);
-//        ptzFocalizeDelBtn.setOnTouchListener(mOnTouchListener);
-//        ImageButton ptzFocalizeAddBtn = (ImageButton) layoutView.findViewById(R.id.rpw_ib_focalize_add);
-//        ptzFocalizeAddBtn.setOnTouchListener(mOnTouchListener);
-
         ImageButton ptzFlipBtn = (ImageButton) layoutView.findViewById(R.id.ptz_flip_btn);
         ptzFlipBtn.setOnClickListener(mOnPopWndClickListener);
 
@@ -2952,34 +2641,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
         Utils.showToast(this, R.string.start_voice_talk);
         mLLTalkBack.setEnabled(false);
-//        mRealPlayFullTalkBtn.setEnabled(false);
-//        mRealPlayFullTalkAnimBtn.setEnabled(false);
         mImgTalkBack.setImageResource(R.mipmap.ic_nor_novoice);
-//        if (mOrientation == Configuration.ORIENTATION_LANDSCAPE) {
-//            mRealPlayFullAnimBtn.setBackgroundResource(R.drawable.speech_1);
-//            mRealPlayFullTalkBtn.getLocationInWindow(mStartXy);
-//            mEndXy[0] = Utils.dip2px(this, 20);
-//            mEndXy[1] = mStartXy[1];
-//            startFullBtnAnim(mRealPlayFullAnimBtn, mStartXy, mEndXy, new Animation.AnimationListener() {
-//
-//                @Override
-//                public void onAnimationStart(Animation animation) {
-//                }
-//
-//                @Override
-//                public void onAnimationRepeat(Animation animation) {
-//                }
-//
-//                @Override
-//                public void onAnimationEnd(Animation animation) {
-//                    Utils.showToast(EZRealPlayActivity.this, R.string.realplay_full_talk_start_tip);
-//                    mRealPlayFullTalkAnimBtn.setVisibility(View.VISIBLE);
-//                    mRealPlayFullAnimBtn.setVisibility(View.GONE);
-//                    onRealPlaySvClick();
-//                    //                    mFullscreenFullButton.setVisibility(View.VISIBLE);
-//                }
-//            });
-//        }
 
         if (mEZPlayer != null) {
             mEZPlayer.closeSound();
@@ -3007,8 +2669,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mSpitPopupWindow != null) {
             dismissPopWindow(mSpitPopupWindow);
             mSpitPopupWindow = null;
-//            mPtzControlLy = null;
-//            setForceOrientation(0);
         }
     }
 
@@ -3028,29 +2688,16 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
         updateOrientation();
         setLoadingSuccess();
-//        mRealPlayFlowTv.setVisibility(View.VISIBLE);
-//        mRealPlayFullFlowLy.setVisibility(View.VISIBLE);
-//        mRealPlayBtn.setBackgroundResource(R.drawable.play_stop_selector);
 
         if (mCameraInfo != null && mDeviceInfo != null) {
             mRealPlayCaptureBtn.setEnabled(true);
             mRealPlayRecordBtn.setEnabled(true);
-            if (mDeviceInfo.getStatus() == 1) {
-//                mRealPlayQualityBtn.setEnabled(true);
-            } else {
-//                mRealPlayQualityBtn.setEnabled(false);
-            }
-            if (getSupportPtz() == 1) {
-//                mRealPlayPtzBtn.setEnabled(true);
-            }
-
-//            mRealPlayFullPlayBtn.setBackgroundResource(R.drawable.play_full_stop_selector);
-//            mRealPlayFullCaptureBtn.setEnabled(true);
-//            mRealPlayFullRecordBtn.setEnabled(true);
-//            mRealPlayFullPtzBtn.setEnabled(true);
+            mLLVoice.setEnabled(true);
+            mLLStream.setEnabled(true);
+            mLLTalkBack.setEnabled(true);
+            mLLControl.setEnabled(true);
         }
 
-//        setRealPlaySound();
 
         startUpdateTimer();
     }
@@ -3136,13 +2783,16 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             setStopLoading();
         }
         mRealPlaySv.setVisibility(View.INVISIBLE);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-//        client.disconnect();
     }
     @Override
     protected void bindEvent() {
         super.bindEvent();
+        mImgBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                AppManager.getInstance().finishActivity(VideoShowActivity.this);
+            }
+        });
         mImgSpit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -3161,6 +2811,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //开启设备对讲
+
+                if (m4BoxOr9Box != null){
+                    showToast("请选择具体设备");
+                    return;
+                }
+
                 if (!mIsOnTalk)
                     startVoiceTalk();
                 else
@@ -3171,6 +2827,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //码流
+
+                if (m4BoxOr9Box != null){
+                    showToast("请选择具体设备");
+                    return;
+                }
+
+
                 new AlertView("选择码流", null,"取消", null,
                         new String[]{"高清","标清","流畅"},
                         VideoShowActivity.this, AlertView.Style.ActionSheet, new OnItemClickListener() {
@@ -3212,21 +2875,30 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //声音
-                onSoundBtnClick();
+                if (m4BoxOr9Box == null)
+                    onSoundBtnClick();
+                else
+                    showToast("请选择具体设备");
             }
         });
         mRealPlayCaptureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //拍照
-                onCapturePicBtnClick();
+                if (m4BoxOr9Box == null)
+                    onCapturePicBtnClick();
+                else
+                    showToast("请选择具体设备");
             }
         });
         mLLControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 //打开控制台
-                openPtzPopupWindow(mRealPlayPlayRl);
+                if (m4BoxOr9Box == null)
+                    openPtzPopupWindow(mFlDisplayContainer);
+                else
+                    showToast("请选择具体设备");
             }
         });
         mRealPlayPlayIv.setOnClickListener(new View.OnClickListener() {
@@ -3315,16 +2987,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 mImgVideoStart.setVisibility(GONE);
                 mImgVideoStop.setVisibility(View.VISIBLE);
             }
-//            mRealPlayFullRecordBtn.setVisibility(View.GONE);
-//            mRealPlayFullRecordStartBtn.setVisibility(View.VISIBLE);
         } else {
-            if (!mIsOnStop) {
-//                mRecordRotateViewUtil.applyRotation(mRealPlayFullRecordContainer, mImgVideoStart,
-//                        mImgVideoStop, 0, 90);
-            } else {
-//                mRealPlayFullRecordBtn.setVisibility(View.GONE);
-//                mRealPlayFullRecordStartBtn.setVisibility(View.VISIBLE);
-            }
             mImgVideoStart.setVisibility(GONE);
             mImgVideoStop.setVisibility(View.VISIBLE);
         }
@@ -3427,17 +3090,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 mImgVideoStop.setVisibility(GONE);
                 mImgVideoStart.setVisibility(View.VISIBLE);
             }
-//            mRealPlayFullRecordStartBtn.setVisibility(View.GONE);
-//            mRealPlayFullRecordBtn.setVisibility(View.VISIBLE);
         } else {
-            if (!mIsOnStop) {
-//                mRecordRotateViewUtil.applyRotation(mRealPlayFullRecordContainer, mRealPlayFullRecordStartBtn,
-//                        mRealPlayFullRecordBtn, 0, 90);
-            } else {
-//                mRealPlayFullRecordStartBtn.setVisibility(View.GONE);
-//                mRealPlayFullRecordBtn.setVisibility(View.VISIBLE);
-
-            }
             mImgVideoStop.setVisibility(GONE);
             mImgVideoStart.setVisibility(View.VISIBLE);
         }
@@ -3447,14 +3100,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         // 计时按钮不可见
         mRlPrompt.setVisibility(GONE);
         mRealPlayRecordLy.setVisibility(GONE);
-        //        mRealPlayCaptureRl.setVisibility(View.VISIBLE);
         mCaptureDisplaySec = 0;
-        //        try {
-        //            mRealPlayCaptureIv.setImageURI(Uri.parse(mRecordFilePath));
-        //        } catch (OutOfMemoryError e) {
-        //            e.printStackTrace();
-        //        }
-        //        mRealPlayCaptureWatermarkIv.setTag(mRecordFilePath);
         mIsRecording = false;
         updateCaptureUI();
     }
@@ -3507,15 +3153,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mLocalInfo.isSoundOpen()) {
             mLocalInfo.setSoundOpen(false);
             mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
-//            if (mRealPlayFullSoundBtn != null) {
-//                mRealPlayFullSoundBtn.setBackgroundResource(R.drawable.play_full_soundoff_btn_selector);
-//            }
         } else {
             mLocalInfo.setSoundOpen(true);
             mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_greenhorn);
-//            if (mRealPlayFullSoundBtn != null) {
-//                mRealPlayFullSoundBtn.setBackgroundResource(R.drawable.play_full_soundon_btn_selector);
-//            }
         }
 
         setRealPlaySound();
@@ -3651,12 +3291,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             try {
                 List<EZDeviceInfo> result = null;
-//                if (mHeaderOrFooter == null || mHeaderOrFooter) {
-//                    result = getOpenSDK().getDeviceList(0, 20);
-//                } else {
-//
-//                    result = getOpenSDK().getDeviceList((mCameraAdapter.getItemCount() / 20)+(mCameraAdapter.getItemCount() % 20>0?1:0), 20);
-//                }
                 result = getOpenSDK().getDeviceList(0, 20);
                 return result;
 
@@ -3676,34 +3310,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             }
 
             mEzDeviceInfo = result;
-
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
-            mEzDeviceInfo.add(mEzDeviceInfo.get(0));
 
             if (mEzDeviceInfo != null && mEzDeviceInfo.size() > 0){
                 onGetDeviceInfoSucess();

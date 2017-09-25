@@ -140,15 +140,6 @@ public class SpitVideoPopView extends PopupWindow {
 
     private void onGetDeviceInfoSucess(List<EZDeviceInfo> ezDeviceInfoList) {
         mDeviceListInfo = ezDeviceInfoList;
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
-        mDeviceListInfo.add(mDeviceListInfo.get(0));
         initView();
     }
 
@@ -165,6 +156,7 @@ public class SpitVideoPopView extends PopupWindow {
                     public void onClick(View v) {
                         if (mOnVideoSelect!=null)
                             mOnVideoSelect.onVideoSelect(position);
+                        dismiss();
                     }
                 });
             }

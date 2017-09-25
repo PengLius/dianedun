@@ -119,7 +119,10 @@ public class VideoFragment extends BaseTitlFragment {
                             mRlNodata.setVisibility(View.VISIBLE);
                         }else{
                             mRlNodata.setVisibility(View.GONE);
-                            addCameraList(dataBean.getResult());
+                            if (mCameraAdapter!=null) {
+                                mCameraAdapter.setDatas(dataBean.getResult());
+                                mCameraAdapter.notifyDataSetChanged();
+                            }
                         }
 
                     }else{
@@ -165,6 +168,7 @@ public class VideoFragment extends BaseTitlFragment {
     boolean mInitLoad = false;
 
     private void initRefreshLayout(){
+        mRefreshLayout.setLoadmoreFinished(true);
         mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
@@ -172,13 +176,13 @@ public class VideoFragment extends BaseTitlFragment {
                 getData(mRefreshOrLoadMore);
             }
         });
-        mRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
-            @Override
-            public void onLoadmore(RefreshLayout refreshlayout) {
-                mRefreshOrLoadMore = false;
-                getData(mRefreshOrLoadMore);
-            }
-        });
+//        mRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
+//            @Override
+//            public void onLoadmore(RefreshLayout refreshlayout) {
+//                mRefreshOrLoadMore = false;
+//                getData(mRefreshOrLoadMore);
+//            }
+//        });
     }
 
 
