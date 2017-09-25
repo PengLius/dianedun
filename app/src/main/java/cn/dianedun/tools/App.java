@@ -1,6 +1,7 @@
 package cn.dianedun.tools;
 
 import android.app.Application;
+import android.support.multidex.MultiDexApplication;
 
 
 import com.videogo.openapi.EZOpenSDK;
@@ -11,7 +12,7 @@ import org.xutils.x;
  * Created by Administrator on 2017/9/2.
  */
 
-public class App extends Application {
+public class App extends MultiDexApplication {
     private static App mInstance;
 
     private String token;

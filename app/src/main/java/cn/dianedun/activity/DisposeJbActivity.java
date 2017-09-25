@@ -31,7 +31,6 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.target.SimpleTarget;
-import com.bumptech.glide.request.transition.Transition;
 import com.google.gson.Gson;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
@@ -594,12 +593,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
             } else {
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_scimg, null);
                 final ImageView imagView = (ImageView) convertView.findViewById(R.id.img_fjimg_img);
-                Glide.with(DisposeJbActivity.this).load(imgList.get(position)).into(new SimpleTarget<Drawable>() {
-                    @Override
-                    public void onResourceReady(Drawable resource, Transition<? super Drawable> transition) {
-                        imagView.setBackground(resource);
-                    }
-                });
+                Glide.with(DisposeJbActivity.this).load(imgList.get(position)).into(imagView);
                 ((ImageView) convertView.findViewById(R.id.img_scimg_del)).setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
