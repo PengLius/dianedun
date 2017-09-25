@@ -5,6 +5,11 @@
     android:background="@mipmap/backall"
     android:orientation="vertical">
 
+    <TextView
+        android:id="@+id/tv_annul_headView"
+        android:layout_width="0dp"
+        android:layout_height="0dp" />
+
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -55,7 +60,7 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
                     android:layout_centerVertical="true"
-                    android:src="@mipmap/hoem_jg_yellow" />
+                    android:src="@mipmap/home_jg_yellow" />
 
                 <TextView
                     android:id="@+id/tv_annul_sqr"
@@ -179,11 +184,12 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="100dp"
                 android:layout_marginTop="10dp"
                 android:background="#6019246B">
 
                 <EditText
+                    android:id="@+id/ed_annul_cause"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_above="@+id/ll_disposejb"
@@ -217,15 +223,56 @@
                         android:textSize="@dimen/content_text_s12" />
 
                     <ImageView
+                        android:id="@+id/img_annul_ly"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:src="@mipmap/yuyin" />
                 </LinearLayout>
-
-
             </RelativeLayout>
 
             <RelativeLayout
+                android:id="@+id/rl_annul_ly"
+                android:layout_width="75dp"
+                android:layout_height="75dp"
+                android:layout_marginTop="10dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:id="@+id/ll_annul_star"
+                    android:layout_width="55dp"
+                    android:layout_height="55dp"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:background="@drawable/rl_5_blue"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/img_annul_lyic"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/yp_bf" />
+
+                    <TextView
+                        android:id="@+id/tv_annul_lytime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="00'00"
+                        android:textColor="#fff"
+                        android:textSize="@dimen/content_text_s12" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/img_annul_del"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:background="@mipmap/home_del_red" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/rl_annul_sub"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp">

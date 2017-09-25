@@ -15,7 +15,7 @@
 
         <LinearLayout
             android:id="@+id/ll_sqr_pop"
-            android:layout_width="220dp"
+            android:layout_width="250dp"
             android:layout_height="wrap_content"
             android:background="@drawable/tv_5_white"
             android:orientation="vertical">
@@ -24,7 +24,6 @@
                 android:id="@+id/gv_amendgd"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
-                android:gravity="center"
                 android:numColumns="2"
                 android:layout_marginTop="10dp"
                 android:verticalSpacing="10dp"></GridView>

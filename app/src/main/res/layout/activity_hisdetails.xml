@@ -7,11 +7,11 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:orientation="vertical">
@@ -30,6 +30,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_nmb"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -53,6 +54,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_urgency"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -76,6 +78,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -99,6 +102,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_startime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -122,6 +126,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_endtime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -146,6 +151,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_cause"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -169,6 +175,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_adress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -192,6 +199,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_xxadress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -215,6 +223,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdetails_cl"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -224,6 +233,14 @@
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
 
+            <cn.dianedun.view.NoScrollGridview
+                android:id="@+id/gv_hisdetauls"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:numColumns="5"
+                android:verticalSpacing="10dp"></cn.dianedun.view.NoScrollGridview>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

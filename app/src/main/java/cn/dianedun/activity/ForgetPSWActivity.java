@@ -14,16 +14,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
 import com.vise.xsnow.manager.AppManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.util.HashMap;
 
@@ -134,15 +131,15 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
                 break;
             case R.id.tv_forget_yzm:
                 if (ed_forget_user.getText().length() != 0) {
-                    HttpUtils httpUtils = new HttpUtils(10000);
-                    RequestParams params1 = new RequestParams("UTF-8");
+                    RequestParams params1 = new RequestParams(AppConfig.NOTECODE);
                     params1.addBodyParameter("username", ed_forget_user.getText().toString());
-                    httpUtils.send(HttpRequest.HttpMethod.POST, AppConfig.NOTECODE, params1, new RequestCallBack<String>() {
+                    x.http().post(params1, new Callback.CommonCallback<String>() {
+
                         @Override
-                        public void onSuccess(ResponseInfo<String> responseInfo) {
+                        public void onSuccess(String result) {
                             JSONObject jsonObject = null;
                             try {
-                                jsonObject = new JSONObject(responseInfo.result);
+                                jsonObject = new JSONObject(result);
                                 if (jsonObject.getString("code").equals("0")) {
                                     Toast.makeText(getApplicationContext(), "短信验证码发送成功", Toast.LENGTH_SHORT).show();
                                     offs = true;
@@ -157,10 +154,21 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
                         }
 
                         @Override
-                        public void onFailure(HttpException error, String msg) {
+                        public void onError(Throwable ex, boolean isOnCallback) {
                             Toast.makeText(getApplicationContext(), "网络不可用", Toast.LENGTH_SHORT).show();
                             tv_forget_yzm.setClickable(true);
                         }
+
+                        @Override
+                        public void onCancelled(CancelledException cex) {
+
+                        }
+
+                        @Override
+                        public void onFinished() {
+
+                        }
+
                     });
                 }
                 break;

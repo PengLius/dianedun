@@ -48,6 +48,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/tv_mine_phone"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="15933227792"
@@ -55,6 +56,7 @@
                             android:textSize="@dimen/content_text_s14" />
 
                         <TextView
+                            android:id="@+id/tv_mine_name"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="10dp"
@@ -74,6 +76,7 @@
                 </RelativeLayout>
 
                 <TextView
+                    android:id="@+id/tv_mine_adrestime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="10dp"
@@ -133,6 +136,7 @@
                 android:orientation="horizontal">
 
                 <ImageView
+                    android:id="@+id/img_mine_msg"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:src="@mipmap/my_msg" />

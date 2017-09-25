@@ -1,5 +1,6 @@
 package cn.dianedun.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,15 +12,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.amap.api.maps2d.AMap;
+import com.amap.api.maps2d.CameraUpdate;
+import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,7 +34,15 @@ import java.util.List;
 
 import butterknife.Bind;
 import cn.dianedun.R;
+import cn.dianedun.activity.DetectionActivity;
 import cn.dianedun.base.BaseTitlFragment;
+import cn.dianedun.bean.DetactionXBean;
+import cn.dianedun.bean.MapBean;
+import cn.dianedun.bean.PeiDSBean;
+import cn.dianedun.tools.App;
+import cn.dianedun.tools.AppConfig;
+import cn.dianedun.tools.GsonUtil;
+import cn.dianedun.tools.MyAsyncTast;
 
 /**
  * Created by Administrator on 2017/8/3.
@@ -59,18 +74,27 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Bind(R.id.map)
     MapView mapView;
 
+    @Bind(R.id.ll_detection_all)
+    LinearLayout ll_detection_all;
+
+    @Bind(R.id.tv_detection_adress)
+    TextView tv_detection_adress;
+
+    private MyAsyncTast myAsyncTast;
+    private HashMap<String, String> hashMap;
     AMap aMap;
-
-    List<HashMap<String, Double>> list;
     List<String> markList;
-
     private TextView title, snippet;
-
     private IndentCusAdapter adapter;
     private boolean rightState = false;
-
     private List<Fragment> mList;
-
+    private PeiDSBean bean;
+    private GaoCeFragment gaoCeFragment;
+    private DiYaFragment diYaFragment;
+    private TemperatureFragment temperatureFragment;
+    private HumidityFragment humidityFragment;
+    private DetactionXBean xBean;
+    private MapBean mapBean;
 
     public static DetectionFragment getInstance() {
         DetectionFragment fragment = new DetectionFragment();
@@ -86,46 +110,83 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Override
     protected void initView(View contentView) {
         super.initView(contentView);
-        mapView.onCreate(savedInstanceState);
-        if (aMap == null) {
-            aMap = mapView.getMap();
-        }
-
-
         setTvTitleText("监测");
-        setTitleBack(R.mipmap.home_backg_leftnull);
-        setImgRightVisibility(View.VISIBLE);
-        setImgRight(R.mipmap.jc_topright);
-        setImgRightOnClick(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (rightState) {
+        if (App.getInstance().getIsAdmin().equals("2")) {
+            mapView.setVisibility(View.VISIBLE);
+            ll_detection_all.setVisibility(View.GONE);
+            mapView.onCreate(savedInstanceState);
+            if (aMap == null) {
+                aMap = mapView.getMap();
+            }
+            setImgRightVisibility(View.GONE);
+            setTitleBack(R.mipmap.home_backg_null);
+            initMap();
+        } else {
+            mapView.setVisibility(View.GONE);
+            ll_detection_all.setVisibility(View.VISIBLE);
+            setTitleBack(R.mipmap.home_backg_leftnull);
+            setImgRightVisibility(View.VISIBLE);
+            setImgRight(R.mipmap.jc_topright);
+            setImgRightOnClick(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (rightState) {
+                        rl_detection.setVisibility(View.GONE);
+                        rightState = false;
+                    } else {
+                        hashMap = new HashMap<>();
+                        hashMap.put("id", "");
+                        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                            @Override
+                            public void send(String result) {
+                                bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
+                                adapter = new IndentCusAdapter();
+                                lv_detection.setAdapter(adapter);
+                                rl_detection.setVisibility(View.VISIBLE);
+                                rightState = true;
+                            }
+                        });
+                        myAsyncTast.execute();
+                    }
+
+                }
+            });
+            rl_detection.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
-                } else {
-                    rl_detection.setVisibility(View.VISIBLE);
-                    rightState = true;
                 }
-                adapter = new IndentCusAdapter();
-                lv_detection.setAdapter(adapter);
-            }
-        });
-        rl_detection.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                rl_detection.setVisibility(View.GONE);
-                rightState = false;
-            }
-        });
+            });
+            initListV();
+        }
+
     }
 
-    @Override
-    protected void initData() {
+    private void initMap() {
+        CameraUpdate mCameraUpdate = CameraUpdateFactory.newCameraPosition(new CameraPosition(new LatLng(38.867814, 115.49159), 11, 0, 0));
+        aMap.moveCamera(mCameraUpdate);
+        markList = new ArrayList<>();
+        myAsyncTast = new MyAsyncTast(getActivity(), new HashMap<String, String>(), AppConfig.INDEX, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void send(String result) {
+                mapBean = GsonUtil.parseJsonWithGson(result, MapBean.class);
+                iniDt();
+            }
+        });
+        myAsyncTast.execute();
+    }
+
+    private void initListV() {
         mList = new ArrayList<>();
-        mList.add(new GaoCeFragment());
-        mList.add(new DiYaFragment());
-        mList.add(new TemperatureFragment());
-        mList.add(new HumidityFragment());
+        gaoCeFragment = new GaoCeFragment();
+        diYaFragment = new DiYaFragment();
+        temperatureFragment = new TemperatureFragment();
+        humidityFragment = new HumidityFragment();
+        mList.add(gaoCeFragment);
+        mList.add(diYaFragment);
+        mList.add(temperatureFragment);
+        mList.add(humidityFragment);
         tv_fdetection_gy.setOnClickListener(this);
         tv_fdetection_dy.setOnClickListener(this);
         tv_fdetection_wd.setOnClickListener(this);
@@ -134,36 +195,63 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         vp_fdetection.setAdapter(myAdapter);
         vp_fdetection.setCurrentItem(0);
         vp_fdetection.setOnPageChangeListener(new MyOnPageChangeListener());
-        markList = new ArrayList<>();
-        list = new ArrayList<>();
-        HashMap<String, Double> hashMap = new HashMap<>();
-        hashMap.put("jd", 39.906901);
-        hashMap.put("wd", 116.397);
-        list.add(hashMap);
-        hashMap = new HashMap<>();
-        hashMap.put("jd", 39.906901);
-        hashMap.put("wd", 116.396);
-        list.add(hashMap);
-        hashMap = new HashMap<>();
-        hashMap.put("jd", 39.906901);
-        hashMap.put("wd", 116.395);
-        list.add(hashMap);
-        hashMap = new HashMap<>();
-        hashMap.put("jd", 39.906901);
-        hashMap.put("wd", 116.394);
-        list.add(hashMap);
-        hashMap = new HashMap<>();
-        hashMap.put("jd", 39.906901);
-        hashMap.put("wd", 116.393);
-        list.add(hashMap);
-        iniDt();
+        fristData();
+    }
 
+    @Override
+    protected void initData() {
+
+    }
+
+    /**
+     * 获取所有配电室id
+     */
+    private void fristData() {
+        hashMap = new HashMap<>();
+        hashMap.put("id", "");
+        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void send(String result) {
+                bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
+                getPDSAll(bean.getData().getSwitchRoomList().get(0).getId());
+                tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
+            }
+        });
+        myAsyncTast.execute();
+    }
+
+    /**
+     * 配电室数据
+     *
+     * @param RoomId 配电室Id
+     */
+    private void getPDSAll(String RoomId) {
+        hashMap = new HashMap<>();
+        hashMap.put("RoomId", RoomId);
+        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void send(String result) {
+                xBean = GsonUtil.parseJsonWithGson(result, DetactionXBean.class);
+                gaoCeFragment.setData(xBean);
+                diYaFragment.setData(xBean);
+                temperatureFragment.setData(xBean);
+                humidityFragment.setData(xBean);
+            }
+        });
+        myAsyncTast.execute();
     }
 
     /**
      * 地图设置点
      */
     private void iniDt() {
+        for (int i = 0; i < mapBean.getData().getDepartList().size(); i++) {
+            Double lat = Double.parseDouble(mapBean.getData().getDepartList().get(i).getLat());
+            Double lng = Double.parseDouble(mapBean.getData().getDepartList().get(i).getLng());
+            LatLng latLng = new LatLng(lat, lng);
+            Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("").snippet(""));
+            markList.add(marker.getId());
+        }
         AMap.InfoWindowAdapter infoWindowAdapter = new AMap.InfoWindowAdapter() {
             @Override
             public View getInfoWindow(Marker marker) {
@@ -187,25 +275,22 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                 title = (TextView) view.findViewById(R.id.title);
                 for (int i = 0; i < markList.size(); i++) {
                     if (markList.get(i).equals(marker.getId())) {
-                        title.setText(list.get(i).get("jd") + "");
-                        snippet.setText(list.get(i).get("wd") + "");
+                        title.setText(mapBean.getData().getDepartList().get(i).getDepartname());
+                        snippet.setText("点击查看配电室");
                     }
                 }
             }
         };
 
-        for (int i = 0; i < list.size(); i++) {
-            LatLng latLng = new LatLng(list.get(i).get("jd"), list.get(i).get("wd"));
-            Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("").snippet(""));
-            markList.add(marker.getId());
-        }
         aMap.setInfoWindowAdapter(infoWindowAdapter);
         AMap.OnInfoWindowClickListener listener = new AMap.OnInfoWindowClickListener() {
             @Override
             public void onInfoWindowClick(Marker marker) {
                 for (int i = 0; i < markList.size(); i++) {
                     if (markList.get(i).equals(marker.getId())) {
-                        showToast(i + "");
+                        Intent intent = new Intent(getActivity(), DetectionActivity.class);
+                        intent.putExtra("id", mapBean.getData().getDepartList().get(i).getId() + "");
+                        startActivity(intent);
                     }
                 }
             }
@@ -254,6 +339,10 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
             default:
                 break;
         }
+    }
+
+    public void getData() {
+
     }
 
     class MyAdapter extends FragmentPagerAdapter {
@@ -327,12 +416,12 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
 
         @Override
         public int getCount() {
-            return 6;
+            return bean.getData().getSwitchRoomList().size();
         }
 
         @Override
         public Object getItem(int position) {
-            return 0;
+            return bean.getData().getSwitchRoomList().get(position);
         }
 
         @Override
@@ -346,16 +435,26 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
             if (convertView == null) {
                 convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_detection, null);
                 cache = new Cache();
+                cache.tv_item_detecticon = (TextView) convertView.findViewById(R.id.tv_item_detecticon);
                 convertView.setTag(cache);
             } else {
                 cache = (Cache) convertView.getTag();
             }
+            cache.tv_item_detecticon.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    getPDSAll(bean.getData().getSwitchRoomList().get(position).getId() + "");
+                    tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
+                    rl_detection.setVisibility(View.GONE);
+                    rightState = false;
+                }
+            });
             return convertView;
         }
     }
 
     class Cache {
-        TextView tv_grouponall_name, tv_grouponall_from, tv_grouponall_offered;
-        ImageView img_grouponall_head;
+        TextView tv_item_detecticon;
     }
 }

@@ -30,12 +30,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
-import com.lidroid.xutils.HttpUtils;
-import com.lidroid.xutils.exception.HttpException;
-import com.lidroid.xutils.http.RequestParams;
-import com.lidroid.xutils.http.ResponseInfo;
-import com.lidroid.xutils.http.callback.RequestCallBack;
-import com.lidroid.xutils.http.client.HttpRequest;
+
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.io.File;
 import java.io.IOException;
@@ -50,6 +48,7 @@ import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.bean.ApplyAdreesBean;
 import cn.dianedun.bean.ApplyPresonBean;
+import cn.dianedun.bean.JbUpBean;
 import cn.dianedun.bean.ResultBean;
 import cn.dianedun.bean.ToJsonBean;
 import cn.dianedun.bean.UpdataBean;
@@ -131,7 +130,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private List<String> alllist;
     int STARTTIME = 0;
     int ENDTTIME = 1;
-    String level = "1";
+    private String level = "0";
     private View view, view2, view3;
     private PopupWindow pop, pop2, pop3;
     private GirdAdapter adapter;
@@ -146,7 +145,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private List<String> nameList;
     private boolean includs = false;
     private int type = 0;
-    private UpdataBean updataBean;
+    private JbUpBean updataBean;
     private RelativeLayout rl_luyin_type;
     private String fileName = "/sdcard/myHead/audiorecordtest.mp3";
     private Dialog diaglog;
@@ -164,6 +163,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private AnimationDrawable animationDrawable;
     private Date startTimer;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -177,7 +177,6 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
         view = inflaters.inflate(R.layout.popupwindow_sqr, null);
         view2 = inflaters.inflate(R.layout.popupwindow_adress, null);
         view3 = inflaters.inflate(R.layout.popupwindow_luyin, null);
-//        tv_amendgd_adress.setText("00'00\"");
 
         gv_amendgd = (GridView) view.findViewById(R.id.gv_amendgd);
         tv_sqr_qd = (TextView) view.findViewById(R.id.tv_sqr_qd);
@@ -269,7 +268,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
             case R.id.tv_amendgd_pt:
                 //普通
-                level = "1";
+                level = "0";
                 tv_amendgd_pt.setCompoundDrawables(drawable, null, null, null);
                 tv_amendgd_jj.setCompoundDrawables(drawable2, null, null, null);
                 break;
@@ -281,7 +280,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
 
             case R.id.tv_amendgd_jj:
                 //紧急
-                level = "2";
+                level = "1";
                 tv_amendgd_jj.setCompoundDrawables(drawable1, null, null, null);
                 tv_amendgd_pt.setCompoundDrawables(drawable2, null, null, null);
                 break;
@@ -385,10 +384,9 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 if (ed_amendgd_sqyy.getText() != null) {
                     hashMap.put("cause", ed_amendgd_sqyy.getText().toString());
                 }
-
-//                if (!obj2.equals("")) {
-//                    hashMap.put("jsonStr", obj2);
-//                }
+                if (!obj2.equals("")) {
+                    hashMap.put("jsonStr", obj2);
+                }
                 myAsyncTast = new MyAsyncTast(ApplyGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                     @Override
                     public void send(String result) {
@@ -591,7 +589,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 cache = new Cache();
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_sqr, null);
                 cache.img_itemsqr_type = (ImageView) convertView.findViewById(R.id.img_itemsqr_type);
-                cache.ll_itemsqr = (LinearLayout) convertView.findViewById(R.id.ll_itemsqr);
+                cache.ll_itemsqr = (RelativeLayout) convertView.findViewById(R.id.ll_itemsqr);
                 cache.tv_itemsqr_name = (TextView) convertView.findViewById(R.id.tv_itemsqr_name);
                 convertView.setTag(cache);
             } else {
@@ -688,14 +686,14 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     class Cache {
         TextView tv_itemsqr_name;
         ImageView img_itemsqr_type;
-        LinearLayout ll_itemsqr;
+        RelativeLayout ll_itemsqr;
     }
 
     class ListViewCache {
         TextView tv_item_adress;
     }
 
-    class MyAsync extends AsyncTask<Object, Object, String> {
+    private class MyAsync extends AsyncTask<Object, Object, String> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -705,35 +703,25 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
 
         @Override
         protected String doInBackground(Object... params) {
-            HttpUtils httpUtils = new HttpUtils();
-            RequestParams param = new RequestParams();
+            RequestParams param = new RequestParams(AppConfig.UPLOADFILE);
             param.addBodyParameter("file", new File(fileName));
-            param.addBodyParameter("type", "1");
+            param.addBodyParameter("optionType", "1");
             param.addHeader("token", App.getInstance().getToken());
-            httpUtils.send(HttpRequest.HttpMethod.POST, AppConfig.UPLOADFILE, param,
-                    new RequestCallBack<String>() {
+            x.http().post(param,
+                    new Callback.CommonCallback<String>() {
                         @Override
-                        public void onFailure(HttpException error, String msg) {
+                        public void onSuccess(String result) {
                             // TODO Auto-generated method stub
-                            showToast("上传失败");
-                            Log.e("error", error + "");
-                            Log.e("msg", msg + "");
-                            diaglog.dismiss();
-                        }
-
-                        @Override
-                        public void onSuccess(ResponseInfo<String> responseInfo) {
-                            // TODO Auto-generated method stub
-                            Log.e("result", responseInfo.result);
-                            updataBean = GsonUtil.parseJsonWithGson(responseInfo.result, UpdataBean.class);
+                            Log.e("result", result);
+                            updataBean = GsonUtil.parseJsonWithGson(result, JbUpBean.class);
                             if (updataBean.getCode() == 0) {
-                                player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData()));
+                                player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData().get(0)));
                                 showToast("上传成功");
                                 rl_amendgd_ly.setVisibility(View.VISIBLE);
                                 pop3.dismiss();
                                 toJsonBean = new ToJsonBean();
                                 toJsonBean.setOptionType(1);
-                                toJsonBean.setContents(updataBean.getData());
+                                toJsonBean.setContents(updataBean.getData().get(0));
                                 toJsonBean.setType(4);
                                 Gson gson = new Gson();
                                 obj2 = "[" + gson.toJson(toJsonBean) + "]";
@@ -809,6 +797,21 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                                 };
                             }
                             diaglog.dismiss();
+                        }
+
+                        @Override
+                        public void onError(Throwable ex, boolean isOnCallback) {
+                            showToast("上传失败");
+                            diaglog.dismiss();
+                        }
+
+                        @Override
+                        public void onCancelled(CancelledException cex) {
+
+                        }
+
+                        @Override
+                        public void onFinished() {
                         }
                     });
             return null;

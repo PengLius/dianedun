@@ -46,6 +46,7 @@
                             android:src="@mipmap/his_jg_gray" />
 
                         <TextView
+                            android:id="@+id/tv_hisdisposejb_type"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="3dp"
@@ -65,6 +66,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tv_hisdisposejb_adress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:text="炫彩soho啊啊啊啊啊a啊啊啊啊啊啊啊啊啊啊啊啊啊"
@@ -72,6 +74,7 @@
                         android:textSize="@dimen/content_text_s14" />
 
                     <TextView
+                        android:id="@+id/tv_hisdisposejb_timer"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
@@ -80,6 +83,7 @@
                         android:textSize="@dimen/content_text_s14" />
 
                     <TextView
+                        android:id="@+id/tv_hisdisposejb_cause"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
@@ -104,6 +108,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
+                    android:id="@+id/tv_hisdisposejb_xxadress"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
@@ -123,17 +128,23 @@
                 android:textSize="@dimen/content_text_s14" />
 
             <TextView
+                android:id="@+id/tv_hisdisposejb_reult"
                 android:layout_width="match_parent"
-                android:layout_height="200dp"
+                android:layout_height="wrap_content"
                 android:layout_marginLeft="30dp"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="10dp"
                 android:text="阿打算打算打算打算打算打算打算打算打算打算打算的按时打算打算打算打算打算的按时打算打算打按时打算打算打按时打算打算打"
                 android:textColor="#FFF"
                 android:textSize="@dimen/content_text_s14" />
-
+            <cn.dianedun.view.NoScrollGridview
+                android:id="@+id/gv_hisdetauls"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:gravity="center"
+                android:numColumns="5"
+                android:verticalSpacing="10dp"></cn.dianedun.view.NoScrollGridview>
         </LinearLayout>
     </ScrollView>
-
-
 </LinearLayout>

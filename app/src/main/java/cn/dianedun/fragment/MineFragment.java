@@ -7,9 +7,14 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.thinkcool.circletextimageview.CircleTextImageView;
+
+import java.util.HashMap;
 
 import butterknife.Bind;
 import cn.dianedun.R;
@@ -18,6 +23,11 @@ import cn.dianedun.activity.MessageActivity;
 import cn.dianedun.activity.PersonActivity;
 import cn.dianedun.activity.WeActivity;
 import cn.dianedun.base.BaseTitlFragment;
+import cn.dianedun.bean.MineBean;
+import cn.dianedun.tools.App;
+import cn.dianedun.tools.AppConfig;
+import cn.dianedun.tools.GsonUtil;
+import cn.dianedun.tools.MyAsyncTast;
 
 /**
  * Created by Administrator on 2017/8/3.
@@ -46,7 +56,23 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
     @Bind(R.id.img_mine_head)
     CircleTextImageView img_mine_head;
 
+    @Bind(R.id.tv_mine_phone)
+    TextView tv_mine_phone;
+
+    @Bind(R.id.tv_mine_name)
+    TextView tv_mine_name;
+
+    @Bind(R.id.tv_mine_adrestime)
+    TextView tv_mine_adrestime;
+
+    @Bind(R.id.img_mine_msg)
+    ImageView img_mine_msg;
+
+
     private Intent intent;
+    private MyAsyncTast myAsyncTast;
+    private HashMap<String, String> hashMap;
+    private MineBean bean;
 
     public static MineFragment getInstance() {
         MineFragment fragment = new MineFragment();
@@ -70,8 +96,7 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
         ll_mine_we.setOnClickListener(this);
         ll_mine_jcgx.setOnClickListener(this);
         ll_mine_person.setOnClickListener(this);
-        Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
-        img_mine_head.setImageBitmap(bmp);
+        getData();
     }
 
     @Override
@@ -117,5 +142,20 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
             default:
                 break;
         }
+    }
+
+    public void getData() {
+        hashMap = new HashMap<>();
+        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.GETUSERINFO, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void send(String result) {
+                bean = GsonUtil.parseJsonWithGson(result, MineBean.class);
+                Glide.with(getActivity()).load(bean.getData().getHeadimg()).into(img_mine_head);
+                tv_mine_phone.setText(bean.getData().getMobilephone() + "");
+                tv_mine_name.setText(bean.getData().getUsername() + "");
+                tv_mine_adrestime.setText("");
+            }
+        });
+        myAsyncTast.execute();
     }
 }
