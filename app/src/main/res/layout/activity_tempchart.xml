@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/backall"
     android:orientation="vertical">
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
 
         <LinearLayout
-            android:id="@+id/ll_detection_all"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tv_detection_adress"
+                android:id="@+id/tv_tempchart_adress"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="15dp"
@@ -32,81 +34,63 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:id="@+id/tv_fdetection_gy"
+                    android:id="@+id/tv_tempchart_1"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:background="@mipmap/jc_tab1"
                     android:gravity="center"
-                    android:text="高压侧"
+                    android:text="近一周"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
-                    android:id="@+id/tv_fdetection_dy"
+                    android:id="@+id/tv_detection_2"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:background="@mipmap/jc_tab"
                     android:gravity="center"
-                    android:text="低压侧"
+                    android:text="近两周"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
-                    android:id="@+id/tv_fdetection_wd"
+                    android:id="@+id/tv_detection_wd"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:background="@mipmap/jc_tab"
                     android:gravity="center"
-                    android:text="温度"
+                    android:text="近一月"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
-                    android:id="@+id/tv_fdetection_sd"
+                    android:id="@+id/tv_detection_sd"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
                     android:layout_weight="1"
                     android:background="@mipmap/jc_tab"
                     android:gravity="center"
-                    android:text="湿度/水浸"
+                    android:text="近三月"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
-
             </LinearLayout>
 
-            <android.support.v4.view.ViewPager
-                android:id="@+id/vp_fdetection"
+            <lecho.lib.hellocharts.view.LineChartView
+                android:id="@+id/cash_chart"
                 android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"></android.support.v4.view.ViewPager>
+                android:layout_height="200dp"
+                android:paddingRight="10dp"
+                android:paddingTop="10dp" />
 
         </LinearLayout>
+    </ScrollView>
 
-        <RelativeLayout
-            android:id="@+id/rl_detection"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#80000000"
-            android:visibility="gone">
-
-            <ListView
-                android:id="@+id/lv_detection"
-                android:layout_width="200dp"
-                android:layout_height="220dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:background="@mipmap/jc_item"
-                android:divider="@null"></ListView>
-        </RelativeLayout>
-
-        <com.amap.api.maps2d.MapView
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></com.amap.api.maps2d.MapView>
-</RelativeLayout>
+</LinearLayout>

@@ -102,9 +102,9 @@ public class GaoCeFragment extends Fragment {
             cache.tv_gyc_XAB.setText(bean.getData().getHdevice().get(position).getVab().getVal() + "V");
             cache.tv_gyc_XBC.setText(bean.getData().getHdevice().get(position).getVbc().getVal() + "V");
             cache.tv_gyc_XCA.setText(bean.getData().getHdevice().get(position).getVca().getVal() + "V");
-            cache.tv_gyc_DA.setText(bean.getData().getHdevice().get(position).getIa().getVal() + "V");
-            cache.tv_gyc_DB.setText(bean.getData().getHdevice().get(position).getIb().getVal() + "V");
-            cache.tv_gyc_DC.setText(bean.getData().getHdevice().get(position).getIc().getVal() + "V");
+            cache.tv_gyc_DA.setText(bean.getData().getHdevice().get(position).getIa().getVal() + "A");
+            cache.tv_gyc_DB.setText(bean.getData().getHdevice().get(position).getIb().getVal() + "A");
+            cache.tv_gyc_DC.setText(bean.getData().getHdevice().get(position).getIc().getVal() + "A");
 
             setImag(cache.img_gyc_GA, bean.getData().getHdevice().get(position).getVa().getLevel());
             setImag(cache.img_gyc_GB, bean.getData().getHdevice().get(position).getVb().getLevel());

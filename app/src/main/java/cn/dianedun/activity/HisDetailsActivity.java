@@ -99,6 +99,11 @@ public class HisDetailsActivity extends BaseTitlActivity {
         hashMap.put("orderNum", getIntent().getStringExtra("orderNum"));
         myAsyncTast = new MyAsyncTast(HisDetailsActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+
+            }
+
+            @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, DetailsBean.class);
                 if (bean.getData().getUrgency() == 0) {
@@ -119,6 +124,11 @@ public class HisDetailsActivity extends BaseTitlActivity {
                 if (bean.getData().getAlertOptionsArray().size() > 0) {
                     GirdAdapter adapter = new GirdAdapter();
                     gv_hisdetauls.setAdapter(adapter);
+                    for (int i = 0; i < bean.getData().getAlertOptionsArray().size(); i++) {
+                        if (bean.getData().getAlertOptionsArray().get(i).getOptionType() == 0) {
+                            imgList.add(bean.getData().getAlertOptionsArray().get(i).getContents());
+                        }
+                    }
                 }
             }
         });
@@ -149,7 +159,6 @@ public class HisDetailsActivity extends BaseTitlActivity {
 
             if (bean.getData().getAlertOptionsArray().get(position).getOptionType() == 0) {
                 //图片
-                imgList.add(bean.getData().getAlertOptionsArray().get(position).getContents());
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_fjimg, null);
                 Glide.with(HisDetailsActivity.this).load(bean.getData().getAlertOptionsArray().get(position).getContents()).into(((ImageView) convertView.findViewById(R.id.img_fjimg_img)));
                 convertView.setOnClickListener(new View.OnClickListener() {
@@ -234,7 +243,9 @@ public class HisDetailsActivity extends BaseTitlActivity {
                                 tv_fjyp_time.setText(a + "'" + b + "\"");
                             }
                         }
-                        animationDrawable.stop();
+                        if(animationDrawable!=null){
+                            animationDrawable.stop();
+                        }
                         img_fjyp_yy.setImageResource(R.mipmap.yp_bf);
                         type = 0;
                     }

@@ -38,6 +38,8 @@ import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.HeaderView;
 
+import static android.view.View.GONE;
+
 /**
  * Created by Administrator on 2017/8/3.
  */
@@ -71,6 +73,7 @@ public class HomeFragment extends BaseTitlFragment {
     private List<HashMap<String, String>> itemList;
     private HashMap<String, String> itemHash;
     private int jg;
+
 
     public static HomeFragment getInstance() {
         HomeFragment fragment = new HomeFragment();
@@ -138,54 +141,70 @@ public class HomeFragment extends BaseTitlFragment {
         });
     }
 
+    @Override
+    public void onSupportVisible() {
+        super.onSupportVisible();
+        srl_home.autoRefresh();
+    }
+
     private void initRefreshLayout() {
-        srl_home.setRefreshHeader(new HeaderView(_mActivity));
-        srl_home.setEnableLoadmore(false);
-        srl_home.setLoadmoreFinished(false);
+        srl_home.setLoadmoreFinished(true);
         srl_home.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
-                refreshlayout.setLoadmoreFinished(false);
-                srl_home.finishRefresh(false);
-
+                getData();
             }
         });
     }
 
-    @Override
-    protected void initData() {
+
+    private void getData() {
         myAsyncTast = new MyAsyncTast(getActivity(), new HashMap<String, String>(), AppConfig.SHOWINDEX, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+                showToast(result);
+                ll_home_null.setVisibility(View.VISIBLE);
+                srl_home.finishRefresh();
+            }
+
+            @Override
             public void send(String result) {
+                ll_home_null.setVisibility(View.GONE);
+                srl_home.finishRefresh();
                 bean = GsonUtil.parseJsonWithGson(result, HomeListBean.class);
                 itemList = new ArrayList<>();
-                for (int i = 0; i < bean.getData().getAlarmList().size(); i++) {
-                    itemHash = new HashMap<>();
-                    itemHash.put("id", bean.getData().getAlarmList().get(i).getId() + "");
-                    itemHash.put("createTime", bean.getData().getAlarmList().get(i).getCreateTime() + "");
-                    itemHash.put("status", bean.getData().getAlarmList().get(i).getStatus() + "");
-                    itemHash.put("delayDay", bean.getData().getAlarmList().get(i).getDelayDay() + "");
-                    itemHash.put("type", bean.getData().getAlarmList().get(i).getType() + "");
-                    itemHash.put("alert_details", bean.getData().getAlarmList().get(i).getAlert_details() + "");
-                    itemHash.put("depart_name", bean.getData().getAlarmList().get(i).getDepart_name() + "");
-                    itemHash.put("itemType", "0");
-                    itemList.add(itemHash);
+                if (bean.getData().getAlarmList() != null) {
+                    for (int i = 0; i < bean.getData().getAlarmList().size(); i++) {
+                        itemHash = new HashMap<>();
+                        itemHash.put("id", bean.getData().getAlarmList().get(i).getId() + "");
+                        itemHash.put("createTime", bean.getData().getAlarmList().get(i).getCreateTime() + "");
+                        itemHash.put("status", bean.getData().getAlarmList().get(i).getStatus() + "");
+                        itemHash.put("delayDay", bean.getData().getAlarmList().get(i).getDelayDay() + "");
+                        itemHash.put("type", bean.getData().getAlarmList().get(i).getType() + "");
+                        itemHash.put("alert_details", bean.getData().getAlarmList().get(i).getAlert_details() + "");
+                        itemHash.put("depart_name", bean.getData().getAlarmList().get(i).getDepart_name() + "");
+                        itemHash.put("itemType", "0");
+                        itemList.add(itemHash);
+                    }
                 }
                 jg = itemList.size();
-                for (int i = 0; i < bean.getData().getOrderList().size(); i++) {
-                    itemHash = new HashMap<>();
-                    itemHash.put("id", bean.getData().getOrderList().get(i).getId() + "");
-                    itemHash.put("orderNum", bean.getData().getOrderList().get(i).getOrderNum() + "");
-                    itemHash.put("urgency", bean.getData().getOrderList().get(i).getUrgency() + "");
-                    itemHash.put("applyTime", bean.getData().getOrderList().get(i).getApplyTime() + "");
-                    itemHash.put("address", bean.getData().getOrderList().get(i).getAddress() + "");
-                    itemHash.put("beginTime", bean.getData().getOrderList().get(i).getBeginTime() + "");
-                    itemHash.put("endTime", bean.getData().getOrderList().get(i).getEndTime() + "");
-                    itemHash.put("delayTime", bean.getData().getOrderList().get(i).getDelayTime() + "");
-                    itemHash.put("status", bean.getData().getOrderList().get(i).getStatus() + "");
-                    itemHash.put("applyStatus", bean.getData().getOrderList().get(i).getApplyStatus() + "");
-                    itemHash.put("itemType", "1");
-                    itemList.add(itemHash);
+                if (bean.getData().getOrderList() != null) {
+                    for (int i = 0; i < bean.getData().getOrderList().size(); i++) {
+                        itemHash = new HashMap<>();
+                        itemHash.put("id", bean.getData().getOrderList().get(i).getId() + "");
+                        itemHash.put("orderNum", bean.getData().getOrderList().get(i).getOrderNum() + "");
+                        itemHash.put("urgency", bean.getData().getOrderList().get(i).getUrgency() + "");
+                        itemHash.put("applyTime", bean.getData().getOrderList().get(i).getApplyTime() + "");
+                        itemHash.put("address", bean.getData().getOrderList().get(i).getAddress() + "");
+                        itemHash.put("beginTime", bean.getData().getOrderList().get(i).getBeginTime() + "");
+                        itemHash.put("endTime", bean.getData().getOrderList().get(i).getEndTime() + "");
+                        itemHash.put("delayTime", bean.getData().getOrderList().get(i).getDelayTime() + "");
+                        itemHash.put("status", bean.getData().getOrderList().get(i).getStatus() + "");
+                        itemHash.put("applyStatus", bean.getData().getOrderList().get(i).getApplyStatus() + "");
+                        itemHash.put("delayTime", bean.getData().getOrderList().get(i).getDelayTime() + "");
+                        itemHash.put("itemType", "1");
+                        itemList.add(itemHash);
+                    }
                 }
                 if (itemList.size() > 0) {
                     ll_home_null.setVisibility(View.GONE);
@@ -199,6 +218,11 @@ public class HomeFragment extends BaseTitlFragment {
             }
         });
         myAsyncTast.execute();
+    }
+
+    @Override
+    protected void initData() {
+
     }
 
     @Override
@@ -264,6 +288,14 @@ public class HomeFragment extends BaseTitlFragment {
                     ((ImageView) convertView.findViewById(R.id.item_hoemimg_sta)).setImageResource(R.mipmap.home_jg_yellow);
                 } else {
                     ((ImageView) convertView.findViewById(R.id.item_hoemimg_sta)).setImageResource(R.mipmap.home_jg_red);
+                }
+                int a = Integer.parseInt(itemList.get(position).get("delayTime"));
+
+                if (a > 0) {
+                    ((TextView) convertView.findViewById(R.id.item_hoemtv_yw)).setVisibility(View.VISIBLE);
+                    ((TextView) convertView.findViewById(R.id.item_hoemtv_yw)).setText("已延误    " + itemList.get(position).get("delayTime") + "天");
+                } else {
+                    ((TextView) convertView.findViewById(R.id.item_hoemtv_yw)).setVisibility(GONE);
                 }
 
                 switch (itemList.get(position).get("status")) {

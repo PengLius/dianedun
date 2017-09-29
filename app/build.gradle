@@ -30,12 +30,12 @@ android {
         }
     }
     signingConfigs {
-//        debug {
-//            storeFile file('C:/dianedun.jks')
-//            storePassword "123456"
-//            keyAlias "dianedun"
-//            keyPassword "123456"
-//        }
+        debug {
+            storeFile file('C:/dianedun.jks')
+            storePassword "123456"
+            keyAlias "dianedun"
+            keyPassword "123456"
+        }
     }
     android {
         useLibrary 'org.apache.http.legacy'
@@ -77,6 +77,8 @@ dependencies {
     compile files('libs/EZUIKit_1.2.jar')
     compile 'com.github.nanchen2251:CompressHelper:1.0.5'
     compile 'com.android.support:multidex:1.0.0'
+    compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
+
 //    compile project(':picture_library')
 //    compile project(':ucrop')
 }

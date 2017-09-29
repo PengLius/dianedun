@@ -183,6 +183,11 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                     hashMap.put("id", getIntent().getStringExtra("id"));
                     myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
+                        public void onError(String result) {
+
+                        }
+
+                        @Override
                         public void send(String result) {
                             bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
                             adapter = new IndentCusAdapter();
@@ -324,6 +329,11 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
         hashMap.put("RoomId", RoomId);
         myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+
+            }
+
+            @Override
             public void send(String result) {
                 xBean = GsonUtil.parseJsonWithGson(result, DetactionXBean.class);
                 gaoCeFragment.setData(xBean);
@@ -339,6 +349,12 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
         hashMap = new HashMap<>();
         hashMap.put("id", getIntent().getStringExtra("id"));
         myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+
+            @Override
+            public void onError(String result) {
+
+            }
+
             @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);

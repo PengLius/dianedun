@@ -36,8 +36,8 @@ public class EZUtils {
 
 
     public static void saveCapturePictrue(String filePath, Bitmap bitmap) throws InnerException {
-        if (TextUtils.isEmpty(filePath)){
-            LogUtil.d("EZUtils","saveCapturePictrue file is null");
+        if (TextUtils.isEmpty(filePath)) {
+            LogUtil.d("EZUtils", "saveCapturePictrue file is null");
             return;
         }
         File filepath = new File(filePath);
@@ -81,7 +81,7 @@ public class EZUtils {
     public static Object getPrivateMethodInvoke(Object instance, /*Class destClass,*/ String methodName,
                                                 Class<?>[] parameterClass, Object... args) throws Exception {
         Class<?>[] parameterTypes = null;
-        if(args != null) {
+        if (args != null) {
             parameterTypes = parameterClass;
         }
         Method method = instance.getClass().getDeclaredMethod(methodName, parameterTypes);
@@ -91,6 +91,7 @@ public class EZUtils {
 
     /**
      * 通过ezdevice 得到其中通道信息
+     *
      * @param deviceInfo
      * @return
      */
@@ -106,6 +107,7 @@ public class EZUtils {
 
     /**
      * EZDeviceInfo 得到取流通道和探测器意外的信息对象
+     *
      * @param deviceInfo
      * @return
      */
@@ -123,29 +125,29 @@ public class EZUtils {
 
     /**
      * 此判断方式只能判断获取报警信息列表获取到的报警图片url
+     *
      * @param url
-     * @return  图片url解析得到图片是否加密
+     * @return 图片url解析得到图片是否加密
      */
-    private static boolean isEncrypt(String url){
+    private static boolean isEncrypt(String url) {
         int ret = 0;
         try {
             Uri uri = Uri.parse(url);
             ret = Integer.parseInt(uri.getQueryParameter("isEncrypted"));
-        }catch (Exception e){
-          e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return ret == 1;
     }
 
     /**
-     *  注意：
-     *  图片加载，加密图片需要先得到byte数据，然后调用EZOpenSDK.getInstance().decryptData进行解码，得到能够正常显示的图片信息
-     *  密码需要开发者自己存储，图片信息获取以及缓存策略需要开发者自己设计缓存规则
-     *
-     * */
+     * 注意：
+     * 图片加载，加密图片需要先得到byte数据，然后调用EZOpenSDK.getInstance().decryptData进行解码，得到能够正常显示的图片信息
+     * 密码需要开发者自己存储，图片信息获取以及缓存策略需要开发者自己设计缓存规则
+     */
     public static void loadImage(final Context context, final ImageView imageView, final String url, final String deviceSerial, final VerifyCodeInput.VerifyCodeErrorListener verifyCodeErrorListener) {
         final String verifyCode = DataManager.getInstance().getDeviceSerialVerifyCode(deviceSerial);
-        if (!isEncrypt(url)){
+        if (!isEncrypt(url)) {
             Glide.with(context).load(url)
                     .placeholder(R.drawable.notify_bg)
                     .listener(new RequestListener<String, GlideDrawable>() {
@@ -156,6 +158,7 @@ public class EZUtils {
                             }
                             return false;
                         }
+
                         @Override
                         public boolean onResourceReady(GlideDrawable glideDrawable, String s, Target<GlideDrawable> target, boolean b, boolean b1) {
                             return false;
@@ -163,8 +166,8 @@ public class EZUtils {
                     })
                     .error(R.drawable.event_list_fail_pic)
                     .into(imageView);
-        }else{
-            if (TextUtils.isEmpty(verifyCode)){
+        } else {
+            if (TextUtils.isEmpty(verifyCode)) {
                 imageView.setImageResource(R.drawable.alarm_encrypt_image_mid);
                 if (verifyCodeErrorListener != null) {
                     verifyCodeErrorListener.verifyCodeError();
@@ -206,30 +209,31 @@ public class EZUtils {
                             output.flush();
                             output.close();
                             byte[] src = output.toByteArray();
-                            if (src == null || src.length <= 0){
-                                LogUtil.d("EZUTils","图片加载错误！");
+                            if (src == null || src.length <= 0) {
+                                LogUtil.d("EZUTils", "图片加载错误！");
                                 return null;
                             }
-                            if (!isEncrypt(url)){
+                            if (!isEncrypt(url)) {
                                 desBitmap = BitmapFactory.decodeByteArray(src, 0, src.length);
-                            }else{
-                            /*************** 开发者需要调用此接口解密 ****************/
-                            byte[] data1 = App.getOpenSDK().decryptData(output.toByteArray(), verifyCode);
-                                if (data1 == null || data1.length <= 0){
-                                    LogUtil.d("EZUTils","verifyCodeError！");
+                            } else {
+                                /*************** 开发者需要调用此接口解密 ****************/
+                                byte[] data1 = App.getOpenSDK().decryptData(output.toByteArray(), verifyCode);
+                                if (data1 == null || data1.length <= 0) {
+                                    LogUtil.d("EZUTils", "verifyCodeError！");
                                     /*************** 验证码错误 ,此处回调是在子线程中，处理UI需调回到主线程****************/
                                     if (verifyCodeErrorListener != null) {
                                         verifyCodeErrorListener.verifyCodeError();
                                     }
-                                }else {
+                                } else {
                                     desBitmap = BitmapFactory.decodeByteArray(data1, 0, data1.length);
                                 }
                             }
-                            if (desBitmap != null){
-                                return new BitmapResource(desBitmap,DataManager.getInstance().getBitmapPool(context));
+                            if (desBitmap != null) {
+                                return new BitmapResource(desBitmap, DataManager.getInstance().getBitmapPool(context));
                             }
                             return null;
                         }
+
                         @Override
                         public String getId() {
                             return url;

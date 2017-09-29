@@ -11,17 +11,19 @@
         android:layout_marginTop="30dp"
         android:gravity="center"
         android:orientation="vertical">
-        <com.thinkcool.circletextimageview.CircleTextImageView
-            xmlns:app="http://schemas.android.com/apk/res-auto"
+
+        <com.thinkcool.circletextimageview.CircleTextImageView xmlns:app="http://schemas.android.com/apk/res-auto"
             android:id="@+id/img_person_head"
             android:layout_width="100dp"
             android:layout_height="100dp"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
-            app:citv_border_color="#1761A7"
             android:src="@mipmap/ic_launcher"
+            app:citv_border_color="#1761A7"
             app:citv_border_width="2dp" />
     </LinearLayout>
+
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -34,123 +36,108 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="手机号"
+            android:text="用户名"
             android:textColor="#FFF"
             android:textSize="@dimen/content_text_s14" />
 
         <TextView
+            android:id="@+id/tv_person_nc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:maxLength="12"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/content_text_s14" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="5dp"
+        android:background="#25684A" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="真实姓名"
+            android:textColor="#FFF"
+            android:textSize="@dimen/content_text_s14" />
+
+        <TextView
+            android:id="@+id/tv_person_zsxm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:gravity="right"
+            android:maxLength="12"
+            android:textColor="#FFFFFF"
+            android:textSize="@dimen/content_text_s14" />
+
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="5dp"
+        android:background="#25684A" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="20dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="手机号"
+            android:textColor="#FFF"
+            android:textSize="@dimen/content_text_s14" />
+
+        <EditText
+            android:id="@+id/ed_person_phone"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:layout_weight="1"
+            android:background="@null"
             android:gravity="right"
+            android:inputType="number"
+            android:maxLines="11"
             android:text="15933227792"
             android:textColor="#FFF"
+            android:textColorHint="#FFF"
             android:textSize="@dimen/content_text_s14" />
 
         <ImageView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/login_clear"
-            android:visibility="invisible"
-            />
+            android:visibility="invisible" />
     </LinearLayout>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="5dp"
-        android:background="#25684A" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="昵称"
-            android:textColor="#FFF"
-            android:textSize="@dimen/content_text_s14" />
-
-        <EditText
-            android:id="@+id/ed_person_nc"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:gravity="right"
-            android:hint="请输入您的昵称"
-            android:maxLength="12"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#AAC2EB"
-            android:textCursorDrawable="@null"
-            android:textSize="@dimen/content_text_s14" />
-
-        <ImageView
-            android:id="@+id/img_person_clear"
-            android:layout_width="wrap_content"
-            android:visibility="invisible"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/login_clear" />
-    </LinearLayout>
-
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="5dp"
-        android:background="#25684A" />
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:layout_marginTop="20dp"
-        android:gravity="center_vertical"
-        android:orientation="horizontal">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="联系人"
-            android:textColor="#FFF"
-            android:textSize="@dimen/content_text_s14" />
-
-        <EditText
-            android:id="@+id/ed_person_lxr"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="10dp"
-            android:layout_weight="1"
-            android:background="@null"
-            android:gravity="right"
-            android:hint="请输入您的姓名或称谓"
-            android:maxLength="12"
-            android:textColor="#FFFFFF"
-            android:textColorHint="#AAC2EB"
-            android:textCursorDrawable="@null"
-            android:textSize="@dimen/content_text_s14" />
-
-        <ImageView
-            android:visibility="invisible"
-            android:id="@+id/img_person_clear1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@mipmap/login_clear" />
-    </LinearLayout>
 
     <View
         android:layout_width="match_parent"
@@ -161,6 +148,7 @@
         android:background="#25684A" />
 
     <RelativeLayout
+        android:id="@+id/rl_person_ok"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="10dp">

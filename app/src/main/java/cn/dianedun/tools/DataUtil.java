@@ -1,5 +1,6 @@
 package cn.dianedun.tools;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -12,7 +13,6 @@ public class DataUtil {
      * 时间戳转换成日期格式字符串
      *
      * @param seconds   精确到秒的字符串
-     * @param formatStr
      * @return
      */
     public static String timeStamp2Date(String seconds, String format) {
@@ -29,7 +29,6 @@ public class DataUtil {
     /**
      * 日期格式字符串转换成时间戳
      *
-     * @param date   字符串日期
      * @param format 如：yyyy-MM-dd HH:mm:ss
      * @return
      */
@@ -53,6 +52,14 @@ public class DataUtil {
         String t = String.valueOf(time / 1000);
         return t;
     }
+
+    public static Date getDate(String timer) {
+        long times = Long.parseLong(timer);
+        Date date = new Date(times);
+        return date;
+    }
+
+
     public static void main(String[] args) {
         String timeStamp = timeStamp();
         System.out.println("timeStamp=" + timeStamp); //运行输出:timeStamp=1470278082

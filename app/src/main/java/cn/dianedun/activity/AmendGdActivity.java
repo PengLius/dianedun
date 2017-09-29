@@ -11,6 +11,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -117,11 +119,20 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     @Bind(R.id.tv_amendgd_lytime)
     TextView tv_amendgd_lytime;
 
-    @Bind(R.id.ed_amendgd_xxadress)
-    EditText ed_amendgd_xxadress;
+    @Bind(R.id.tv_amendgd_xxadress)
+    TextView tv_amendgd_xxadress;
 
     @Bind(R.id.ed_amendgd_sqyy)
     EditText ed_amendgd_sqyy;
+
+    @Bind(R.id.tv_amendgd_numb)
+    TextView tv_amendgd_numb;
+
+    @Bind(R.id.ll_amendgd)
+    LinearLayout ll_amendgd;
+
+    @Bind(R.id.tv_amendgd_gdh)
+    TextView tv_amendgd_gdh;
 
 
     private String beginTime, endTime;
@@ -150,7 +161,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     private ImageView img_luyin_uploading, img_yuyin_close, img_luyin;
     private TextView tv_luyin_timer;
     private MediaRecorder recorder;
-    private String fileName = "/sdcard/myHead/audiorecordtest.mp3";
+    private String fileName = "/sdcard/audiorecordtest.mp3";
     private CountTimer countTimer;
     private boolean offs = false;
     private int type = 0;
@@ -162,10 +173,11 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     private Dialog diaglog;
     private JbUpBean updataBean;
     private ToJsonBean toJsonBean;
-    private Date startTimer;
+    private Date startTimer, endTimer;
     private HashMap<String, String> hashMap;
     private DetailsBean bean;
     private String handlePersion = "";
+    private String xxAdress = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -175,6 +187,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
         setTitleBack(R.mipmap.home_backg_rightnull);
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
+        ll_amendgd.setVisibility(View.VISIBLE);
 
         LayoutInflater inflaters = LayoutInflater.from(this);
         view = inflaters.inflate(R.layout.popupwindow_sqr, null);
@@ -210,6 +223,25 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
         img_yuyin_close.setOnClickListener(this);
 
         nameList = new ArrayList<>();
+        ed_amendgd_sqyy.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 500) {
+//                    showToast("字数不超过500字");
+                } else {
+                    tv_amendgd_numb.setText(s.length() + "/500");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         invitData();
 
@@ -260,6 +292,11 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
         hashMap.put("orderNum", getIntent().getStringExtra("orderNum"));
         myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+
+            }
+
+            @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, DetailsBean.class);
                 if (bean.getData().getUrgency() == 0) {
@@ -273,16 +310,20 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 }
                 String beginTime = bean.getData().getBeginTime() / 1000 + "";
                 String endTime = bean.getData().getEndTime() / 1000 + "";
+                startTimer = DataUtil.getDate(beginTime);
+                endTimer = DataUtil.getDate(endTime);
                 beginTime = DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm");
                 endTime = DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm");
+                tv_amendgd_gdh.setText(bean.getData().getOrderNum() + "");
                 tv_amendgd_startime.setText(beginTime);
                 tv_amendgd_endtime.setText(endTime);
                 departId = bean.getData().getDepartId();
                 tv_amendgd_adress.setText(bean.getData().getDepartName());
-                ed_amendgd_xxadress.setText(bean.getData().getAddress());
                 handlePersion = bean.getData().getHandlePersion();
                 tv_amendgd_name.setText(handlePersion);
                 ed_amendgd_sqyy.setText(bean.getData().getCause());
+                xxAdress = bean.getData().getAddress() + "";
+                tv_amendgd_xxadress.setText(xxAdress);
                 if (bean.getData().getAlertOptionsArray().size() > 0) {
                     rl_amendgd_ly.setVisibility(View.VISIBLE);
                     player = MediaPlayer.create(getApplicationContext(), Uri.parse(bean.getData().getAlertOptionsArray().get(0).getContents()));
@@ -351,7 +392,9 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                                     tv_amendgd_lytime.setText(a + "'" + b + "\"");
                                 }
                             }
-                            animationDrawable.stop();
+                            if(animationDrawable!=null){
+                                animationDrawable.stop();
+                            }
                             img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
                             playTyp = 0;
                         }
@@ -402,6 +445,11 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     hashMap.put("departId", departId);
                     myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.GETUSERBYDEPARTID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
+                        public void onError(String result) {
+
+                        }
+
+                        @Override
                         public void send(String result) {
                             showDialog();
                             applyPresonBean = GsonUtil.parseJsonWithGson(result, ApplyPresonBean.class);
@@ -437,6 +485,11 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 Log.e("token", App.getInstance().getToken());
                 HashMap hashMaps = new HashMap();
                 myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMaps, AppConfig.GETDEPARTBYUSER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                    @Override
+                    public void onError(String result) {
+
+                    }
+
                     @Override
                     public void send(String result) {
                         showDialog2();
@@ -479,9 +532,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 if (handlePersion != null) {
                     hashMap.put("handlePersion", handlePersion);
                 }
-                if (ed_amendgd_xxadress.getText() != null) {
-                    hashMap.put("address", ed_amendgd_xxadress.getText().toString());
-                }
+                hashMap.put("address", xxAdress);
                 if (beginTime != null) {
                     hashMap.put("beginTime", beginTime + ":00");
                 }
@@ -495,6 +546,11 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     hashMap.put("jsonStr", obj2);
                 }
                 myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                    @Override
+                    public void onError(String result) {
+
+                    }
+
                     @Override
                     public void send(String result) {
                         ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
@@ -583,15 +639,20 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     @Override
     public void onDateSet(Date date, int type) {
         if (type == STARTTIME) {
-            tv_amendgd_startime.setText(mFormatter.format(date) + "");
-            beginTime = mFormatter.format(date) + "";
-            startTimer = date;
+            if (endTimer.getTime() < date.getTime()) {
+                showToast("开始时间不能大于结束时间");
+            } else {
+                tv_amendgd_startime.setText(mFormatter.format(date) + "");
+                beginTime = mFormatter.format(date) + "";
+                startTimer = date;
+            }
         } else if (type == ENDTTIME) {
             if (startTimer.getTime() > date.getTime()) {
                 showToast("开始时间不能大于结束时间");
             } else {
                 tv_amendgd_endtime.setText(mFormatter.format(date) + "");
                 endTime = mFormatter.format(date) + "";
+                endTimer = date;
             }
         }
     }
@@ -781,6 +842,8 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 public void onClick(View v) {
                     tv_amendgd_adress.setText(applyBean.getData().getResult().get(position).getDepartname());
                     departId = applyBean.getData().getResult().get(position).getId();
+                    xxAdress = applyBean.getData().getResult().get(position).getAddress();
+                    tv_amendgd_adress.setText(xxAdress);
                     pop2.dismiss();
                     nameList = new ArrayList<String>();
                     tv_amendgd_name.setText("");
@@ -896,7 +959,9 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                                         tv_amendgd_lytime.setText(a + "'" + b + "\"");
                                     }
                                 }
-                                animationDrawable.stop();
+                                if(animationDrawable!=null){
+                                    animationDrawable.stop();
+                                }
                                 img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
                                 playTyp = 0;
                             }

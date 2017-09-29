@@ -188,6 +188,12 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
                     hashMap.put("password", ed_forget_psw.getText().toString());
                     hashMap.put("code", ed_forget_yzm.getText().toString());
                     MyAsyncTast myAsyncTast = new MyAsyncTast(ForgetPSWActivity.this, hashMap, AppConfig.RESETPWD, new MyAsyncTast.Callback() {
+
+                        @Override
+                        public void onError(String result) {
+                            
+                        }
+
                         @Override
                         public void send(String result) {
                             try {

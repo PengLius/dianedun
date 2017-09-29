@@ -17,12 +17,15 @@ import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.nanchen.compresshelper.CompressHelper;
 import com.thinkcool.circletextimageview.CircleTextImageView;
 import com.yanzhenjie.permission.AndPermission;
 
@@ -34,11 +37,17 @@ import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
+import cn.dianedun.bean.ImagBean;
+import cn.dianedun.tools.App;
+import cn.dianedun.tools.AppConfig;
+import cn.dianedun.tools.GsonUtil;
+import cn.dianedun.tools.MyAsyncTast;
 
 /**
  * Created by Administrator on 2017/8/5.
@@ -49,22 +58,23 @@ public class PersonActivity extends BaseTitlActivity {
     @Bind(R.id.img_person_head)
     CircleTextImageView img_person_head;
 
-    @Bind(R.id.ed_person_nc)
-    EditText ed_person_nc;
 
-    @Bind(R.id.ed_person_lxr)
-    EditText ed_person_lxr;
+    @Bind(R.id.ed_person_phone)
+    TextView ed_person_phone;
 
-    @Bind(R.id.img_person_clear)
-    ImageView img_person_clear;
+    @Bind(R.id.tv_person_nc)
+    TextView tv_person_nc;
 
-    @Bind(R.id.img_person_clear1)
-    ImageView img_person_clear1;
+    @Bind(R.id.tv_person_zsxm)
+    TextView tv_person_zsxm;
 
+    @Bind(R.id.rl_person_ok)
+    RelativeLayout rl_person_ok;
 
     private Dialog diaglog;
     private List<LocalMedia> selectList;
-    private String imgUrl;
+    private String imgUrl, phone, imgUri, realname, username, imgUrs;
+    private ImagBean imgBean;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +84,7 @@ public class PersonActivity extends BaseTitlActivity {
         setTitleBack(R.mipmap.home_backg_rightnull);
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
+        imgUrs = "";
         img_person_head.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -83,41 +94,40 @@ public class PersonActivity extends BaseTitlActivity {
         Bitmap bmp = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher);
         img_person_head.setImageBitmap(bmp);
 
-        ed_person_nc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    img_person_clear.setVisibility(View.VISIBLE);
-                } else {
-                    // 此处为失去焦点时的处理内容
-                    img_person_clear.setVisibility(View.INVISIBLE);
-                }
+        imgUri = getIntent().getStringExtra("imagUrl");
+        phone = getIntent().getStringExtra("phone");
+        realname = getIntent().getStringExtra("realname");
+        username = getIntent().getStringExtra("username");
+        tv_person_nc.setText(username);
+        tv_person_zsxm.setText(realname);
+        ed_person_phone.setText(phone);
+        Glide.with(PersonActivity.this).load(imgUri).into(img_person_head);
+        ed_person_phone.setHint(phone);
+        if (ed_person_phone.getText().toString().length() < 11) {
+            showToast("请输入正确的手机号");
+        } else {
+            rl_person_ok.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    HashMap hashMap = new HashMap();
+                    hashMap.put("headImg", imgUrs);
+                    hashMap.put("phone", ed_person_phone.getText().toString());
+                    MyAsyncTast myAsyncTast = new MyAsyncTast(PersonActivity.this, hashMap, AppConfig.MONDIFYUSERHEADIMG, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                        @Override
+                        public void onError(String result) {
+                            
+                        }
 
-            }
-        });
-        ed_person_lxr.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    img_person_clear1.setVisibility(View.VISIBLE);
-                } else {
-                    // 此处为失去焦点时的处理内容
-                    img_person_clear1.setVisibility(View.INVISIBLE);
+                        @Override
+                        public void send(String result) {
+                            showToast("完成");
+                            finish();
+                        }
+                    });
+                    myAsyncTast.execute();
                 }
-            }
-        });
-        img_person_clear1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ed_person_lxr.setText("");
-            }
-        });
-        img_person_clear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                ed_person_nc.setText("");
-            }
-        });
+            });
+        }
 
     }
 
@@ -138,7 +148,6 @@ public class PersonActivity extends BaseTitlActivity {
                                 .showCropFrame(false)
                                 .circleDimmedLayer(true)
                                 .forResult(PictureConfig.CHOOSE_REQUEST);
-
 
                     } else {
                         // 申请权限。
@@ -174,8 +183,9 @@ public class PersonActivity extends BaseTitlActivity {
                 case PictureConfig.CHOOSE_REQUEST:
                     // 图片选择结果回调
                     selectList = PictureSelector.obtainMultipleResult(data);
-                    showToast(selectList.get(0).getCutPath());
                     imgUrl = selectList.get(0).getCutPath();
+                    MyAsync myAsync = new MyAsync();
+                    myAsync.execute();
                     break;
             }
         }
@@ -192,25 +202,26 @@ public class PersonActivity extends BaseTitlActivity {
 
         @Override
         protected String doInBackground(Object... params) {
-            RequestParams param = new RequestParams("");
-            param.addBodyParameter("headImg", new File(imgUrl));
+            RequestParams param = new RequestParams(AppConfig.UPLOADFILE);
+            param.addBodyParameter("file", new File(imgUrl));
+            param.addBodyParameter("optionType", "0");
+            param.addHeader("token", App.getInstance().getToken());
             x.http().post(param,
                     new Callback.CommonCallback<String>() {
                         @Override
                         public void onSuccess(String result) {
                             // TODO Auto-generated method stub
-                            try {
-                                JSONObject jsonObject = new JSONObject(result);
-
-                            } catch (JSONException e) {
-                                e.printStackTrace();
-                            }
-
+                            diaglog.dismiss();
+                            showToast("上传成功");
+                            imgBean = GsonUtil.parseJsonWithGson(result, ImagBean.class);
+                            Glide.with(PersonActivity.this).load(imgBean.getData().get(0)).into(img_person_head);
+                            imgUrs = imgBean.getData().get(0);
                         }
 
                         @Override
                         public void onError(Throwable ex, boolean isOnCallback) {
                             showToast("上传失败");
+                            diaglog.dismiss();
                         }
 
                         @Override

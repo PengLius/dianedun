@@ -5,7 +5,7 @@ package cn.dianedun.tools;
  */
 
 public class AppConfig {
-//    public static final String PORTS = "http://192.168.0.11:8081";//线下
+    //    public static final String PORTS = "http://192.168.0.11:8081";//线下
 //    public static final String PORTS = "http://192.168.0.11:8080";//线下2
     public static final String PORTS = "http://47.92.155.108:8081";//线上
 
@@ -31,6 +31,11 @@ public class AppConfig {
     public static final String JBUPLOADFILE = PORTS + "/alarm/upLoadFile";//  附件上传警报
     public static final String FEEDBACKHANDLEORDER = PORTS + "/handleorder/feedbackHandleOrder";//工单反馈
     public static final String GETUSERINFO = PORTS + "/user/getUserInfo";//个人资料
+    public static final String LOGINOUT = PORTS + "/user/logout";// 退出登录
+    public static final String MONDIFYUSERHEADIMG = PORTS + "/user/modifyUserHeadImg";// 修改头像和手机号
+    public static final String MODIFYMESSAGESTATSALL = PORTS + "/user/modifyMessageStatsAll";// 更新所有消息状态为已读
+    public static final String MODIFYMESSAGESTATS = PORTS + "/user/modifyMessageStats";//根据message id 修改消息读取状态
+    public static final String ANDROIDVERSION = PORTS + "/index/androidVersion";//安卓版本信息
 
 
     public static final String WEB_CARMERA_PORTS = "http://47.92.155.108:8082";//线上WEB

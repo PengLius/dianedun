@@ -25,6 +25,9 @@ import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import org.w3c.dom.Text;
 
@@ -95,6 +98,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     private HumidityFragment humidityFragment;
     private DetactionXBean xBean;
     private MapBean mapBean;
+    private String pdsId;
 
     public static DetectionFragment getInstance() {
         DetectionFragment fragment = new DetectionFragment();
@@ -110,56 +114,6 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Override
     protected void initView(View contentView) {
         super.initView(contentView);
-        setTvTitleText("监测");
-        if (App.getInstance().getIsAdmin().equals("2")) {
-            mapView.setVisibility(View.VISIBLE);
-            ll_detection_all.setVisibility(View.GONE);
-            mapView.onCreate(savedInstanceState);
-            if (aMap == null) {
-                aMap = mapView.getMap();
-            }
-            setImgRightVisibility(View.GONE);
-            setTitleBack(R.mipmap.home_backg_null);
-            initMap();
-        } else {
-            mapView.setVisibility(View.GONE);
-            ll_detection_all.setVisibility(View.VISIBLE);
-            setTitleBack(R.mipmap.home_backg_leftnull);
-            setImgRightVisibility(View.VISIBLE);
-            setImgRight(R.mipmap.jc_topright);
-            setImgRightOnClick(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (rightState) {
-                        rl_detection.setVisibility(View.GONE);
-                        rightState = false;
-                    } else {
-                        hashMap = new HashMap<>();
-                        hashMap.put("id", "");
-                        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-                            @Override
-                            public void send(String result) {
-                                bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
-                                adapter = new IndentCusAdapter();
-                                lv_detection.setAdapter(adapter);
-                                rl_detection.setVisibility(View.VISIBLE);
-                                rightState = true;
-                            }
-                        });
-                        myAsyncTast.execute();
-                    }
-
-                }
-            });
-            rl_detection.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    rl_detection.setVisibility(View.GONE);
-                    rightState = false;
-                }
-            });
-            initListV();
-        }
 
     }
 
@@ -168,6 +122,11 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         aMap.moveCamera(mCameraUpdate);
         markList = new ArrayList<>();
         myAsyncTast = new MyAsyncTast(getActivity(), new HashMap<String, String>(), AppConfig.INDEX, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void onError(String result) {
+                showToast(result);
+            }
+
             @Override
             public void send(String result) {
                 mapBean = GsonUtil.parseJsonWithGson(result, MapBean.class);
@@ -211,9 +170,15 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         hashMap.put("id", "");
         myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+
+            }
+
+            @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
-                getPDSAll(bean.getData().getSwitchRoomList().get(0).getId());
+                pdsId = bean.getData().getSwitchRoomList().get(0).getId();
+                getPDSAll(pdsId);
                 tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
             }
         });
@@ -229,6 +194,11 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
         myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void onError(String result) {
+
+            }
+
             @Override
             public void send(String result) {
                 xBean = GsonUtil.parseJsonWithGson(result, DetactionXBean.class);
@@ -444,7 +414,8 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getPDSAll(bean.getData().getSwitchRoomList().get(position).getId() + "");
+                    pdsId = bean.getData().getSwitchRoomList().get(position).getId() + "";
+                    getPDSAll(pdsId);
                     tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
@@ -456,5 +427,66 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
 
     class Cache {
         TextView tv_item_detecticon;
+    }
+
+    @Override
+    public void onSupportVisible() {
+        super.onSupportVisible();
+        if (App.getInstance().getIsAdmin().equals("2")) {
+            setTvTitleText("概览");
+            mapView.setVisibility(View.VISIBLE);
+            ll_detection_all.setVisibility(View.GONE);
+            mapView.onCreate(savedInstanceState);
+            if (aMap == null) {
+                aMap = mapView.getMap();
+            }
+            setImgRightVisibility(View.GONE);
+            setTitleBack(R.mipmap.home_backg_null);
+            initMap();
+        } else {
+            setTvTitleText("监测");
+            mapView.setVisibility(View.GONE);
+            ll_detection_all.setVisibility(View.VISIBLE);
+            setTitleBack(R.mipmap.home_backg_leftnull);
+            setImgRightVisibility(View.VISIBLE);
+            setImgRight(R.mipmap.jc_topright);
+            setImgRightOnClick(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (rightState) {
+                        rl_detection.setVisibility(View.GONE);
+                        rightState = false;
+                    } else {
+                        hashMap = new HashMap<>();
+                        hashMap.put("id", "");
+                        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                            @Override
+                            public void onError(String result) {
+
+                            }
+
+                            @Override
+                            public void send(String result) {
+                                bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
+                                adapter = new IndentCusAdapter();
+                                lv_detection.setAdapter(adapter);
+                                rl_detection.setVisibility(View.VISIBLE);
+                                rightState = true;
+                            }
+                        });
+                        myAsyncTast.execute();
+                    }
+
+                }
+            });
+            rl_detection.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    rl_detection.setVisibility(View.GONE);
+                    rightState = false;
+                }
+            });
+            initListV();
+        }
     }
 }

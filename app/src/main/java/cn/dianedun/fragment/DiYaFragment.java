@@ -101,9 +101,9 @@ public class DiYaFragment extends Fragment {
             cache.tv_gyc_XAB.setText(bean.getData().getLdevice().get(position).getVab().getVal() + "V");
             cache.tv_gyc_XBC.setText(bean.getData().getLdevice().get(position).getVbc().getVal() + "V");
             cache.tv_gyc_XCA.setText(bean.getData().getLdevice().get(position).getVca().getVal() + "V");
-            cache.tv_gyc_DA.setText(bean.getData().getLdevice().get(position).getIa().getVal() + "V");
-            cache.tv_gyc_DB.setText(bean.getData().getLdevice().get(position).getIb().getVal() + "V");
-            cache.tv_gyc_DC.setText(bean.getData().getLdevice().get(position).getIc().getVal() + "V");
+            cache.tv_gyc_DA.setText(bean.getData().getLdevice().get(position).getIa().getVal() + "A");
+            cache.tv_gyc_DB.setText(bean.getData().getLdevice().get(position).getIb().getVal() + "A");
+            cache.tv_gyc_DC.setText(bean.getData().getLdevice().get(position).getIc().getVal() + "A");
 
             setImag(cache.img_gyc_GA, bean.getData().getLdevice().get(position).getVa().getLevel());
             setImag(cache.img_gyc_GB, bean.getData().getLdevice().get(position).getVb().getLevel());

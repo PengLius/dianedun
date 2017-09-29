@@ -12,6 +12,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -102,8 +104,8 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     @Bind(R.id.rl_amendgd_tj)
     RelativeLayout rl_amendgd_tj;
 
-    @Bind(R.id.ed_amendgd_xxadress)
-    EditText ed_amendgd_xxadress;
+    @Bind(R.id.tv_amendgd_xxadress)
+    TextView tv_amendgd_xxadress;
 
     @Bind(R.id.ed_amendgd_sqyy)
     EditText ed_amendgd_sqyy;
@@ -122,6 +124,9 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
 
     @Bind(R.id.img_amendgd_lyic)
     ImageView img_amendgd_lyic;
+
+    @Bind(R.id.tv_amendgd_numb)
+    TextView tv_amendgd_numb;
 
 
     private GridView gv_amendgd;
@@ -147,7 +152,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private int type = 0;
     private JbUpBean updataBean;
     private RelativeLayout rl_luyin_type;
-    private String fileName = "/sdcard/myHead/audiorecordtest.mp3";
+    private String fileName = "/sdcard/audiorecordtest.mp3";
     private Dialog diaglog;
     private ImageView img_luyin_uploading, img_yuyin_close, img_luyin;
     private MediaPlayer player;
@@ -162,6 +167,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private int playTyp = 0;
     private AnimationDrawable animationDrawable;
     private Date startTimer;
+    private String xxAdress = "";
 
 
     @Override
@@ -239,6 +245,26 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
         };
 
         nameList = new ArrayList<>();
+        ed_amendgd_sqyy.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 500) {
+//                    showToast("字数不超过500字");
+                } else {
+                    tv_amendgd_numb.setText(s.length() + "/500");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
     }
 
@@ -291,6 +317,11 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                     hashMap.put("departId", departId);
                     myAsyncTast = new MyAsyncTast(ApplyGdActivity.this, hashMap, AppConfig.GETUSERBYDEPARTID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
+                        public void onError(String result) {
+
+                        }
+
+                        @Override
                         public void send(String result) {
                             showDialog();
                             applyPresonBean = GsonUtil.parseJsonWithGson(result, ApplyPresonBean.class);
@@ -330,6 +361,11 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 Log.e("token", App.getInstance().getToken());
                 HashMap hashMaps = new HashMap();
                 myAsyncTast = new MyAsyncTast(ApplyGdActivity.this, hashMaps, AppConfig.GETDEPARTBYUSER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                    @Override
+                    public void onError(String result) {
+
+                    }
+
                     @Override
                     public void send(String result) {
                         showDialog2();
@@ -372,9 +408,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 if (handlePersion != null) {
                     hashMap.put("handlePersion", handlePersion);
                 }
-                if (ed_amendgd_xxadress.getText() != null) {
-                    hashMap.put("address", ed_amendgd_xxadress.getText().toString());
-                }
+                hashMap.put("address", xxAdress);
                 if (beginTime != null) {
                     hashMap.put("beginTime", beginTime + ":00");
                 }
@@ -388,6 +422,12 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                     hashMap.put("jsonStr", obj2);
                 }
                 myAsyncTast = new MyAsyncTast(ApplyGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+
+                    @Override
+                    public void onError(String result) {
+
+                    }
+
                     @Override
                     public void send(String result) {
                         ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
@@ -673,6 +713,8 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 public void onClick(View v) {
                     tv_amendgd_adress.setText(applyBean.getData().getResult().get(position).getDepartname());
                     departId = applyBean.getData().getResult().get(position).getId();
+                    xxAdress = applyBean.getData().getResult().get(position).getAddress();
+                    tv_amendgd_xxadress.setText(xxAdress);
                     pop2.dismiss();
                     nameList = new ArrayList<String>();
                     tv_amendgd_name.setText("");
@@ -790,7 +832,11 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                                                 tv_amendgd_lytime.setText(a + "'" + b + "\"");
                                             }
                                         }
-                                        animationDrawable.stop();
+                                        if(animationDrawable!=null){
+                                            if (animationDrawable.isRunning()) {
+                                                animationDrawable.stop();
+                                            }
+                                        }
                                         img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
                                         playTyp = 0;
                                     }

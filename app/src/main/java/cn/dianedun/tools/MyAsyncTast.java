@@ -20,6 +20,7 @@ import android.widget.Toast;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.xutils.common.Callback;
+import org.xutils.ex.HttpException;
 import org.xutils.http.RequestParams;
 import org.xutils.x;
 
@@ -123,7 +124,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                 if (loding) {
                     diaglog.dismiss();
                 }
-                Log.e("ex", ex.getMessage());
+                callback.onError("网络错误，请检查网路是否通畅");
             }
 
             @Override
@@ -140,7 +141,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
         return result;
     }
 
-    public static Dialog createLoadingDialog(Context context, String msg) {
+    private static Dialog createLoadingDialog(Context context, String msg) {
 
         LayoutInflater inflater = LayoutInflater.from(context);
         View v = inflater.inflate(R.layout.dialog_loadings, null);// 得到加载view
@@ -169,5 +170,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
 
     public interface Callback {
         void send(String result);
+
+        void onError(String result);
     }
 }

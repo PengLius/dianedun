@@ -79,7 +79,6 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
         LayoutInflater localInflater = LayoutInflater.from(getContext()).cloneInContext(contextThemeWrapper);
         View view = localInflater.inflate(R.layout.view_date_time_picker_dialog, null);
 
-
         setView(view);
 
         timePicker = new TimePicker(getContext());
@@ -241,7 +240,7 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
         calendar.set(Calendar.YEAR, datePicker.getYear());
         calendar.set(Calendar.MONTH, datePicker.getMonth());
         calendar.set(Calendar.DAY_OF_MONTH, datePicker.getDayOfMonth());
-        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR));
+        calendar.set(Calendar.HOUR_OF_DAY, calendar.get(Calendar.HOUR_OF_DAY));
         calendar.set(Calendar.MINUTE, calendar.get(Calendar.MINUTE));
         dateButton.setText(simpleDateFormat.format(calendar.getTime()));
 //        Log.i("testss", simpleDateFormat.format(calendar.getTime()));

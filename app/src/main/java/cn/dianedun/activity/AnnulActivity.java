@@ -10,6 +10,8 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -38,6 +40,7 @@ import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.bean.DetailsBean;
+import cn.dianedun.bean.JbUpBean;
 import cn.dianedun.bean.ToJsonBean;
 import cn.dianedun.bean.UpdataBean;
 import cn.dianedun.tools.App;
@@ -102,6 +105,9 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
     @Bind(R.id.img_annul_del)
     ImageView img_annul_del;
 
+    @Bind(R.id.tv_annul_num)
+    TextView tv_annul_num;
+
 
     private RelativeLayout rl_luyin_type;
     private ImageView img_luyin_uploading, img_yuyin_close, img_luyin;
@@ -110,14 +116,14 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
     private HashMap<String, String> hashMap;
     private DetailsBean bean;
     private MediaRecorder recorder;
-    private String fileName = "/sdcard/myHead/audiorecordtest.mp3";
+    private String fileName = "/sdcard/audiorecordtest.mp3";
     private View view3;
     private PopupWindow pop3;
     private boolean offs = false;
     private CountTimer countTimer;
     private int type = 0;
     private Dialog diaglog;
-    private UpdataBean updataBean;
+    private JbUpBean updataBean;
     private MediaPlayer player;
     private ToJsonBean toJsonBean;
     private String obj2 = "";
@@ -150,6 +156,26 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
         img_yuyin_close.setOnClickListener(this);
 
         initData();
+        ed_annul_cause.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 500) {
+//                    showToast("字数不超过500字");
+                } else {
+                    tv_annul_num.setText(s.length() + "/500");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
     }
 
     private void initData() {
@@ -157,6 +183,11 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
         hashMap = new HashMap<>();
         hashMap.put("orderNum", getIntent().getStringExtra("orderNum"));
         myAsyncTast = new MyAsyncTast(AnnulActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void onError(String result) {
+
+            }
+
             @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, DetailsBean.class);
@@ -198,6 +229,11 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                 hashMap.put("type", "6");
 
                 myAsyncTast = new MyAsyncTast(AnnulActivity.this, hashMap, AppConfig.REVOKEDHANDLERORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                    @Override
+                    public void onError(String result) {
+
+                    }
+
                     @Override
                     public void send(String result) {
                         showToast("撤销成功");
@@ -358,21 +394,21 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
         protected String doInBackground(Object... params) {
             RequestParams param = new RequestParams(AppConfig.UPLOADFILE);
             param.addBodyParameter("file", new File(fileName));
-            param.addBodyParameter("type", "1");
+            param.addBodyParameter("optionType", "1");
             param.addHeader("token", App.getInstance().getToken());
             x.http().post(param,
                     new Callback.CommonCallback<String>() {
                         @Override
                         public void onSuccess(String result) {
-                            updataBean = GsonUtil.parseJsonWithGson(result, UpdataBean.class);
+                            updataBean = GsonUtil.parseJsonWithGson(result, JbUpBean.class);
                             if (updataBean.getCode() == 0) {
-                                player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData()));
+                                player = MediaPlayer.create(getApplicationContext(), Uri.parse(updataBean.getData().get(0)));
                                 showToast("上传成功");
                                 rl_annul_ly.setVisibility(View.VISIBLE);
                                 pop3.dismiss();
                                 toJsonBean = new ToJsonBean();
                                 toJsonBean.setOptionType(1);
-                                toJsonBean.setContents(updataBean.getData());
+                                toJsonBean.setContents(updataBean.getData().get(0));
                                 toJsonBean.setType(6);
                                 Gson gson = new Gson();
                                 obj2 = "[" + gson.toJson(toJsonBean) + "]";
@@ -441,7 +477,9 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                                                 tv_annul_lytime.setText(a + "'" + b + "\"");
                                             }
                                         }
-                                        animationDrawable.stop();
+                                        if(animationDrawable!=null){
+                                            animationDrawable.stop();
+                                        }
                                         img_annul_lyic.setImageResource(R.mipmap.yp_bf);
                                         playTyp = 0;
                                     }

@@ -14,6 +14,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -112,6 +114,21 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
     @Bind(R.id.tv_retroaction_headView)
     TextView tv_retroaction_headView;
 
+    @Bind(R.id.img_gdfk)
+    ImageView img_gdfk;
+
+    @Bind(R.id.tv_retroaction_num)
+    TextView tv_retroaction_num;
+
+    @Bind(R.id.rl_retroation)
+    RelativeLayout rl_retroation;
+
+    @Bind(R.id.img_retroation_yy)
+    ImageView img_retroation_yy;
+
+    @Bind(R.id.tv_retroation_time)
+    TextView tv_retroation_time;
+
 
     private HashMap<String, String> hashMap;
     private DetailsBean bean;
@@ -130,7 +147,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
     private GirdAdapter adapter;
     private String ypUri = "";
     private MediaRecorder recorder;
-    private String fileName = "/sdcard/myHead/audiorecordtest.mp3";
+    private String fileName = "/sdcard/audiorecordtest.mp3";
     private PopupWindow pop3;
     private View view3;
     private RelativeLayout rl_luyin_type;
@@ -141,6 +158,12 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
     private JbUpBean updataBean;
     private ToJsonBean toJsonBean;
     private List<String> imgList;
+    private String contents;
+    private MediaPlayer player;
+    private CountDownTimer countDownTimer;
+    private AnimationDrawable animationDrawables;
+    private int types = 0;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -163,6 +186,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
         img_yuyin_close.setOnClickListener(this);
         img_retroaction_add.setOnClickListener(this);
         rl_retroaction_ok.setOnClickListener(this);
+        rl_retroation.setOnClickListener(this);
         countTimer = new CountTimer(1000) {
             @Override
             public void onTick(long millisFly) {
@@ -199,6 +223,27 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
         gv_disposejb.setAdapter(adapter);
         imgList = new ArrayList<>();
         ed_retroaction_cause.setText("");
+        ed_retroaction_cause.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 500) {
+//                    showToast("字数不超过500字");
+                } else {
+                    tv_retroaction_num.setText(s.length() + "/500");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
+
     }
 
     private void setupDialog() {
@@ -209,9 +254,13 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case 0:
-                        PictureSelector.create(RetroactionActivity.this)
-                                .openCamera(PictureMimeType.ofImage())
-                                .forResult(PictureConfig.CHOOSE_REQUEST);
+                        if (num == 0) {
+                            showToast("最多上传9张图片");
+                        } else {
+                            PictureSelector.create(RetroactionActivity.this)
+                                    .openCamera(PictureMimeType.ofImage())
+                                    .forResult(PictureConfig.CHOOSE_REQUEST);
+                        }
                         break;
                     case 1:
                         if (num == 0) {
@@ -264,19 +313,26 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                 toJsonBean.setType(5);
                 obS = obS + gson.toJson(toJsonBean) + ",";
             }
-            obj2 = "[" + obS.substring(0, obS.length() - 1) + "]";
+            if (obS.length() > 2) {
+                obj2 = "[" + obS.substring(0, obS.length() - 1) + "]";
+            }
         }
-
-        hashMap.put("result", ed_retroaction_cause.getText().toString());
+        if (ed_retroaction_cause.getText() != null) {
+            hashMap.put("feedCause", ed_retroaction_cause.getText().toString());
+        }
         if (confirmTime != null) {
-            hashMap.put("confirmTime", confirmTime + ":00");
+            hashMap.put("feedTime", confirmTime + ":00");
         }
-        if (!obj2.equals("")) {
+        if ((!obj2.equals("")) && obj2 != null) {
             hashMap.put("jsonStr", obj2);
         }
-
-        hashMap.put("id", getIntent().getStringExtra("id"));
+        hashMap.put("id", bean.getData().getId() + "");
         myAsyncTast = new MyAsyncTast(RetroactionActivity.this, hashMap, AppConfig.FEEDBACKHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void onError(String result) {
+
+            }
+
             @Override
             public void send(String result) {
                 showToast("提交成功");
@@ -291,6 +347,11 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
         hashMap.put("orderNum", getIntent().getStringExtra("orderNum"));
         myAsyncTast = new MyAsyncTast(RetroactionActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+
+            }
+
+            @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, DetailsBean.class);
                 tv_annul_gdh.setText(bean.getData().getOrderNum());
@@ -302,6 +363,90 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                 tv_retroaction_cause.setText(bean.getData().getCause() + "");
                 tv_annul_adr.setText(bean.getData().getDepartName() + "");
                 tv_annul_xxadr.setText(bean.getData().getAddress() + "");
+                if (bean.getData().getUrgency() == 0) {
+                    img_gdfk.setImageResource(R.mipmap.home_jg_yellow);
+                } else {
+                    img_gdfk.setImageResource(R.mipmap.home_jg_red);
+                }
+                if (bean.getData().getAlertOptionsArray().size() > 0) {
+                    for (int i = 0; i < bean.getData().getAlertOptionsArray().size(); i++) {
+                        if (bean.getData().getAlertOptionsArray().get(i).getOptionType() == 1) {
+                            rl_retroation.setVisibility(View.VISIBLE);
+                            contents = bean.getData().getAlertOptionsArray().get(i).getContents();
+                        }
+                    }
+                    player = MediaPlayer.create(getApplicationContext(), Uri.parse(contents));
+                    long f = player.getDuration() / 1000 / 60;
+                    long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
+                    if (f < 10) {
+                        if (m < 10) {
+                            tv_retroation_time.setText("0" + f + "'" + "0" + m + "\"");
+                        } else {
+                            tv_retroation_time.setText("0" + f + "'" + m + "\"");
+                        }
+                    } else {
+                        if (m < 10) {
+                            tv_retroation_time.setText(f + "'" + "0" + m + "\"");
+                        } else {
+                            tv_retroation_time.setText(f + "'" + m + "\"");
+                        }
+                    }
+                    countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
+                            long f = millisUntilFinished / 1000 / 60;
+                            long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                            if (f < 10) {
+                                if (m < 10) {
+                                    tv_retroation_time.setText("0" + f + "'" + "0" + m + "\"");
+                                } else {
+                                    tv_retroation_time.setText("0" + f + "'" + m + "\"");
+                                }
+                            } else {
+                                if (m < 10) {
+                                    tv_retroation_time.setText(f + "'" + "0" + m + "\"");
+                                } else {
+                                    tv_retroation_time.setText(f + "'" + m + "\"");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancel(long millisUntilFinished) {
+                        }
+
+                        @Override
+                        public void onPause(long millisUntilFinished) {
+
+                        }
+
+                        @Override
+                        public void onResume(long millisUntilFinished) {
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            long a = player.getDuration() / 1000 / 60;
+                            long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                            if (a < 10) {
+                                if (b < 10) {
+                                    tv_retroation_time.setText("0" + a + "'" + "0" + b + "\"");
+                                } else {
+                                    tv_retroation_time.setText("0" + a + "'" + b + "\"");
+                                }
+                            } else {
+                                if (b < 10) {
+                                    tv_retroation_time.setText(a + "'" + "0" + b + "\"");
+                                } else {
+                                    tv_retroation_time.setText(a + "'" + b + "\"");
+                                }
+                            }
+                            animationDrawables.stop();
+                            img_retroation_yy.setImageResource(R.mipmap.yp_bf);
+                            types = 0;
+                        }
+                    };
+                }
             }
         });
         myAsyncTast.execute();
@@ -348,6 +493,29 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
             case R.id.img_yuyin_close:
                 //关闭录音弹窗
                 pop3.dismiss();
+            case R.id.rl_retroation:
+                if (types == 0) {
+                    player.start();
+                    countDownTimer.start();
+                    img_retroation_yy.setImageResource(R.drawable.animation1);
+                    animationDrawables = (AnimationDrawable) img_retroation_yy.getDrawable();
+                    animationDrawables.start();
+                    type = 1;
+                } else if (types == 1) {
+                    img_retroation_yy.setImageResource(R.mipmap.yp_bf);
+                    player.pause();
+                    countDownTimer.pause();
+                    types = 2;
+                    animationDrawables.stop();
+                } else {
+                    player.start();
+                    countDownTimer.resume();
+                    img_retroation_yy.setImageResource(R.drawable.animation1);
+                    animationDrawables = (AnimationDrawable) img_retroation_yy.getDrawable();
+                    animationDrawables.start();
+                    types = 1;
+                }
+                break;
             default:
                 break;
         }
@@ -551,7 +719,9 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                                 tv_fjyp_time.setText(a + "'" + b + "\"");
                             }
                         }
-                        animationDrawable.stop();
+                        if(animationDrawable!=null){
+                            animationDrawable.stop();
+                        }
                         img_fjyp_yy.setImageResource(R.mipmap.yp_bf);
                         type = 0;
                     }
@@ -588,7 +758,9 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                         lyType = NOLY;
                         player.stop();
                         countDownTimer.onFinish();
-                        animationDrawable.stop();
+                        if(animationDrawable!=null){
+                            animationDrawable.stop();
+                        }
                         type = 0;
                         adapter.notifyDataSetChanged();
                         ypUri = "";

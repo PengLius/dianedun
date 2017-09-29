@@ -22,30 +22,35 @@
             android:layout_marginTop="10dp"
             android:orientation="vertical">
 
-            <!--<LinearLayout-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_marginTop="15dp"-->
-            <!--android:gravity="center_vertical"-->
-            <!--android:orientation="horizontal">-->
+            <LinearLayout
+                android:id="@+id/ll_amendgd"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:visibility="gone">
 
-            <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="工  单  号："-->
-            <!--android:textColor="#00B168"-->
-            <!--android:textSize="@dimen/content_text_s14" />-->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="工  单  号："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
 
-            <!--<EditText-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="30dp"-->
-            <!--android:layout_marginLeft="10dp"-->
-            <!--android:background="@drawable/ed_5_gray"-->
-            <!--android:paddingLeft="5dp"-->
-            <!--android:paddingRight="5dp"-->
-            <!--android:textColor="#FFF"-->
-            <!--android:textSize="@dimen/content_text_s14" />-->
-            <!--</LinearLayout>-->
+                <TextView
+                    android:id="@+id/tv_amendgd_gdh"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/ed_5_gray"
+                    android:gravity="center_vertical"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:text="aaaaa"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -194,6 +199,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="15dp"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
                 <TextView
@@ -203,13 +209,13 @@
                     android:textColor="#00B168"
                     android:textSize="@dimen/content_text_s14" />
 
-                <EditText
-                    android:id="@+id/ed_amendgd_xxadress"
+                <TextView
+                    android:id="@+id/tv_amendgd_xxadress"
                     android:layout_width="match_parent"
-                    android:layout_height="60dp"
+                    android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/ed_5_gray"
-                    android:gravity="left|top"
+                    android:gravity="center_vertical"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:textColor="#FFF"
@@ -310,6 +316,7 @@
                         android:layout_marginTop="10dp"
                         android:background="@null"
                         android:gravity="left|top"
+                        android:maxLength="500"
                         android:paddingLeft="5dp"
                         android:paddingRight="5dp"
                         android:textColor="#FFF"

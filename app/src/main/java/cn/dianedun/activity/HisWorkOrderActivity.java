@@ -59,6 +59,11 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
         hashMap.put("pageSize", "10");
         myAsyncTast = new MyAsyncTast(HisWorkOrderActivity.this, hashMap, AppConfig.GETHANDLEORDERBYSTATS, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+                
+            }
+
+            @Override
             public void send(String result) {
                 results = result;
                 bean = GsonUtil.parseJsonWithGson(result, HisOrderListBean.class);

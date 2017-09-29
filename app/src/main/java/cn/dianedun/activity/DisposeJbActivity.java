@@ -14,6 +14,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -103,6 +105,9 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
     @Bind(R.id.tv_amendgd_headView)
     TextView tv_amendgd_headView;
 
+    @Bind(R.id.tv_disposejb_num)
+    TextView tv_disposejb_num;
+
     private ImagBean imgBean;
     private MyAsyncTast myAsyncTast;
     private HashMap<String, String> hashMap;
@@ -120,7 +125,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
     private GirdAdapter adapter;
     private String ypUri = "";
     private MediaRecorder recorder;
-    private String fileName = "/sdcard/myHead/audiorecordtest.mp3";
+    private String fileName = "/sdcard/audiorecordtest.mp3";
     private PopupWindow pop3;
     private View view3;
     private RelativeLayout rl_luyin_type;
@@ -187,6 +192,26 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
         adapter = new GirdAdapter();
         gv_disposejb.setAdapter(adapter);
         imgList = new ArrayList<>();
+        ed_disposejb_cause.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (s.length() > 500) {
+//                    showToast("字数不超过500字");
+                } else {
+                    tv_disposejb_num.setText(s.length() + "/500");
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
     }
 
     private void setupDialog() {
@@ -197,9 +222,13 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
             public void onClick(DialogInterface dialog, int which) {
                 switch (which) {
                     case 0:
-                        PictureSelector.create(DisposeJbActivity.this)
-                                .openCamera(PictureMimeType.ofImage())
-                                .forResult(PictureConfig.CHOOSE_REQUEST);
+                        if (num == 0) {
+                            showToast("最多上传9张图片");
+                        } else {
+                            PictureSelector.create(DisposeJbActivity.this)
+                                    .openCamera(PictureMimeType.ofImage())
+                                    .forResult(PictureConfig.CHOOSE_REQUEST);
+                        }
                         break;
                     case 1:
                         if (num == 0) {
@@ -234,6 +263,11 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
         hashMap = new HashMap<>();
         hashMap.put("id", getIntent().getStringExtra("id"));
         myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.FINDALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void onError(String result) {
+
+            }
+
             @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, DisposeJBBean.class);
@@ -283,8 +317,9 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                 obS = obS + gson.toJson(toJsonBean) + ",";
             }
         }
-        obj2 = "[" + obS.substring(0, obS.length() - 1) + "]";
-        Log.e("aaa", obj2);
+        if (obS.length() > 1) {
+            obj2 = "[" + obS.substring(0, obS.length() - 1) + "]";
+        }
         hashMap.put("result", ed_disposejb_cause.getText().toString());
         if (confirmTime != null) {
             hashMap.put("confirmTime", confirmTime + ":00");
@@ -295,6 +330,11 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
 
         hashMap.put("id", getIntent().getStringExtra("id"));
         myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.UPDATEALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void onError(String result) {
+
+            }
+
             @Override
             public void send(String result) {
                 showToast("提交成功");
@@ -546,7 +586,12 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                                 tv_fjyp_time.setText(a + "'" + b + "\"");
                             }
                         }
-                        animationDrawable.stop();
+                        if (animationDrawable != null) {
+                            if (animationDrawable.isRunning()) {
+                                animationDrawable.stop();
+                            }
+                        }
+
                         img_fjyp_yy.setImageResource(R.mipmap.yp_bf);
                         type = 0;
                     }
@@ -583,7 +628,9 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                         lyType = NOLY;
                         player.stop();
                         countDownTimer.onFinish();
-                        animationDrawable.stop();
+                        if(animationDrawable!=null){
+                            animationDrawable.stop();
+                        }
                         type = 0;
                         adapter.notifyDataSetChanged();
                         ypUri = "";
@@ -608,7 +655,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                     public void onClick(View v) {
                         Intent intent = new Intent(getApplicationContext(), ImagActivity.class);
                         intent.putStringArrayListExtra("imgList", (ArrayList<String>) imgList);
-                        intent.putExtra("pos", position+"");
+                        intent.putExtra("pos", position + "");
                         startActivity(intent);
                     }
                 });

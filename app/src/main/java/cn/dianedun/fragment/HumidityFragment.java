@@ -43,7 +43,12 @@ public class HumidityFragment extends Fragment {
         ButterKnife.bind(this, view);
         if (bean != null) {
             tv_humidity_sd.setText(bean.getData().getHumidityAndWater().getHumidity().getVal() + "%");
-            tv_humidity_sj.setText(bean.getData().getHumidityAndWater().getWater().getVal() + "");
+            if (bean.getData().getHumidityAndWater().getWater().getVal().equals("0")) {
+                tv_humidity_sj.setText("无");
+            } else if (bean.getData().getHumidityAndWater().getWater().getVal().equals("2")) {
+                tv_humidity_sj.setText("有");
+            }
+
             if (bean.getData().getHumidityAndWater().getWater().getLevel().equals("0")) {
                 img_humidity_sj.setImageResource(R.mipmap.jc_green);
             } else {

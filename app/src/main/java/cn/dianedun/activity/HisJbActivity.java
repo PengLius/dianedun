@@ -55,6 +55,11 @@ public class HisJbActivity extends BaseTitlActivity {
         hashMap.put("currentPage", page + "");
         myAsyncTast = new MyAsyncTast(HisJbActivity.this, hashMap, AppConfig.HISTORYALARM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+                
+            }
+
+            @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, HisJbBean.class);
                 adapter = new IndentCusAdapter();

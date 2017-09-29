@@ -43,8 +43,6 @@ public class TemperatureFragment extends Fragment {
         ButterKnife.bind(this, view);
         if (bean != null) {
             allList = new ArrayList<>();
-            hashMap = new HashMap<>();
-            allList.add(hashMap);
             for (int i = 0; i < bean.getData().getTemp().getTransformer().size(); i++) {
                 hashMap = new HashMap<>();
                 hashMap.put("level", bean.getData().getTemp().getTransformer().get(i).getLevel());
@@ -52,8 +50,6 @@ public class TemperatureFragment extends Fragment {
                 hashMap.put("val", bean.getData().getTemp().getTransformer().get(i).getVal() + "");
                 allList.add(hashMap);
             }
-            hashMap = new HashMap<>();
-            allList.add(hashMap);
             for (int i = 0; i < bean.getData().getTemp().getBusbar().size(); i++) {
                 hashMap = new HashMap<>();
                 hashMap.put("level", bean.getData().getTemp().getBusbar().get(i).getLevel());
@@ -73,8 +69,6 @@ public class TemperatureFragment extends Fragment {
         bean = xBean;
         if (adapter != null) {
             allList = new ArrayList<>();
-            hashMap = new HashMap<>();
-            allList.add(hashMap);
             for (int i = 0; i < bean.getData().getTemp().getTransformer().size(); i++) {
                 hashMap = new HashMap<>();
                 hashMap.put("level", bean.getData().getTemp().getTransformer().get(i).getLevel());
@@ -82,8 +76,6 @@ public class TemperatureFragment extends Fragment {
                 hashMap.put("val", bean.getData().getTemp().getTransformer().get(i).getVal() + "");
                 allList.add(hashMap);
             }
-            hashMap = new HashMap<>();
-            allList.add(hashMap);
             for (int i = 0; i < bean.getData().getTemp().getBusbar().size(); i++) {
                 hashMap = new HashMap<>();
                 hashMap.put("level", bean.getData().getTemp().getBusbar().get(i).getLevel());
@@ -132,18 +124,18 @@ public class TemperatureFragment extends Fragment {
             if (position == 0) {
                 cache.ll_temperature.setVisibility(View.VISIBLE);
                 cache.tv_item_temname.setText("变压器温度");
-            } else if (position == bean.getData().getTemp().getTransformer().size() + 1) {
+            } else if (position == bean.getData().getTemp().getTransformer().size()) {
                 cache.ll_temperature.setVisibility(View.VISIBLE);
                 cache.tv_item_temname.setText("母排温度");
             } else {
                 cache.ll_temperature.setVisibility(View.GONE);
-                cache.tv_wd_name.setText(allList.get(position).get("number"));
-                cache.tv_wd_wd.setText(allList.get(position).get("val"));
-                if (allList.get(position).get("level").equals("0")) {
-                    cache.img_wd_type.setImageResource(R.mipmap.jc_green);
-                } else {
-                    cache.img_wd_type.setImageResource(R.mipmap.jc_red);
-                }
+            }
+            cache.tv_wd_name.setText(allList.get(position).get("number"));
+            cache.tv_wd_wd.setText(allList.get(position).get("val")+"℃");
+            if (allList.get(position).get("level").equals("0")) {
+                cache.img_wd_type.setImageResource(R.mipmap.jc_green);
+            } else {
+                cache.img_wd_type.setImageResource(R.mipmap.jc_red);
             }
             return convertView;
         }

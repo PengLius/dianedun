@@ -9,7 +9,7 @@ public class MineBean {
     /**
      * code : 0
      * msg : 成功
-     * data : {"id":"402823815df2ea32015df2ede38b0003","activitisync":"","browser":"","password":"","realname":"张亮有权限","signature":"","status":"","userkey":"","username":"zlyou","departid":"","deleteFlag":"","token":"","departList":"","mobilephone":"15028267481","headimg":"","unreadCount":3}
+     * data : {"id":"402823815df2ea32015df2f4c8b80011","activitisync":"","browser":"","password":"","realname":"刘朋有权限","signature":"","status":"","userkey":"","username":"liupengyou","departid":"","deleteFlag":"","token":"","mobilephone":"15933227792","headimg":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/image/1506333173776688.jpg","logtime":"2017-09-26 08:59:11.0","unreadCount":0}
      */
 
     private int code;
@@ -42,22 +42,22 @@ public class MineBean {
 
     public static class DataBean {
         /**
-         * id : 402823815df2ea32015df2ede38b0003
+         * id : 402823815df2ea32015df2f4c8b80011
          * activitisync :
          * browser :
          * password :
-         * realname : 张亮有权限
+         * realname : 刘朋有权限
          * signature :
          * status :
          * userkey :
-         * username : zlyou
+         * username : liupengyou
          * departid :
          * deleteFlag :
          * token :
-         * departList :
-         * mobilephone : 15028267481
-         * headimg :
-         * unreadCount : 3
+         * mobilephone : 15933227792
+         * headimg : http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/image/1506333173776688.jpg
+         * logtime : 2017-09-26 08:59:11.0
+         * unreadCount : 0
          */
 
         private String id;
@@ -72,9 +72,9 @@ public class MineBean {
         private String departid;
         private String deleteFlag;
         private String token;
-        private String departList;
         private String mobilephone;
         private String headimg;
+        private String logtime;
         private int unreadCount;
 
         public String getId() {
@@ -173,14 +173,6 @@ public class MineBean {
             this.token = token;
         }
 
-        public String getDepartList() {
-            return departList;
-        }
-
-        public void setDepartList(String departList) {
-            this.departList = departList;
-        }
-
         public String getMobilephone() {
             return mobilephone;
         }
@@ -195,6 +187,14 @@ public class MineBean {
 
         public void setHeadimg(String headimg) {
             this.headimg = headimg;
+        }
+
+        public String getLogtime() {
+            return logtime;
+        }
+
+        public void setLogtime(String logtime) {
+            this.logtime = logtime;
         }
 
         public int getUnreadCount() {

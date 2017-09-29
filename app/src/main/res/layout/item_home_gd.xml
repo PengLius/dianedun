@@ -183,6 +183,7 @@
                 android:src="@mipmap/home_jg_yellow" />
 
             <TextView
+                android:id="@+id/item_hoemtv_yw"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentRight="true"

@@ -76,6 +76,7 @@ public class DetailsingActivity extends BaseTitlActivity {
                 intent = new Intent(getApplicationContext(), AnnulActivity.class);
                 intent.putExtra("orderNum", getIntent().getStringExtra("orderNum"));
                 startActivity(intent);
+                finish();
             }
         });
         rl_detail_xg.setOnClickListener(new View.OnClickListener() {
@@ -85,6 +86,7 @@ public class DetailsingActivity extends BaseTitlActivity {
                 intent = new Intent(getApplicationContext(), AmendGdActivity.class);
                 intent.putExtra("orderNum", getIntent().getStringExtra("orderNum"));
                 startActivity(intent);
+                finish();
             }
         });
         initData();
@@ -95,6 +97,11 @@ public class DetailsingActivity extends BaseTitlActivity {
         hashMap = new HashMap<>();
         hashMap.put("orderNum", getIntent().getStringExtra("orderNum"));
         myAsyncTast = new MyAsyncTast(DetailsingActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+            @Override
+            public void onError(String result) {
+
+            }
+
             @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, DetailsBean.class);

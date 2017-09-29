@@ -131,31 +131,6 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="原        因："
-                    android:textColor="#00B168"
-                    android:textSize="@dimen/content_text_s14" />
-
-                <TextView
-                    android:id="@+id/tv_examine_cause"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="10dp"
-                    android:layout_toRightOf="@+id/tv_examine_gdhs"
-                    android:text="小区住户电压异常"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
-            </LinearLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="地        点："
                     android:textColor="#00B168"
                     android:textSize="@dimen/content_text_s14" />
@@ -194,6 +169,63 @@
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="原        因："
+                    android:textColor="#00B168"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:id="@+id/tv_examine_cause"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_toRightOf="@+id/tv_examine_gdhs"
+                    android:text="小区住户电压异常"
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/rl_examine"
+                android:layout_width="60dp"
+                android:layout_height="60dp"
+                android:layout_marginTop="5dp"
+                android:visibility="gone">
+
+                <LinearLayout
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentBottom="true"
+                    android:background="@drawable/rl_5_blue"
+                    android:gravity="center"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/img_examine_yy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@mipmap/yp_bf" />
+
+                    <TextView
+                        android:id="@+id/tv_examine_time"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text="01'02"
+                        android:textColor="#FFFFFF"
+                        android:textSize="@dimen/content_text_s12" />
+                </LinearLayout>
+            </RelativeLayout>
+
 
             <TextView
                 android:layout_width="match_parent"

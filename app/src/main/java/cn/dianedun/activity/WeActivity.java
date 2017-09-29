@@ -33,6 +33,11 @@ public class WeActivity extends BaseTitlActivity {
     public void getDate() {
         myAsyncTast = new MyAsyncTast(WeActivity.this, new HashMap<String, String>(), "", App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+                
+            }
+
+            @Override
             public void send(String result) {
 
             }

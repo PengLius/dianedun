@@ -1,5 +1,8 @@
 package cn.dianedun.activity;
 
+import android.app.Activity;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -11,6 +14,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
+import com.bumptech.glide.Glide;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -51,6 +56,18 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
     @Bind(R.id.rl_amendpsw_ok)
     RelativeLayout rl_amendpsw_ok;
 
+    @Bind(R.id.img_amendpsw_head)
+    ImageView img_amendpsw_head;
+
+    @Bind(R.id.tv_amendpsw_phone)
+    TextView tv_amendpsw_phone;
+
+    @Bind(R.id.tv_amendpsw_name)
+    TextView tv_amendpsw_name;
+
+    @Bind(R.id.tv_amendpsw_time)
+    TextView tv_amendpsw_time;
+
     private Boolean boolxs = true;
     private boolean offs = true;
     private Handler handler = new Handler() {
@@ -83,6 +100,10 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
         tv_amendpsw_yzm.setOnClickListener(this);
         rl_amendpsw_ok.setOnClickListener(this);
         rl_amendpsw_qx.setOnClickListener(this);
+        Glide.with(AmendPSWActivity.this).load(getIntent().getStringExtra("imagUrl")).into(img_amendpsw_head);
+        tv_amendpsw_phone.setText(getIntent().getStringExtra("phone"));
+        tv_amendpsw_name.setText(getIntent().getStringExtra("username"));
+        tv_amendpsw_time.setText("您上次于 " + getIntent().getStringExtra("time") + " 在河北 保定 登录");
 
     }
 
@@ -106,7 +127,7 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
 
             case R.id.tv_amendpsw_yzm:
                 RequestParams params1 = new RequestParams(AppConfig.NOTECODE);
-                params1.addBodyParameter("username", "");
+                params1.addBodyParameter("username", getIntent().getStringExtra("username"));
                 x.http().post(params1, new Callback.CommonCallback<String>() {
                     @Override
                     public void onSuccess(String result) {
@@ -147,15 +168,41 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
                 if (ed_amendpsw_yzm.getText().length() < 4) {
                     showToast("请输入4位短信验证码");
                 } else {
-                    if (ed_amend_psw.getText().length() > 6 && ed_amend_psw.getText() != null) {
+                    if (ed_amend_psw.getText().length() > 5 && ed_amend_psw.getText() != null) {
                         HashMap<String, String> hashMap = new HashMap<>();
                         hashMap.put("username", getIntent().getStringExtra("username"));
                         hashMap.put("code", ed_amendpsw_yzm.getText().toString());
                         hashMap.put("password", ed_amend_psw.getText().toString());
                         MyAsyncTast myAsyncTast = new MyAsyncTast(AmendPSWActivity.this, hashMap, AppConfig.RESETPWD, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                             @Override
+                            public void onError(String result) {
+
+                            }
+
+                            @Override
                             public void send(String result) {
-                                showToast("修改成功");
+                                try {
+                                    JSONObject jsonObject = new JSONObject(result);
+                                    if (jsonObject.getString("code").equals("0")) {
+                                        JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                        String token = jsonObject1.getString("token");
+                                        String isAdmin = jsonObject1.getString("isAdmin");
+                                        App.getInstance().setToken(token);
+                                        App.getInstance().setIsAdmin(isAdmin);
+                                        SharedPreferences mySharedPreferences = getSharedPreferences("user", Activity.MODE_PRIVATE);
+                                        SharedPreferences.Editor editor = mySharedPreferences.edit();
+                                        editor.putString("token", token);
+                                        editor.putString("isAdmin", isAdmin);
+                                        editor.commit();
+                                        showToast("修改成功");
+                                        finish();
+                                    }
+
+
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+
                                 finish();
                             }
                         });

@@ -82,6 +82,11 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
         hashMap.put("id", getIntent().getStringExtra("id"));
         myAsyncTast = new MyAsyncTast(HisDisposeJbActivity.this, hashMap, AppConfig.FINDALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
+            public void onError(String result) {
+
+            }
+
+            @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, DisposeJBBean.class);
                 tv_hisdisposejb_adress.setText(bean.getData().getDepartName());
@@ -99,6 +104,11 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
                     gv_hisdetauls.setAdapter(adapter);
                 }
 
+                for (int i = 0; i < bean.getData().getOptions().size(); i++) {
+                    if (bean.getData().getOptions().get(i).getOptionType() == 0) {
+                        imgList.add(bean.getData().getOptions().get(i).getContents());
+                    }
+                }
             }
         });
         myAsyncTast.execute();
@@ -128,7 +138,6 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
 
             if (bean.getData().getOptions().get(position).getOptionType() == 0) {
                 //图片
-                imgList.add(bean.getData().getOptions().get(position).getContents());
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_fjimg, null);
                 Glide.with(HisDisposeJbActivity.this).load(bean.getData().getOptions().get(position).getContents()).into(((ImageView) convertView.findViewById(R.id.img_fjimg_img)));
                 convertView.setOnClickListener(new View.OnClickListener() {
@@ -213,7 +222,9 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
                                 tv_fjyp_time.setText(a + "'" + b + "\"");
                             }
                         }
-                        animationDrawable.stop();
+                        if(animationDrawable!=null){
+                            animationDrawable.stop();
+                        }
                         img_fjyp_yy.setImageResource(R.mipmap.yp_bf);
                         type = 0;
                     }

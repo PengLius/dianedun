@@ -29,14 +29,18 @@
             android:orientation="vertical">
 
             <TextView
+                android:id="@+id/tv_message_con"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                android:maxLines="2"
                 android:text="尊敬的用户，您有待处理工单，请及时处理。啊啊啊啊啊嗷嗷啊啊啊啊。"
                 android:textColor="#FFF"
                 android:textSize="@dimen/content_text_s14" />
 
             <TextView
+                android:id="@+id/tv_message_time"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="10dp"
