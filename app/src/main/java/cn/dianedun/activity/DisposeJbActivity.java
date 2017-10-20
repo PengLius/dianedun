@@ -244,9 +244,12 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                         }
                         break;
                     case 2:
-                        showDialog3();
+                        if (ypUri.equals("")) {
+                            showDialog3();
+                        } else {
+                            showToast("已存在录音文件");
+                        }
                         break;
-
                     default:
                         break;
                 }
@@ -297,8 +300,9 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
         Date curDate = new Date(System.currentTimeMillis());//获取当前时间
         String confirmTime = formatter.format(curDate);
         hashMap = new HashMap<>();
-
-
+        if (confirmTime != null) {
+            hashMap.put("confirmTime", confirmTime + ":00");
+        }
         Gson gson = new Gson();
         String obS = "";
         if (!(ypUri.equals(""))) {
@@ -316,32 +320,47 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                 toJsonBean.setType(2);
                 obS = obS + gson.toJson(toJsonBean) + ",";
             }
-        }
-        if (obS.length() > 1) {
-            obj2 = "[" + obS.substring(0, obS.length() - 1) + "]";
-        }
-        hashMap.put("result", ed_disposejb_cause.getText().toString());
-        if (confirmTime != null) {
-            hashMap.put("confirmTime", confirmTime + ":00");
+            if (obS.length() > 1) {
+                obj2 = "[" + obS.substring(0, obS.length() - 1) + "]";
+            }
         }
         if (!obj2.equals("")) {
             hashMap.put("jsonStr", obj2);
+            if (ed_disposejb_cause.getText() != null) {
+                hashMap.put("result", ed_disposejb_cause.getText().toString());
+            }
+            myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.UPDATEALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                @Override
+                public void onError(String result) {
+                }
+
+                @Override
+                public void send(String result) {
+                    showToast("提交成功");
+                    finish();
+                }
+            });
+            myAsyncTast.execute();
+        } else {
+            if (ed_disposejb_cause.getText() == null || ed_disposejb_cause.getText().toString().equals("")) {
+                showToast("请填写反馈详情");
+            } else {
+                myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.UPDATEALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                    @Override
+                    public void onError(String result) {
+                    }
+
+                    @Override
+                    public void send(String result) {
+                        showToast("提交成功");
+                        finish();
+                    }
+                });
+                myAsyncTast.execute();
+            }
         }
-
         hashMap.put("id", getIntent().getStringExtra("id"));
-        myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.UPDATEALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-            @Override
-            public void onError(String result) {
 
-            }
-
-            @Override
-            public void send(String result) {
-                showToast("提交成功");
-                finish();
-            }
-        });
-        myAsyncTast.execute();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -628,7 +647,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                         lyType = NOLY;
                         player.stop();
                         countDownTimer.onFinish();
-                        if(animationDrawable!=null){
+                        if (animationDrawable != null) {
                             animationDrawable.stop();
                         }
                         type = 0;

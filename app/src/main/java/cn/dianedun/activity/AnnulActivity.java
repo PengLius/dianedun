@@ -195,8 +195,8 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                 tv_annul_sqr.setText(bean.getData().getHandlePersion() + "");
                 String beginTime = bean.getData().getBeginTime() / 1000 + "";
                 String endTime = bean.getData().getEndTime() / 1000 + "";
-                tv_annul_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm"));
-                tv_annul_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm"));
+                tv_annul_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm") + ":00");
+                tv_annul_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm") + ":00");
                 tv_annul_xxadr.setText(bean.getData().getAddress() + "");
                 tv_annul_adr.setText(bean.getData().getDepartName());
                 if (bean.getData().getUrgency() == 0) {
@@ -215,32 +215,53 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.img_annul_ly:
-                showDialog3();
+                if (obj2.equals("")) {
+                    showDialog3();
+                } else {
+                    showToast("已存在录音文件");
+                }
                 break;
-
             case R.id.rl_annul_sub:
                 //提交
                 hashMap = new HashMap<>();
                 hashMap.put("Num", bean.getData().getOrderNum() + "");
-                if (ed_annul_cause.getText() != null) {
-                    hashMap.put("remark", ed_annul_cause.getText().toString());
-                }
-                hashMap.put("jsonStr", obj2);
                 hashMap.put("type", "6");
+                if (obj2.equals("") || obj2 == null) {
+                    if (ed_annul_cause.getText() == null || ed_annul_cause.getText().toString().equals("")) {
+                        showToast("请填写撤销原因");
+                    } else {
+                        hashMap.put("remark", ed_annul_cause.getText().toString());
+                        myAsyncTast = new MyAsyncTast(AnnulActivity.this, hashMap, AppConfig.REVOKEDHANDLERORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                            @Override
+                            public void onError(String result) {
+                            }
 
-                myAsyncTast = new MyAsyncTast(AnnulActivity.this, hashMap, AppConfig.REVOKEDHANDLERORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-                    @Override
-                    public void onError(String result) {
-
+                            @Override
+                            public void send(String result) {
+                                showToast("撤销成功");
+                                finish();
+                            }
+                        });
+                        myAsyncTast.execute();
                     }
-
-                    @Override
-                    public void send(String result) {
-                        showToast("撤销成功");
-                        finish();
+                } else {
+                    hashMap.put("jsonStr", obj2);
+                    if (ed_annul_cause.getText() != null) {
+                        hashMap.put("remark", ed_annul_cause.getText().toString());
                     }
-                });
-                myAsyncTast.execute();
+                    myAsyncTast = new MyAsyncTast(AnnulActivity.this, hashMap, AppConfig.REVOKEDHANDLERORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                        @Override
+                        public void onError(String result) {
+                        }
+
+                        @Override
+                        public void send(String result) {
+                            showToast("撤销成功");
+                            finish();
+                        }
+                    });
+                    myAsyncTast.execute();
+                }
                 break;
             case R.id.rl_luyin_type:
                 //开始录音
@@ -477,7 +498,7 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                                                 tv_annul_lytime.setText(a + "'" + b + "\"");
                                             }
                                         }
-                                        if(animationDrawable!=null){
+                                        if (animationDrawable != null) {
                                             animationDrawable.stop();
                                         }
                                         img_annul_lyic.setImageResource(R.mipmap.yp_bf);

@@ -73,6 +73,8 @@ public class HomeFragment extends BaseTitlFragment {
     private List<HashMap<String, String>> itemList;
     private HashMap<String, String> itemHash;
     private int jg;
+    private int jbNum = 0;
+    private int gdNum = 0;
 
 
     public static HomeFragment getInstance() {
@@ -99,8 +101,13 @@ public class HomeFragment extends BaseTitlFragment {
         setImgLeftOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(getActivity(), ApplyGdActivity.class);
-                startActivity(intent);
+                if (App.getInstance().getIsAdmin().equals("1")) {
+                    showToast("您没有权限");
+                } else {
+                    intent = new Intent(getActivity(), ApplyGdActivity.class);
+                    startActivity(intent);
+                }
+
             }
         });
         setImgRightOnClick(new View.OnClickListener() {
@@ -125,9 +132,13 @@ public class HomeFragment extends BaseTitlFragment {
         tv_home_hisjb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                intent = new Intent(getActivity(), HisJbActivity.class);
-                startActivity(intent);
-                rl_home.setVisibility(View.GONE);
+                if (App.getInstance().getIsAdmin().equals("1")) {
+                    showToast("您没有权限");
+                } else {
+                    intent = new Intent(getActivity(), HisJbActivity.class);
+                    startActivity(intent);
+                    rl_home.setVisibility(View.GONE);
+                }
             }
         });
 
@@ -202,6 +213,7 @@ public class HomeFragment extends BaseTitlFragment {
                         itemHash.put("status", bean.getData().getOrderList().get(i).getStatus() + "");
                         itemHash.put("applyStatus", bean.getData().getOrderList().get(i).getApplyStatus() + "");
                         itemHash.put("delayTime", bean.getData().getOrderList().get(i).getDelayTime() + "");
+                        itemHash.put("departName", bean.getData().getOrderList().get(i).getDepartName() + "");
                         itemHash.put("itemType", "1");
                         itemList.add(itemHash);
                     }
@@ -209,6 +221,16 @@ public class HomeFragment extends BaseTitlFragment {
                 if (itemList.size() > 0) {
                     ll_home_null.setVisibility(View.GONE);
                     lv_home.setVisibility(View.VISIBLE);
+                    jbNum = 0;
+                    gdNum = 0;
+                    for (int i = 0; i < itemList.size(); i++) {
+                        if (itemList.get(i).get("itemType").equals("0")) {
+                            jbNum++;
+                        }
+                        if (itemList.get(i).get("itemType").equals("1")) {
+                            gdNum++;
+                        }
+                    }
                     adapter = new IndentCusAdapter();
                     lv_home.setAdapter(adapter);
                 } else {
@@ -254,6 +276,7 @@ public class HomeFragment extends BaseTitlFragment {
                 convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_home_jb, null);
                 if (position == 0) {
                     convertView.findViewById(R.id.item_tv_dcljb).setVisibility(View.VISIBLE);
+                    ((TextView) convertView.findViewById(R.id.item_tv_dcljb)).setText("待处理警报(" + jbNum + ")");
                 }
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -277,13 +300,14 @@ public class HomeFragment extends BaseTitlFragment {
                 convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_home_gd, null);
                 if (position == jg) {
                     convertView.findViewById(R.id.item_tv_dclgd).setVisibility(View.VISIBLE);
+                    ((TextView) convertView.findViewById(R.id.item_tv_dclgd)).setText("待处理工单(" + gdNum + ")");
                 }
                 ((TextView) convertView.findViewById(R.id.item_hometv_code)).setText(itemList.get(position).get("orderNum"));
                 String beginTime = Long.parseLong(itemList.get(position).get("beginTime")) / 1000 + "";
                 String endTime = Long.parseLong(itemList.get(position).get("endTime")) / 1000 + "";
-                ((TextView) convertView.findViewById(R.id.item_hometv_starti)).setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm"));
-                ((TextView) convertView.findViewById(R.id.item_hometv_endti)).setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm"));
-                ((TextView) convertView.findViewById(R.id.item_hometv_adres)).setText(itemList.get(position).get("address"));
+                ((TextView) convertView.findViewById(R.id.item_hometv_starti)).setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm:ss"));
+                ((TextView) convertView.findViewById(R.id.item_hometv_endti)).setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm:ss"));
+                ((TextView) convertView.findViewById(R.id.item_hometv_adres)).setText(itemList.get(position).get("departName"));
                 if (itemList.get(position).get("urgency").equals("0")) {
                     ((ImageView) convertView.findViewById(R.id.item_hoemimg_sta)).setImageResource(R.mipmap.home_jg_yellow);
                 } else {

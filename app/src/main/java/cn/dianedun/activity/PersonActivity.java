@@ -71,6 +71,10 @@ public class PersonActivity extends BaseTitlActivity {
     @Bind(R.id.rl_person_ok)
     RelativeLayout rl_person_ok;
 
+
+    @Bind(R.id.img_person_clear)
+    ImageView img_person_clear;
+
     private Dialog diaglog;
     private List<LocalMedia> selectList;
     private String imgUrl, phone, imgUri, realname, username, imgUrs;
@@ -101,34 +105,64 @@ public class PersonActivity extends BaseTitlActivity {
         tv_person_nc.setText(username);
         tv_person_zsxm.setText(realname);
         ed_person_phone.setText(phone);
-        Glide.with(PersonActivity.this).load(imgUri).into(img_person_head);
-        ed_person_phone.setHint(phone);
-        if (ed_person_phone.getText().toString().length() < 11) {
-            showToast("请输入正确的手机号");
-        } else {
-            rl_person_ok.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    HashMap hashMap = new HashMap();
-                    hashMap.put("headImg", imgUrs);
-                    hashMap.put("phone", ed_person_phone.getText().toString());
-                    MyAsyncTast myAsyncTast = new MyAsyncTast(PersonActivity.this, hashMap, AppConfig.MONDIFYUSERHEADIMG, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-                        @Override
-                        public void onError(String result) {
-                            
-                        }
+        img_person_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ed_person_phone.setText("");
+            }
+        });
+        ed_person_phone.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (hasFocus) {
+                    img_person_clear.setVisibility(View.VISIBLE);
 
-                        @Override
-                        public void send(String result) {
-                            showToast("完成");
-                            finish();
-                        }
-                    });
-                    myAsyncTast.execute();
+                } else {
+                    // 此处为失去焦点时的处理内容
+                    img_person_clear.setVisibility(View.INVISIBLE);
                 }
-            });
+            }
+        });
+
+        if (imgUri == null || imgUri.equals("")) {
+            Glide.with(PersonActivity.this).load(R.mipmap.login_logo).into(img_person_head);
+        } else {
+            Glide.with(PersonActivity.this).load(imgUri).into(img_person_head);
         }
 
+        rl_person_ok.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (ed_person_phone.getText().toString().length() < 11) {
+                    showToast("请添加11位手机号码");
+                } else {
+                    HashMap hashMap = new HashMap();
+                    if (imgUrs != null || imgUrs.equals("")) {
+                        hashMap.put("headImg", imgUrs);
+                    }
+                    if (!(ed_person_phone.getText().toString().equals(phone))) {
+                        hashMap.put("phone", ed_person_phone.getText().toString());
+                    }
+                    if (ed_person_phone.getText().toString().equals(phone) && (imgUrs == null || imgUrs.equals(""))) {
+                        finish();
+                    } else {
+                        MyAsyncTast myAsyncTast = new MyAsyncTast(PersonActivity.this, hashMap, AppConfig.MONDIFYUSERHEADIMG, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                            @Override
+                            public void onError(String result) {
+
+                            }
+
+                            @Override
+                            public void send(String result) {
+                                showToast("修改成功");
+                                finish();
+                            }
+                        });
+                        myAsyncTast.execute();
+                    }
+                }
+            }
+        });
     }
 
     private void setupDialog() {

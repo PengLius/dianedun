@@ -14,6 +14,7 @@ import cn.dianedun.fragment.DetectionFragment;
 import cn.dianedun.fragment.HomeFragment;
 import cn.dianedun.fragment.MineFragment;
 import cn.dianedun.fragment.VideoFragment;
+import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppManager;
 import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.BottomBarView.BottomBar;
@@ -71,11 +72,12 @@ public class MainActivity extends BaseActivity {
         mBottomBar.setOnTabSelectedListener(new BottomBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position, int prePosition) {
-                showHideFragment(mFragments[position], mFragments[prePosition]);
+                    showHideFragment(mFragments[position], mFragments[prePosition]);
             }
 
             @Override
             public void onTabUnselected(int position) {
+
             }
 
             @Override

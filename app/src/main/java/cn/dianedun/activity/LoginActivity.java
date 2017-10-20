@@ -31,6 +31,7 @@ import org.xutils.x;
 import cn.dianedun.R;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by Administrator on 2017/8/3.
@@ -75,7 +76,6 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         AppManager.getInstance().addActivity(this);
         initView();
         getData();
-
     }
 
     private void initView() {
@@ -240,7 +240,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
         @Override
         protected void onPreExecute() {
-            dialog = ProgressDialog.show(LoginActivity.this, "登录提示", "正在登录，请稍等。。。", false);
+            dialog = ProgressDialog.show(LoginActivity.this, "登录提示", "正在登录，请稍等...", false);
             super.onPreExecute();
         }
 
@@ -263,7 +263,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
             @Override
             public void onSuccess(String result) {
-                Log.e("result",result);
+                Log.e("result", result);
                 try {
                     JSONObject jsonObject = new JSONObject(result);
                     if (jsonObject.getString("code").equals("0")) {
@@ -290,14 +290,14 @@ public class LoginActivity extends Activity implements View.OnClickListener {
                             String msg = jsonObject.getString("msg");
                             showToast(msg);
                         }
-                        ed_login_psw.setText("");
-                    } else if (jsonObject.getString("code").equals("1008")) {
+                    } else if (jsonObject.getString("code").equals("1003")) {
                         ll_login_yz.setVisibility(View.VISIBLE);
                         booljy = true;
+                        String msg = jsonObject.getString("msg");
+                        showToast(msg);
                     } else {
                         String msg = jsonObject.getString("msg");
                         showToast(msg);
-                        ed_login_psw.setText("");
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -307,7 +307,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
             @Override
             public void onError(Throwable ex, boolean isOnCallback) {
-                showToast("请检查网络");
+                showToast("网络异常，请检查网络是否畅通");
                 dialog.dismiss();
             }
 

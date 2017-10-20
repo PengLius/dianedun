@@ -1,10 +1,16 @@
 package cn.dianedun.activity;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.webkit.WebView;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 
+import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.tools.App;
@@ -16,7 +22,10 @@ import cn.dianedun.tools.MyAsyncTast;
  */
 
 public class WeActivity extends BaseTitlActivity {
+    @Bind(R.id.web_we)
+    WebView web_we;
     private MyAsyncTast myAsyncTast;
+    private String text;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,14 +40,24 @@ public class WeActivity extends BaseTitlActivity {
     }
 
     public void getDate() {
-        myAsyncTast = new MyAsyncTast(WeActivity.this, new HashMap<String, String>(), "", App.getInstance().getToken(), new MyAsyncTast.Callback() {
+        myAsyncTast = new MyAsyncTast(WeActivity.this, new HashMap<String, String>(), AppConfig.FINDABOUTUS, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-                
+
             }
 
             @Override
             public void send(String result) {
+                try {
+                    JSONObject jsonObject = new JSONObject(result);
+                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                    text = jsonObject1.getString("text");
+                    web_we.loadDataWithBaseURL(null, text, "text/html", "utf-8", null);
+                    web_we.setBackgroundColor(Color.parseColor("#6019246B"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
 
             }
         });

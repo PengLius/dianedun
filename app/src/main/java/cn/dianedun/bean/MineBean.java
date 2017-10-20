@@ -9,7 +9,7 @@ public class MineBean {
     /**
      * code : 0
      * msg : 成功
-     * data : {"id":"402823815df2ea32015df2f4c8b80011","activitisync":"","browser":"","password":"","realname":"刘朋有权限","signature":"","status":"","userkey":"","username":"liupengyou","departid":"","deleteFlag":"","token":"","mobilephone":"15933227792","headimg":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/image/1506333173776688.jpg","logtime":"2017-09-26 08:59:11.0","unreadCount":0}
+     * data : {"id":"2c9a307d5f2d37a4015f327035c900a5","activitisync":"","browser":"","password":"","realname":"李毅","signature":"","status":"","userkey":"","username":"liyi","departid":"","deleteFlag":"","token":"","mobilephone":"15265478956","headimg":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/20171019095751PxYxLmFj.png","logtime":"","unreadCount":0,"statues":0}
      */
 
     private int code;
@@ -42,22 +42,23 @@ public class MineBean {
 
     public static class DataBean {
         /**
-         * id : 402823815df2ea32015df2f4c8b80011
+         * id : 2c9a307d5f2d37a4015f327035c900a5
          * activitisync :
          * browser :
          * password :
-         * realname : 刘朋有权限
+         * realname : 李毅
          * signature :
          * status :
          * userkey :
-         * username : liupengyou
+         * username : liyi
          * departid :
          * deleteFlag :
          * token :
-         * mobilephone : 15933227792
-         * headimg : http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/image/1506333173776688.jpg
-         * logtime : 2017-09-26 08:59:11.0
+         * mobilephone : 15265478956
+         * headimg : http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/20171019095751PxYxLmFj.png
+         * logtime :
          * unreadCount : 0
+         * statues : 0
          */
 
         private String id;
@@ -76,6 +77,7 @@ public class MineBean {
         private String headimg;
         private String logtime;
         private int unreadCount;
+        private int statues;
 
         public String getId() {
             return id;
@@ -203,6 +205,14 @@ public class MineBean {
 
         public void setUnreadCount(int unreadCount) {
             this.unreadCount = unreadCount;
+        }
+
+        public int getStatues() {
+            return statues;
+        }
+
+        public void setStatues(int statues) {
+            this.statues = statues;
         }
     }
 }

@@ -40,7 +40,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_annul_gdhs"
-                    android:text="123456789"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -72,7 +72,7 @@
                     android:layout_marginTop="20dp"
                     android:layout_toLeftOf="@+id/img_annul_jb"
                     android:layout_toRightOf="@+id/tv_annul_sqrs"
-                    android:text="张三"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -97,7 +97,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:text="2016-5-12 23:20:11"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -120,7 +120,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:text="2016-5-12 23:20:11"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -145,7 +145,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_annul_gdhs"
-                    android:text="保定市北市区炫彩soho"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -169,7 +169,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_annul_gdhs"
-                    android:text="保定市北市区炫彩soho"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -184,7 +184,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="150dp"
                 android:layout_marginTop="10dp"
                 android:background="#6019246B">
 

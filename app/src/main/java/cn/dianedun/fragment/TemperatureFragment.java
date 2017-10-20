@@ -131,12 +131,15 @@ public class TemperatureFragment extends Fragment {
                 cache.ll_temperature.setVisibility(View.GONE);
             }
             cache.tv_wd_name.setText(allList.get(position).get("number"));
-            cache.tv_wd_wd.setText(allList.get(position).get("val")+"℃");
+            cache.tv_wd_wd.setText(allList.get(position).get("val") + "℃");
             if (allList.get(position).get("level").equals("0")) {
                 cache.img_wd_type.setImageResource(R.mipmap.jc_green);
-            } else {
+            } else if (allList.get(position).get("level").equals("1")) {
+                cache.img_wd_type.setImageResource(R.mipmap.jc_ye);
+            } else if (allList.get(position).get("level").equals("2")) {
                 cache.img_wd_type.setImageResource(R.mipmap.jc_red);
             }
+
             return convertView;
         }
     }

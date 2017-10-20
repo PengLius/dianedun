@@ -35,6 +35,8 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.thinkcool.circletextimageview.CircleTextImageView;
 
+import org.xutils.common.Callback;
+import org.xutils.http.RequestParams;
 import org.xutils.x;
 
 import java.io.File;
@@ -103,6 +105,8 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
     @Bind(R.id.headView)
     TextView headView;
 
+    @Bind(R.id.tv_mine_bbh)
+    TextView tv_mine_bbh;
 
     private Intent intent;
     private MyAsyncTast myAsyncTast;
@@ -145,6 +149,8 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
         rl_mine_out.setOnClickListener(this);
         pop_tv_qx.setOnClickListener(this);
         pop_tv_qr.setOnClickListener(this);
+        String bbh = getVersionName(getActivity());
+        tv_mine_bbh.setText("当前版本：" + bbh);
         initRefreshLayout();
     }
 
@@ -176,7 +182,7 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
                 break;
             case R.id.ll_mine_phone:
                 intent = new Intent(Intent.ACTION_DIAL);
-                Uri data = Uri.parse("tel:" + 123456789);
+                Uri data = Uri.parse("tel:" + "400-096-2006");
                 intent.setData(data);
                 startActivity(intent);
                 break;
@@ -271,17 +277,28 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
 
             @Override
             public void send(String result) {
-                Log.e("result", result);
                 bean = GsonUtil.parseJsonWithGson(result, MineBean.class);
                 imagUrl = bean.getData().getHeadimg();
                 phone = bean.getData().getMobilephone() + "";
-                time = bean.getData().getLogtime();
                 username = bean.getData().getUsername();
                 realname = bean.getData().getRealname();
-                tv_mine_adrestime.setText("您上次于 " + time + "登录");
-                Glide.with(getActivity()).load(imagUrl).into(img_mine_head);
-                tv_mine_phone.setText(bean.getData().getMobilephone() + "");
-                tv_mine_name.setText(bean.getData().getUsername() + "");
+                if (bean.getData().getLogtime() == null) {
+                    tv_mine_adrestime.setText("欢迎使用电e盾");
+                } else {
+                    if (bean.getData().getLogtime().equals("null")) {
+                        tv_mine_adrestime.setText("欢迎使用电e盾");
+                    } else {
+                        time = bean.getData().getLogtime();
+                        tv_mine_adrestime.setText("您上次于 " + time + "登录");
+                    }
+                }
+                if (imagUrl == null || imagUrl.equals("")) {
+                    Glide.with(getActivity()).load(R.mipmap.login_logo).into(img_mine_head);
+                } else {
+                    Glide.with(getActivity()).load(imagUrl).into(img_mine_head);
+                }
+                tv_mine_phone.setText("手机号：" + phone + "");
+                tv_mine_name.setText("用户名：" + username + "");
                 if (bean.getData().getUnreadCount() > 0) {
                     img_mine_msg.setImageResource(R.mipmap.my_msg);
                 } else {
@@ -349,44 +366,54 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
             String path = Environment.getExternalStorageDirectory().getAbsolutePath()
                     + File.separator + "minEgou.apk";
             //3,发送请求,获取apk,并且放置到指定路径
-            HttpUtils httpUtils = new HttpUtils();
+            RequestParams params = new RequestParams(downUrl);
             //4,发送请求,传递参数(下载地址,下载应用放置位置)
-            httpUtils.download(downUrl, path, new RequestCallBack<File>() {
+            params.setSaveFilePath(path);
+            x.http().get(params, new Callback.ProgressCallback<File>() {
                 @Override
-                public void onSuccess(ResponseInfo<File> responseInfo) {
-                    //下载成功(下载过后的放置在sd卡中apk)
+                public void onSuccess(File result) {
                     Log.i("", "下载成功");
-                    File file = responseInfo.result;
+                    File file = result;
                     //提示用户安装
                     diaglog.dismiss();
                     installApk(file);
                 }
 
                 @Override
-                public void onFailure(HttpException error, String msg) {
-                    Log.i("", "下载失败");
+                public void onError(Throwable ex, boolean isOnCallback) {
                     diaglog.dismiss();
                     showToast("下载失败");
                 }
 
-                //刚刚开始下载方法
                 @Override
-                public void onStart() {
-                    diaglog = createLoadingDialog(getActivity(), "安装包下载中...");
-                    diaglog.show();
-                    super.onStart();
+                public void onCancelled(CancelledException cex) {
+
                 }
 
-                //下载过程中的方法(下载apk总大小,当前的下载位置,是否正在下载)
                 @Override
-                public void onLoading(long total, long current, boolean isUploading) {
+                public void onFinished() {
+
+                }
+
+
+                @Override
+                public void onWaiting() {
+
+                }
+
+                @Override
+                public void onStarted() {
+                    diaglog = createLoadingDialog(getActivity(), "安装包下载中...");
+                    diaglog.show();
+                }
+
+                @Override
+                public void onLoading(long total, long current, boolean isDownloading) {
                     Log.i("", "下载中........");
                     Log.i("", "total = " + total);
                     Log.i("", "current = " + current);
-                    super.onLoading(total, current, isUploading);
                 }
             });
-
         }
     }
 

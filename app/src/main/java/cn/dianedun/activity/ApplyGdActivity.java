@@ -168,6 +168,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     private AnimationDrawable animationDrawable;
     private Date startTimer;
     private String xxAdress = "";
+    private LinearLayout ll_view;
 
 
     @Override
@@ -187,6 +188,13 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
         gv_amendgd = (GridView) view.findViewById(R.id.gv_amendgd);
         tv_sqr_qd = (TextView) view.findViewById(R.id.tv_sqr_qd);
         tv_sqr_cz = (TextView) view.findViewById(R.id.tv_sqr_cz);
+        ll_view = (LinearLayout) view.findViewById(R.id.ll_view);
+        ll_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pop.dismiss();
+            }
+        });
         lv_itemadress = (ListView) view2.findViewById(R.id.lv_itemadress);
         ll_adress_close = (LinearLayout) view2.findViewById(R.id.ll_adress_close);
         rl_luyin_type = (RelativeLayout) view3.findViewById(R.id.rl_luyin_type);
@@ -378,68 +386,83 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
             case R.id.img_amendgd_yuyin:
                 //语音
-                showDialog3();
+                if (obj2.equals("")) {
+                    showDialog3();
+                } else {
+                    showToast("已存在录音文件");
+                }
                 break;
             case R.id.rl_amendgd_tj:
                 //提交
-                SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-                Date curDate = new Date(System.currentTimeMillis());//获取当前时间
-                String applyTime = formatter.format(curDate);
-                String handlePersion = "";
-                if (nameList.size() > 0) {
-                    for (int i = 0; i < nameList.size(); i++) {
-                        if ((i + 1) != nameList.size()) {
-                            handlePersion = handlePersion + nameList.get(i) + ",";
-                        } else {
-                            handlePersion = handlePersion + nameList.get(i);
+                if (beginTime == null) {
+                    showToast("请选择开始时间");
+                } else if (endTime == null) {
+                    showToast("请选择结束时间");
+                } else if (departId == null) {
+                    showToast("请选择地点");
+                } else if (nameList == null || nameList.size() == 0) {
+                    showToast("请选择申请人");
+                } else if (ed_amendgd_sqyy.getText() == null || ed_amendgd_sqyy.getText().toString().equals("")) {
+                    showToast("请填写申请原因");
+                } else {
+                    SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+                    Date curDate = new Date(System.currentTimeMillis());//获取当前时间
+                    String applyTime = formatter.format(curDate);
+                    String handlePersion = "";
+                    if (nameList.size() > 0) {
+                        for (int i = 0; i < nameList.size(); i++) {
+                            if ((i + 1) != nameList.size()) {
+                                handlePersion = handlePersion + nameList.get(i) + ",";
+                            } else {
+                                handlePersion = handlePersion + nameList.get(i);
+                            }
                         }
                     }
-                }
-                HashMap hashMap = new HashMap();
-                if (departId != null) {
-                    hashMap.put("departId", departId);
-                }
-                if (level != null) {
-                    hashMap.put("urgency", level);
-                }
-                if (applyTime != null) {
-                    hashMap.put("applyTime", applyTime + ":00");
-                }
-                if (handlePersion != null) {
-                    hashMap.put("handlePersion", handlePersion);
-                }
-                hashMap.put("address", xxAdress);
-                if (beginTime != null) {
-                    hashMap.put("beginTime", beginTime + ":00");
-                }
-                if (endTime != null) {
-                    hashMap.put("endTime", endTime + ":00");
-                }
-                if (ed_amendgd_sqyy.getText() != null) {
-                    hashMap.put("cause", ed_amendgd_sqyy.getText().toString());
-                }
-                if (!obj2.equals("")) {
-                    hashMap.put("jsonStr", obj2);
-                }
-                myAsyncTast = new MyAsyncTast(ApplyGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-
-                    @Override
-                    public void onError(String result) {
-
+                    HashMap hashMap = new HashMap();
+                    if (departId != null) {
+                        hashMap.put("departId", departId);
                     }
+                    if (level != null) {
+                        hashMap.put("urgency", level);
+                    }
+                    if (applyTime != null) {
+                        hashMap.put("applyTime", applyTime + ":00");
+                    }
+                    if (handlePersion != null) {
+                        hashMap.put("handlePersion", handlePersion);
+                    }
+                    hashMap.put("address", xxAdress);
+                    if (beginTime != null) {
+                        hashMap.put("beginTime", beginTime + ":00");
+                    }
+                    if (endTime != null) {
+                        hashMap.put("endTime", endTime + ":00");
+                    }
+                    if (ed_amendgd_sqyy.getText() != null) {
+                        hashMap.put("cause", ed_amendgd_sqyy.getText().toString());
+                    }
+                    if (!obj2.equals("")) {
+                        hashMap.put("jsonStr", obj2);
+                    }
+                    myAsyncTast = new MyAsyncTast(ApplyGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
 
-                    @Override
-                    public void send(String result) {
-                        ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
-                        if (bean.getCode() == 0) {
-                            showToast("工单提交成功");
-                            finish();
-                        } else {
-                            showToast(bean.getMsg());
+                        @Override
+                        public void onError(String result) {
                         }
-                    }
-                });
-                myAsyncTast.execute();
+
+                        @Override
+                        public void send(String result) {
+                            ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
+                            if (bean.getCode() == 0) {
+                                showToast("工单提交成功");
+                                finish();
+                            } else {
+                                showToast(bean.getMsg());
+                            }
+                        }
+                    });
+                    myAsyncTast.execute();
+                }
                 break;
             case R.id.rl_luyin_type:
                 //开始录音
@@ -832,7 +855,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                                                 tv_amendgd_lytime.setText(a + "'" + b + "\"");
                                             }
                                         }
-                                        if(animationDrawable!=null){
+                                        if (animationDrawable != null) {
                                             if (animationDrawable.isRunning()) {
                                                 animationDrawable.stop();
                                             }

@@ -90,8 +90,14 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
     @Bind(R.id.tv_examine_time)
     TextView tv_examine_time;
 
+    @Bind(R.id.rl_examine_con)
+    RelativeLayout rl_examine_con;
 
-    private String applyStatus = "0";
+    @Bind(R.id.tv_annul_xxadr)
+    TextView tv_annul_xxadr;
+
+
+    private String applyStatus = "1";
     private MyAsyncTast myAsyncTast;
     private HashMap<String, String> hashMap;
     private DetailsBean bean;
@@ -158,7 +164,8 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                 tv_examine_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm"));
                 tv_examine_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm"));
                 tv_examine_cause.setText(bean.getData().getCause() + "");
-                tv_annul_adr.setText(bean.getData().getAddress() + "");
+                tv_annul_xxadr.setText(bean.getData().getAddress() + "");
+                tv_annul_adr.setText(bean.getData().getDepartName() + "");
                 if (bean.getData().getUrgency() == 0) {
                     img_examine_sta.setImageResource(R.mipmap.home_jg_yellow);
                 } else {
@@ -237,7 +244,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                                     tv_examine_time.setText(a + "'" + b + "\"");
                                 }
                             }
-                            if(animationDrawable!=null){
+                            if (animationDrawable != null) {
                                 animationDrawable.stop();
                             }
                             img_examine_yy.setImageResource(R.mipmap.yp_bf);
@@ -260,6 +267,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                 img_examine_pass.setImageResource(R.mipmap.dot_bule);
                 img_examine_reject.setImageResource(R.mipmap.dot_null);
                 applyStatus = "1";
+                rl_examine_con.setVisibility(View.GONE);
                 break;
 
             case R.id.ll_examine_reject:
@@ -267,6 +275,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                 img_examine_reject.setImageResource(R.mipmap.dot_bule);
                 img_examine_pass.setImageResource(R.mipmap.dot_null);
                 applyStatus = "0";
+                rl_examine_con.setVisibility(View.VISIBLE);
                 break;
 
             case R.id.rl_examine_sub:
@@ -274,25 +283,45 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                 hashMap = new HashMap<>();
                 hashMap.put("Num", getIntent().getStringExtra("orderNum"));
                 hashMap.put("applyStatus", applyStatus);
-                if (ed_examine_cause.getText() != null) {
-                    hashMap.put("rejectCause", ed_examine_cause.getText().toString());
-                }
-                myAsyncTast = new MyAsyncTast(ExamineActivity.this, hashMap, AppConfig.APPROVALHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-                    @Override
-                    public void onError(String result) {
+                if (applyStatus.equals("0")) {
+                    if (ed_examine_cause.getText() == null || ed_examine_cause.getText().toString().equals("")) {
+                        showToast("请填写驳回原因");
+                    } else {
+                        hashMap.put("rejectCause", ed_examine_cause.getText().toString());
+                        myAsyncTast = new MyAsyncTast(ExamineActivity.this, hashMap, AppConfig.APPROVALHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                            @Override
+                            public void onError(String result) {
 
+                            }
+
+                            @Override
+                            public void send(String result) {
+                                ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
+                                if (bean.getCode() == 0) {
+                                    showToast("审批成功");
+                                    finish();
+                                }
+                            }
+                        });
+                        myAsyncTast.execute();
                     }
-
-                    @Override
-                    public void send(String result) {
-                        ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
-                        if (bean.getCode() == 0) {
-                            showToast("审批成功");
-                            finish();
+                } else {
+                    myAsyncTast = new MyAsyncTast(ExamineActivity.this, hashMap, AppConfig.APPROVALHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                        @Override
+                        public void onError(String result) {
                         }
-                    }
-                });
-                myAsyncTast.execute();
+
+                        @Override
+                        public void send(String result) {
+                            ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
+                            if (bean.getCode() == 0) {
+                                showToast("审批成功");
+                                finish();
+                            }
+                        }
+                    });
+                    myAsyncTast.execute();
+                }
                 break;
             case R.id.rl_examine:
                 if (type == 0) {

@@ -13,6 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -74,6 +75,18 @@ public class HisDetailsActivity extends BaseTitlActivity {
     @Bind(R.id.gv_hisdetauls)
     NoScrollGridview gv_hisdetauls;
 
+    @Bind(R.id.rl_hisdetails)
+    RelativeLayout rl_hisdetails;
+
+    @Bind(R.id.img_hisdetails_yy)
+    ImageView img_hisdetails_yy;
+
+    @Bind(R.id.tv_hisdetails_time)
+    TextView tv_hisdetails_time;
+
+    @Bind(R.id.tv_hisdetails_tit)
+    TextView tv_hisdetails_tit;
+
 
     private Intent intent;
     private MyAsyncTast myAsyncTast;
@@ -81,7 +94,11 @@ public class HisDetailsActivity extends BaseTitlActivity {
     private DetailsBean bean;
     private List<String> imgList;
     private int type = 0;
+    private String contents;
     private AnimationDrawable animationDrawable;
+    private MediaPlayer player;
+    private CountDownTimer countDownTimer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,13 +131,26 @@ public class HisDetailsActivity extends BaseTitlActivity {
                 tv_hisdetails_name.setText(bean.getData().getHandlePersion() + "");
                 String beginTime = bean.getData().getBeginTime() / 1000 + "";
                 String endTime = bean.getData().getEndTime() / 1000 + "";
-                tv_hisdetails_startime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm"));
-                tv_hisdetails_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm"));
+                tv_hisdetails_startime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm") + ":00");
+                tv_hisdetails_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm") + ":00");
                 tv_hisdetails_cause.setText(bean.getData().getCause() + "");
                 tv_hisdetails_adress.setText(bean.getData().getDepartName() + "");
                 tv_hisdetails_xxadress.setText(bean.getData().getAddress() + "");
                 tv_hisdetails_nmb.setText(bean.getData().getOrderNum() + "");
-                tv_hisdetails_cl.setText(bean.getData().getFeedCause() + "");
+                if (bean.getData().getStatus() == 0) {
+                    tv_hisdetails_tit.setText("撤销原因：");
+                    if (bean.getData().getRemark().equals("null")) {
+                        tv_hisdetails_cl.setText("");
+                    } else {
+                        tv_hisdetails_cl.setText(bean.getData().getRemark() + "");
+                    }
+                } else {
+                    if (bean.getData().getFeedCause().equals("null")) {
+                        tv_hisdetails_cl.setText("");
+                    } else {
+                        tv_hisdetails_cl.setText(bean.getData().getFeedCause() + "");
+                    }
+                }
                 if (bean.getData().getAlertOptionsArray().size() > 0) {
                     GirdAdapter adapter = new GirdAdapter();
                     gv_hisdetauls.setAdapter(adapter);
@@ -128,7 +158,112 @@ public class HisDetailsActivity extends BaseTitlActivity {
                         if (bean.getData().getAlertOptionsArray().get(i).getOptionType() == 0) {
                             imgList.add(bean.getData().getAlertOptionsArray().get(i).getContents());
                         }
+                        if (bean.getData().getAlertOptionsArray().get(i).getOptionType() == 1 && bean.getData().getAlertOptionsArray().get(i)
+                                .getType() == 4) {
+                            rl_hisdetails.setVisibility(View.VISIBLE);
+                            contents = bean.getData().getAlertOptionsArray().get(i).getContents();
+                        }
                     }
+                    player = MediaPlayer.create(getApplicationContext(), Uri.parse(contents));
+                    long f = player.getDuration() / 1000 / 60;
+                    long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
+                    if (f < 10) {
+                        if (m < 10) {
+                            tv_hisdetails_time.setText("0" + f + "'" + "0" + m + "\"");
+                        } else {
+                            tv_hisdetails_time.setText("0" + f + "'" + m + "\"");
+                        }
+                    } else {
+                        if (m < 10) {
+                            tv_hisdetails_time.setText(f + "'" + "0" + m + "\"");
+                        } else {
+                            tv_hisdetails_time.setText(f + "'" + m + "\"");
+                        }
+                    }
+                    rl_hisdetails.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            if (type == 0) {
+                                player.start();
+                                countDownTimer.start();
+                                img_hisdetails_yy.setImageResource(R.drawable.animation1);
+                                animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
+                                animationDrawable.start();
+                                type = 1;
+                            } else if (type == 1) {
+                                img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
+                                player.pause();
+                                countDownTimer.pause();
+                                type = 2;
+                                animationDrawable.stop();
+                            } else {
+                                player.start();
+                                countDownTimer.resume();
+                                img_hisdetails_yy.setImageResource(R.drawable.animation1);
+                                animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
+                                animationDrawable.start();
+                                type = 1;
+                            }
+                        }
+                    });
+
+                    countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
+                            long f = millisUntilFinished / 1000 / 60;
+                            long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                            if (f < 10) {
+                                if (m < 10) {
+                                    tv_hisdetails_time.setText("0" + f + "'" + "0" + m + "\"");
+                                } else {
+                                    tv_hisdetails_time.setText("0" + f + "'" + m + "\"");
+                                }
+                            } else {
+                                if (m < 10) {
+                                    tv_hisdetails_time.setText(f + "'" + "0" + m + "\"");
+                                } else {
+                                    tv_hisdetails_time.setText(f + "'" + m + "\"");
+                                }
+                            }
+                        }
+
+                        @Override
+                        public void onCancel(long millisUntilFinished) {
+                        }
+
+                        @Override
+                        public void onPause(long millisUntilFinished) {
+
+                        }
+
+                        @Override
+                        public void onResume(long millisUntilFinished) {
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            long a = player.getDuration() / 1000 / 60;
+                            long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                            if (a < 10) {
+                                if (b < 10) {
+                                    tv_hisdetails_time.setText("0" + a + "'" + "0" + b + "\"");
+                                } else {
+                                    tv_hisdetails_time.setText("0" + a + "'" + b + "\"");
+                                }
+                            } else {
+                                if (b < 10) {
+                                    tv_hisdetails_time.setText(a + "'" + "0" + b + "\"");
+                                } else {
+                                    tv_hisdetails_time.setText(a + "'" + b + "\"");
+                                }
+                            }
+                            if (animationDrawable != null) {
+                                animationDrawable.stop();
+                            }
+                            img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
+                            type = 0;
+                        }
+                    };
                 }
             }
         });
@@ -243,7 +378,7 @@ public class HisDetailsActivity extends BaseTitlActivity {
                                 tv_fjyp_time.setText(a + "'" + b + "\"");
                             }
                         }
-                        if(animationDrawable!=null){
+                        if (animationDrawable != null) {
                             animationDrawable.stop();
                         }
                         img_fjyp_yy.setImageResource(R.mipmap.yp_bf);

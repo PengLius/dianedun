@@ -41,7 +41,7 @@
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
             android:layout_marginBottom="3dp"
-            android:background="@mipmap/home_look" />
+            android:background="@mipmap/jc_topright" />
     </RelativeLayout>
 
     <RelativeLayout

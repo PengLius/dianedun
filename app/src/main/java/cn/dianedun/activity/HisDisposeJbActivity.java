@@ -56,6 +56,9 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
     @Bind(R.id.gv_hisdetauls)
     NoScrollGridview gv_hisdetauls;
 
+    @Bind(R.id.tv_hisdisposejb_person)
+    TextView tv_hisdisposejb_person;
+
     private List<String> imgList;
 
 
@@ -94,8 +97,9 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
                 tv_hisdisposejb_cause.setText(bean.getData().getAlertDetails());
                 tv_hisdisposejb_xxadress.setText(bean.getData().getAddress());
                 tv_hisdisposejb_reult.setText(bean.getData().getResult());
+                tv_hisdisposejb_person.setText(bean.getData().getUpdateName());
                 if (bean.getData().getType() == 1) {
-                    tv_hisdisposejb_type.setText("普通");
+                    tv_hisdisposejb_type.setText("一般");
                 } else {
                     tv_hisdisposejb_type.setText("严重");
                 }
@@ -222,7 +226,7 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
                                 tv_fjyp_time.setText(a + "'" + b + "\"");
                             }
                         }
-                        if(animationDrawable!=null){
+                        if (animationDrawable != null) {
                             animationDrawable.stop();
                         }
                         img_fjyp_yy.setImageResource(R.mipmap.yp_bf);

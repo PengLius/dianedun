@@ -4,6 +4,8 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.format.DateUtils;
+import android.util.Log;
 import android.view.ContextThemeWrapper;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,11 +17,14 @@ import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.TimePicker;
 
+import com.vise.utils.assist.DateUtil;
+
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
 import cn.dianedun.R;
+import cn.dianedun.tools.DataUtil;
 
 /**
  * Created by Administrator on 2017/8/10.
@@ -83,7 +88,6 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
 
         timePicker = new TimePicker(getContext());
         timePicker.setIs24HourView(true);
-
         viewPager = (ViewPager) view.findViewById(R.id.contentViewPager);
         okButton = (Button) view.findViewById(R.id.okButton);
         cancleButton = (Button) view.findViewById(R.id.cancelButton);
@@ -93,7 +97,7 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
 
         datePickerView = localInflater.inflate(R.layout.view_date_picker_layout, null);
         datePicker = (DatePicker) datePickerView.findViewById(R.id.datePicker);
-
+        datePicker.setMinDate(DataUtil.getDates(new Date().getTime() + "").getTime());
         timePickerView = localInflater.inflate(R.layout.view_time_picker_layout, null);
         timePicker = (TimePicker) timePickerView.findViewById(R.id.timePicker);
 
@@ -143,11 +147,9 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
         cancleButton.setOnClickListener(this);
         okButton.setOnClickListener(this);
         //初始化 显示 时间
-        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), this);
-        timePicker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
-        timePicker.setCurrentMinute(calendar.get(Calendar.MINUTE));
-
-
+//        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), this);
+//        timePicker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
+//        timePicker.setCurrentMinute(calendar.get(Calendar.MINUTE));
     }
 
     /**

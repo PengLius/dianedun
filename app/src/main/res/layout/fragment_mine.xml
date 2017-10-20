@@ -50,7 +50,7 @@
                             android:layout_height="100dp"
                             android:layout_centerVertical="true"
                             android:layout_margin="10dp"
-                            android:src="@mipmap/ic_launcher"
+                            android:src="@mipmap/login_logo"
                             app:citv_border_color="#1761A7"
                             app:citv_border_width="2dp" />
 
@@ -65,7 +65,7 @@
                                 android:id="@+id/tv_mine_phone"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="15933227792"
+                                android:text="手机号："
                                 android:textColor="#FFF"
                                 android:textSize="@dimen/content_text_s14" />
 
@@ -74,7 +74,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="10dp"
-                                android:text="刘小贱"
+                                android:text="用户名："
                                 android:textColor="#FFF"
                                 android:textSize="@dimen/content_text_s14" />
                         </LinearLayout>
@@ -200,7 +200,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="10dp"
                         android:layout_weight="1"
-                        android:text="客服电话"
+                        android:text="客服电话 400-096-2006"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 
@@ -280,6 +280,14 @@
                         android:layout_marginLeft="10dp"
                         android:layout_weight="1"
                         android:text="检查更新"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+
+                    <TextView
+                        android:id="@+id/tv_mine_bbh"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 

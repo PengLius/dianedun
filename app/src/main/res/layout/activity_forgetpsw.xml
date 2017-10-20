@@ -37,7 +37,7 @@
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:background="@mipmap/login_phone" />
+                        android:background="@mipmap/user" />
 
                     <EditText
                         android:id="@+id/ed_forget_user"
@@ -106,7 +106,7 @@
                                     android:id="@+id/ed_forget_yzm"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginLeft="15dp"
+                                    android:layout_marginLeft="20dp"
                                     android:layout_marginRight="20dp"
                                     android:layout_weight="1"
                                     android:background="@null"
@@ -186,7 +186,7 @@
                         android:id="@+id/ed_forget_psw"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
+                        android:layout_marginLeft="13dp"
                         android:layout_weight="1"
                         android:background="@null"
                         android:hint="请输入登录密码"
@@ -236,28 +236,28 @@
                         android:textSize="@dimen/content_text_s18" />
                 </RelativeLayout>
 
-                <RelativeLayout
-                    android:id="@+id/rl_forget_failure"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dp">
+                <!--<RelativeLayout-->
+                    <!--android:id="@+id/rl_forget_failure"-->
+                    <!--android:layout_width="match_parent"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:layout_marginTop="10dp">-->
 
-                    <ImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:layout_centerVertical="true"
-                        android:src="@mipmap/button_white" />
+                    <!--<ImageView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerHorizontal="true"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:src="@mipmap/button_white" />-->
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
-                        android:layout_centerVertical="true"
-                        android:text="取消"
-                        android:textColor="#000"
-                        android:textSize="@dimen/content_text_s18" />
-                </RelativeLayout>
+                    <!--<TextView-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerHorizontal="true"-->
+                        <!--android:layout_centerVertical="true"-->
+                        <!--android:text="取消"-->
+                        <!--android:textColor="#000"-->
+                        <!--android:textSize="@dimen/content_text_s18" />-->
+                <!--</RelativeLayout>-->
             </LinearLayout>
         </LinearLayout>
     </ScrollView>

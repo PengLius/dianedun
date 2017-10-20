@@ -5,6 +5,14 @@
     android:background="@mipmap/backall"
     android:orientation="vertical">
 
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/srl_detection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.scwang.smartrefresh.layout.header.ClassicsHeader
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"></com.scwang.smartrefresh.layout.header.ClassicsHeader>
 
         <LinearLayout
             android:id="@+id/ll_detection_all"
@@ -85,28 +93,28 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"></android.support.v4.view.ViewPager>
-
         </LinearLayout>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
-        <RelativeLayout
-            android:id="@+id/rl_detection"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="#80000000"
-            android:visibility="gone">
+    <RelativeLayout
+        android:id="@+id/rl_detection"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#80000000"
+        android:visibility="gone">
 
-            <ListView
-                android:id="@+id/lv_detection"
-                android:layout_width="200dp"
-                android:layout_height="220dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:background="@mipmap/jc_item"
-                android:divider="@null"></ListView>
-        </RelativeLayout>
+        <ListView
+            android:id="@+id/lv_detection"
+            android:layout_width="200dp"
+            android:layout_height="220dp"
+            android:layout_centerHorizontal="true"
+            android:layout_centerVertical="true"
+            android:background="@mipmap/jc_item"
+            android:divider="@null"></ListView>
+    </RelativeLayout>
 
-        <com.amap.api.maps2d.MapView
-            android:id="@+id/map"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"></com.amap.api.maps2d.MapView>
+    <com.amap.api.maps2d.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"></com.amap.api.maps2d.MapView>
 </RelativeLayout>

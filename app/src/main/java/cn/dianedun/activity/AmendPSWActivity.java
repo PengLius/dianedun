@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
+import com.vise.xsnow.manager.AppManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -49,9 +50,6 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
 
     @Bind(R.id.img_amendpsw_eyes)
     ImageView img_amendpsw_eyes;
-
-    @Bind(R.id.rl_amendpsw_qx)
-    RelativeLayout rl_amendpsw_qx;
 
     @Bind(R.id.rl_amendpsw_ok)
     RelativeLayout rl_amendpsw_ok;
@@ -99,11 +97,16 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
         img_amendpsw_eyes.setOnClickListener(this);
         tv_amendpsw_yzm.setOnClickListener(this);
         rl_amendpsw_ok.setOnClickListener(this);
-        rl_amendpsw_qx.setOnClickListener(this);
-        Glide.with(AmendPSWActivity.this).load(getIntent().getStringExtra("imagUrl")).into(img_amendpsw_head);
+        String imagUrl = getIntent().getStringExtra("imagUrl");
+        if (imagUrl == null || imagUrl.equals("")) {
+            Glide.with(AmendPSWActivity.this).load(R.mipmap.login_logo).into(img_amendpsw_head);
+        } else {
+            Glide.with(AmendPSWActivity.this).load(imagUrl).into(img_amendpsw_head);
+        }
+
         tv_amendpsw_phone.setText(getIntent().getStringExtra("phone"));
         tv_amendpsw_name.setText(getIntent().getStringExtra("username"));
-        tv_amendpsw_time.setText("您上次于 " + getIntent().getStringExtra("time") + " 在河北 保定 登录");
+        tv_amendpsw_time.setText("您上次于 " + getIntent().getStringExtra("time") + " 登录");
 
     }
 
@@ -195,24 +198,22 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
                                         editor.putString("isAdmin", isAdmin);
                                         editor.commit();
                                         showToast("修改成功");
+                                        AppManager.getInstance().finishActivity(MainActivity.class);
+                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                        startActivity(intent);
                                         finish();
+                                    } else {
+                                        showToast(jsonObject.getString("msg"));
                                     }
-
-
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
-
-                                finish();
                             }
                         });
                         myAsyncTast.execute();
                     }
                 }
 
-                break;
-            case R.id.rl_amendpsw_qx:
-                finish();
                 break;
             default:
                 break;

@@ -4,15 +4,24 @@
     android:layout_height="match_parent"
     android:background="@mipmap/backall"
     android:orientation="vertical">
-    <TextView
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_marginTop="30dp"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
+        android:layout_marginTop="30dp"
+        android:orientation="vertical"
         android:textColor="#FFF"
-        android:textSize="@dimen/content_text_s14"
-        android:background="#6019246B"
-        />
+        android:textSize="@dimen/content_text_s14">
+
+        <WebView
+            android:id="@+id/web_we"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            ></WebView>
+
+    </LinearLayout>
 
 </LinearLayout>

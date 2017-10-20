@@ -11,7 +11,7 @@ public class HisJbBean {
     /**
      * code : 0
      * msg : 成功
-     * data : {"list":[{"id":"402823815dab213e015dab22ce7d0001","createTime":"2017-08-08 21:49:48","departName":"炫彩SOHO2号配电室","address":"保定市炫彩SOHO B座704","departId":"402823815d68419b015d684a10160002","alertDetails":"高压侧1号柜电压异常"}]}
+     * data : {"list":[{"id":"09848f14fbdb493e8031a1bdc86270d6","createTime":"2017-10-12 09:23:00","departName":"尚达豪庭1号配电室","address":"保定市莲池区A座204","departId":"8a8ab0b246dc81120146dc8180bd0018","alertDetails":"高压侧A2电流A120A","type":1},{"id":"c795637330af442aa6508c31fdc74f44","createTime":"2017-10-10 16:39:00","departName":"尚达豪庭1号配电室","address":"保定市莲池区A座204","departId":"8a8ab0b246dc81120146dc8180bd0018","alertDetails":"湿度侧室内湿度异常","type":2},{"id":"c795637330af442aa6508c31fdb74e4b","createTime":"2017-09-27 15:54:46","departName":"尚达豪庭1号配电室","address":"保定市莲池区A座204","departId":"8a8ab0b246dc81120146dc8180bd0018","alertDetails":"低压侧A1设备电流a异常","type":1},{"id":"a9c45925abae46cca37b9977d7893ef5","createTime":"2017-09-29 12:40:49","departName":"尚达豪庭1号配电室","address":"保定市莲池区A座204","departId":"8a8ab0b246dc81120146dc8180bd0018","alertDetails":"温度侧30异常","type":1},{"id":"a381917ae7c241b5b06977e7f43e4c32","createTime":"2017-09-29 12:41:45","departName":"尚达豪庭1号配电室","address":"保定市莲池区A座204","departId":"8a8ab0b246dc81120146dc8180bd0018","alertDetails":"温度侧29异常","type":2},{"id":"c795637330af442aa6508c31fdc74f43","createTime":"2017-10-10 10:24:00","departName":"尚达豪庭1号配电室","address":"保定市莲池区A座204","departId":"8a8ab0b246dc81120146dc8180bd0018","alertDetails":"温度侧29异常","type":2},{"id":"632334ad5148469588c67ee3c642b79d","createTime":"2017-09-29 12:21:12","departName":"尚达豪庭1号配电室","address":"保定市莲池区A座204","departId":"8a8ab0b246dc81120146dc8180bd0018","alertDetails":"温度侧33异常","type":2},{"id":"226de1b9d5064cba91a1a8bc5b3d4c80","createTime":"2017-09-29 12:47:00","departName":"尚达豪庭1号配电室","address":"保定市莲池区A座204","departId":"8a8ab0b246dc81120146dc8180bd0018","alertDetails":"温度侧36异常","type":2}]}
      */
 
     private int code;
@@ -55,12 +55,13 @@ public class HisJbBean {
 
         public static class ListBean {
             /**
-             * id : 402823815dab213e015dab22ce7d0001
-             * createTime : 2017-08-08 21:49:48
-             * departName : 炫彩SOHO2号配电室
-             * address : 保定市炫彩SOHO B座704
-             * departId : 402823815d68419b015d684a10160002
-             * alertDetails : 高压侧1号柜电压异常
+             * id : 09848f14fbdb493e8031a1bdc86270d6
+             * createTime : 2017-10-12 09:23:00
+             * departName : 尚达豪庭1号配电室
+             * address : 保定市莲池区A座204
+             * departId : 8a8ab0b246dc81120146dc8180bd0018
+             * alertDetails : 高压侧A2电流A120A
+             * type : 1
              */
 
             private String id;
@@ -70,14 +71,6 @@ public class HisJbBean {
             private String departId;
             private String alertDetails;
             private int type;
-
-            public int getType() {
-                return type;
-            }
-
-            public void setType(int type) {
-                this.type = type;
-            }
 
             public String getId() {
                 return id;
@@ -125,6 +118,14 @@ public class HisJbBean {
 
             public void setAlertDetails(String alertDetails) {
                 this.alertDetails = alertDetails;
+            }
+
+            public int getType() {
+                return type;
+            }
+
+            public void setType(int type) {
+                this.type = type;
             }
         }
     }

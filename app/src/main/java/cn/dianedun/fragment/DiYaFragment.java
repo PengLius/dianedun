@@ -122,8 +122,9 @@ public class DiYaFragment extends Fragment {
     private void setImag(ImageView imag, String type) {
         if (type.equals("0")) {
             imag.setImageResource(R.mipmap.jc_green);
-
-        } else {
+        } else if (type.equals("1")) {
+            imag.setImageResource(R.mipmap.jc_ye);
+        } else if (type.equals("2")) {
             imag.setImageResource(R.mipmap.jc_red);
         }
 

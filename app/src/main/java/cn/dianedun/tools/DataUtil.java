@@ -54,8 +54,27 @@ public class DataUtil {
     }
 
     public static Date getDate(String timer) {
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         long times = Long.parseLong(timer);
-        Date date = new Date(times);
+        String d = format.format(times);
+        Date date= null;
+        try {
+            date = format.parse(d);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        return date;
+    }
+    public static Date getDates(String timer) {
+        SimpleDateFormat format =  new SimpleDateFormat("yyyy-MM-dd  HH:mm");
+        long times = Long.parseLong(timer);
+        String d = format.format(times);
+        Date date= null;
+        try {
+            date = format.parse(d);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         return date;
     }
 

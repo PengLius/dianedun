@@ -11,7 +11,7 @@ public class DetailsBean {
     /**
      * code : 0
      * msg : 成功
-     * data : {"id":"43c99b18ecbf4351916578c35eea193c","departId":"8a8ab0b246dc81120146dc8180a20016","orderNum":"00906023026760","urgency":2,"orderOwner":"liupengyou","createTime":"","applyTime":1504679400000,"feedTime":"","handlePersion":"管理员,刘朋有权限,张亮有权限","address":"看看","beginTime":1504679340000,"endTime":1504679340000,"applyStatus":"","status":4,"rejectCause":"","feedCause":"","feedOption":"","cause":"看见了","remark":"","createName":"刘朋有权限","createBy":"402823815df2ea32015df2f4c8b80011","createDate":"","updateName":"","updateBy":"","updateDate":"","sysOrgCode":"","sysCompanyCode":"","bpmStatus":"","alertOptionsArray":[{"id":3,"optionId":"402823815dcc085b015dcc0a7b750003","type":5,"optionType":1,"contents":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/skttest"}],"persionArray":[],"departName":"新大长远","delayTime":0}
+     * data : {"id":"ff96271344c948eab3f3a7c4739240c3","departId":"8a8ab0b246dc81120146dc8180bd0018","orderNum":"01016085256135","urgency":0,"orderOwner":"liupengwu","createTime":1508115177000,"applyTime":1508115120000,"feedTime":null,"handlePersion":"杨阳,册世,张技术员,杨洋,李技术员","address":"保定市莲池区A座204","beginTime":1508115120000,"endTime":1508115180000,"applyStatus":0,"status":3,"rejectCause":"理由不充分","feedCause":null,"feedOption":null,"cause":"配电室异常","remark":null,"createName":"刘朋无","createBy":"402823815df2ea32015df2f5f0d60015","createDate":null,"updateName":null,"updateBy":null,"updateDate":null,"sysOrgCode":null,"sysCompanyCode":null,"bpmStatus":null,"alertOptionsArray":[{"id":3,"optionId":"402823815dcc085b015dcc0a7b750003","type":5,"optionType":1,"contents":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/skttest"}],"persionArray":["杨阳","册世","张技术员","杨洋","李技术员"],"departName":"尚达豪庭1号配电室","delayTime":0}
      */
 
     private int code;
@@ -44,37 +44,37 @@ public class DetailsBean {
 
     public static class DataBean {
         /**
-         * id : 43c99b18ecbf4351916578c35eea193c
-         * departId : 8a8ab0b246dc81120146dc8180a20016
-         * orderNum : 00906023026760
-         * urgency : 2
-         * orderOwner : liupengyou
-         * createTime :
-         * applyTime : 1504679400000
-         * feedTime :
-         * handlePersion : 管理员,刘朋有权限,张亮有权限
-         * address : 看看
-         * beginTime : 1504679340000
-         * endTime : 1504679340000
-         * applyStatus :
-         * status : 4
-         * rejectCause :
-         * feedCause :
-         * feedOption :
-         * cause : 看见了
-         * remark :
-         * createName : 刘朋有权限
-         * createBy : 402823815df2ea32015df2f4c8b80011
-         * createDate :
-         * updateName :
-         * updateBy :
-         * updateDate :
-         * sysOrgCode :
-         * sysCompanyCode :
-         * bpmStatus :
+         * id : ff96271344c948eab3f3a7c4739240c3
+         * departId : 8a8ab0b246dc81120146dc8180bd0018
+         * orderNum : 01016085256135
+         * urgency : 0
+         * orderOwner : liupengwu
+         * createTime : 1508115177000
+         * applyTime : 1508115120000
+         * feedTime : null
+         * handlePersion : 杨阳,册世,张技术员,杨洋,李技术员
+         * address : 保定市莲池区A座204
+         * beginTime : 1508115120000
+         * endTime : 1508115180000
+         * applyStatus : 0
+         * status : 3
+         * rejectCause : 理由不充分
+         * feedCause : null
+         * feedOption : null
+         * cause : 配电室异常
+         * remark : null
+         * createName : 刘朋无
+         * createBy : 402823815df2ea32015df2f5f0d60015
+         * createDate : null
+         * updateName : null
+         * updateBy : null
+         * updateDate : null
+         * sysOrgCode : null
+         * sysCompanyCode : null
+         * bpmStatus : null
          * alertOptionsArray : [{"id":3,"optionId":"402823815dcc085b015dcc0a7b750003","type":5,"optionType":1,"contents":"http://dianedun.oss-cn-zhangjiakou.aliyuncs.com/test/skttest"}]
-         * persionArray : []
-         * departName : 新大长远
+         * persionArray : ["杨阳","册世","张技术员","杨洋","李技术员"]
+         * departName : 尚达豪庭1号配电室
          * delayTime : 0
          */
 
@@ -83,33 +83,33 @@ public class DetailsBean {
         private String orderNum;
         private int urgency;
         private String orderOwner;
-        private String createTime;
+        private long createTime;
         private long applyTime;
-        private String feedTime;
+        private Object feedTime;
         private String handlePersion;
         private String address;
         private long beginTime;
         private long endTime;
-        private String applyStatus;
+        private int applyStatus;
         private int status;
         private String rejectCause;
-        private String feedCause;
-        private String feedOption;
+        private Object feedCause;
+        private Object feedOption;
         private String cause;
-        private String remark;
+        private Object remark;
         private String createName;
         private String createBy;
-        private String createDate;
-        private String updateName;
-        private String updateBy;
-        private String updateDate;
-        private String sysOrgCode;
-        private String sysCompanyCode;
-        private String bpmStatus;
+        private Object createDate;
+        private Object updateName;
+        private Object updateBy;
+        private Object updateDate;
+        private Object sysOrgCode;
+        private Object sysCompanyCode;
+        private Object bpmStatus;
         private String departName;
         private int delayTime;
         private List<AlertOptionsArrayBean> alertOptionsArray;
-        private List<?> persionArray;
+        private List<String> persionArray;
 
         public String getId() {
             return id;
@@ -151,11 +151,11 @@ public class DetailsBean {
             this.orderOwner = orderOwner;
         }
 
-        public String getCreateTime() {
+        public long getCreateTime() {
             return createTime;
         }
 
-        public void setCreateTime(String createTime) {
+        public void setCreateTime(long createTime) {
             this.createTime = createTime;
         }
 
@@ -167,11 +167,11 @@ public class DetailsBean {
             this.applyTime = applyTime;
         }
 
-        public String getFeedTime() {
+        public Object getFeedTime() {
             return feedTime;
         }
 
-        public void setFeedTime(String feedTime) {
+        public void setFeedTime(Object feedTime) {
             this.feedTime = feedTime;
         }
 
@@ -207,11 +207,11 @@ public class DetailsBean {
             this.endTime = endTime;
         }
 
-        public String getApplyStatus() {
+        public int getApplyStatus() {
             return applyStatus;
         }
 
-        public void setApplyStatus(String applyStatus) {
+        public void setApplyStatus(int applyStatus) {
             this.applyStatus = applyStatus;
         }
 
@@ -231,19 +231,19 @@ public class DetailsBean {
             this.rejectCause = rejectCause;
         }
 
-        public String getFeedCause() {
+        public Object getFeedCause() {
             return feedCause;
         }
 
-        public void setFeedCause(String feedCause) {
+        public void setFeedCause(Object feedCause) {
             this.feedCause = feedCause;
         }
 
-        public String getFeedOption() {
+        public Object getFeedOption() {
             return feedOption;
         }
 
-        public void setFeedOption(String feedOption) {
+        public void setFeedOption(Object feedOption) {
             this.feedOption = feedOption;
         }
 
@@ -255,11 +255,11 @@ public class DetailsBean {
             this.cause = cause;
         }
 
-        public String getRemark() {
+        public Object getRemark() {
             return remark;
         }
 
-        public void setRemark(String remark) {
+        public void setRemark(Object remark) {
             this.remark = remark;
         }
 
@@ -279,59 +279,59 @@ public class DetailsBean {
             this.createBy = createBy;
         }
 
-        public String getCreateDate() {
+        public Object getCreateDate() {
             return createDate;
         }
 
-        public void setCreateDate(String createDate) {
+        public void setCreateDate(Object createDate) {
             this.createDate = createDate;
         }
 
-        public String getUpdateName() {
+        public Object getUpdateName() {
             return updateName;
         }
 
-        public void setUpdateName(String updateName) {
+        public void setUpdateName(Object updateName) {
             this.updateName = updateName;
         }
 
-        public String getUpdateBy() {
+        public Object getUpdateBy() {
             return updateBy;
         }
 
-        public void setUpdateBy(String updateBy) {
+        public void setUpdateBy(Object updateBy) {
             this.updateBy = updateBy;
         }
 
-        public String getUpdateDate() {
+        public Object getUpdateDate() {
             return updateDate;
         }
 
-        public void setUpdateDate(String updateDate) {
+        public void setUpdateDate(Object updateDate) {
             this.updateDate = updateDate;
         }
 
-        public String getSysOrgCode() {
+        public Object getSysOrgCode() {
             return sysOrgCode;
         }
 
-        public void setSysOrgCode(String sysOrgCode) {
+        public void setSysOrgCode(Object sysOrgCode) {
             this.sysOrgCode = sysOrgCode;
         }
 
-        public String getSysCompanyCode() {
+        public Object getSysCompanyCode() {
             return sysCompanyCode;
         }
 
-        public void setSysCompanyCode(String sysCompanyCode) {
+        public void setSysCompanyCode(Object sysCompanyCode) {
             this.sysCompanyCode = sysCompanyCode;
         }
 
-        public String getBpmStatus() {
+        public Object getBpmStatus() {
             return bpmStatus;
         }
 
-        public void setBpmStatus(String bpmStatus) {
+        public void setBpmStatus(Object bpmStatus) {
             this.bpmStatus = bpmStatus;
         }
 
@@ -359,11 +359,11 @@ public class DetailsBean {
             this.alertOptionsArray = alertOptionsArray;
         }
 
-        public List<?> getPersionArray() {
+        public List<String> getPersionArray() {
             return persionArray;
         }
 
-        public void setPersionArray(List<?> persionArray) {
+        public void setPersionArray(List<String> persionArray) {
             this.persionArray = persionArray;
         }
 

@@ -13,12 +13,14 @@ import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 
 import java.util.ArrayList;
 import java.util.List;
 
 import cn.dianedun.R;
+import cn.dianedun.tools.App;
 
 public class BottomBar extends LinearLayout {
     private static final int TRANSLATE_DURATION_MILLIS = 200;
@@ -33,6 +35,7 @@ public class BottomBar extends LinearLayout {
     private LayoutParams mTabParams;
     private int mCurrentPosition = 0;
     private OnTabSelectedListener mListener;
+    private Context context;
 
     public BottomBar(Context context) {
         this(context, null);
@@ -49,6 +52,7 @@ public class BottomBar extends LinearLayout {
 
     private void init(Context context, AttributeSet attrs) {
         setOrientation(VERTICAL);
+        this.context = context;
 
 //        ImageView shadowView = new ImageView(context);
 //        shadowView.setBackgroundResource(R.drawable.actionbar_shadow_up);
@@ -69,16 +73,20 @@ public class BottomBar extends LinearLayout {
             @Override
             public void onClick(View v) {
                 if (mListener == null) return;
-
                 int pos = tab.getTabPosition();
                 if (mCurrentPosition == pos) {
                     mListener.onTabReselected(pos);
                 } else {
-                    mListener.onTabSelected(pos, mCurrentPosition);
-                    tab.setSelected(true);
-                    mListener.onTabUnselected(mCurrentPosition);
-                    mTabs.get(mCurrentPosition).setSelected(false);
-                    mCurrentPosition = pos;
+                    if ((pos == 1 || pos == 2) && (App.getInstance().getIsAdmin().equals("1"))) {
+                        mListener.onTabReselected(pos);
+                        Toast.makeText(context, "没有权限", Toast.LENGTH_SHORT).show();
+                    } else {
+                        mListener.onTabSelected(pos, mCurrentPosition);
+                        tab.setSelected(true);
+                        mListener.onTabUnselected(mCurrentPosition);
+                        mTabs.get(mCurrentPosition).setSelected(false);
+                        mCurrentPosition = pos;
+                    }
                 }
             }
         });
@@ -89,7 +97,7 @@ public class BottomBar extends LinearLayout {
         return this;
     }
 
-    public void reInit(){
+    public void reInit() {
         mTabLayout.removeAllViews();
         mTabs.clear();
     }

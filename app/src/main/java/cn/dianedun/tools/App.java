@@ -1,12 +1,17 @@
 package cn.dianedun.tools;
 
 import android.app.Application;
+import android.content.Context;
 import android.support.multidex.MultiDexApplication;
+import android.util.Log;
 
 
 import com.videogo.openapi.EZOpenSDK;
+
 import org.xutils.BuildConfig;
 import org.xutils.x;
+
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by Administrator on 2017/9/2.
@@ -20,6 +25,7 @@ public class App extends MultiDexApplication {
 
     public static String AppKey = "0f74e3ed04794788a1b2ac9e45109031";
     public static String AppSecret = "53f55b1e13a13452dbb078fd2ea6fcae";
+
     public static EZOpenSDK getOpenSDK() {
         return EZOpenSDK.getInstance();
     }
@@ -29,7 +35,11 @@ public class App extends MultiDexApplication {
         super.onCreate();
         mInstance = this;
         initSDK();
+        JPushInterface.setDebugMode(true);
+        JPushInterface.init(this);
+
     }
+
 
     private void initSDK() {
         {

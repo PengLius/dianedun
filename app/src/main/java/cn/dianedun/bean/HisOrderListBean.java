@@ -9,10 +9,11 @@ import java.util.List;
 
 
 public class HisOrderListBean implements Serializable {
+
     /**
      * code : 0
      * msg : 成功
-     * data : {"result":[{"id":"078bf059079144edbcfeeeb926c25bde","departId":"","orderNum":"00909025141643","urgency":2,"orderOwner":"liupengyou","createTime":1504939901523,"applyTime":1504939860000,"feedTime":"","handlePersion":"","address":"看见了","beginTime":1504939680000,"endTime":1504939680000,"applyStatus":"","status":1,"rejectCause":"","feedCause":"","feedOption":"","cause":"看见了","remark":"","createName":"","createBy":"","createDate":"","updateName":"","updateBy":"","updateDate":"","sysOrgCode":"","sysCompanyCode":"","bpmStatus":"","alertOptionsArray":"","persionArray":""}]}
+     * data : {"result":[{"id":"38cd626202bd4251be37956aa331a97b","departId":"8a8ab0b246dc81120146dc8180bd0018","orderNum":"01016021116296","urgency":1,"orderOwner":"liupengwu","createTime":1508134276000,"applyTime":1508134260000,"feedTime":"","handlePersion":"","address":"保定市莲池区A座204","beginTime":"","endTime":"","applyStatus":"","status":0,"rejectCause":"","feedCause":"","feedOption":"","cause":"出门维修","remark":"","createName":"","createBy":"","createDate":"","updateName":"","updateBy":"","updateDate":"","sysOrgCode":"","sysCompanyCode":"","bpmStatus":"","alertOptionsArray":"","persionArray":"","departName":"尚达豪庭1号配电室","delayTime":0},{"id":"1c4c53c086a54a02bf6fba06c7fb7ccb","departId":"8a8ab0b246dc81120146dc8180bd0018","orderNum":"01016015512670","urgency":1,"orderOwner":"liupengwu","createTime":1508133313000,"applyTime":1508133300000,"feedTime":"","handlePersion":"","address":"保定市莲池区A座204","beginTime":"","endTime":"","applyStatus":"","status":0,"rejectCause":"","feedCause":"","feedOption":"","cause":"出门维修","remark":"","createName":"","createBy":"","createDate":"","updateName":"","updateBy":"","updateDate":"","sysOrgCode":"","sysCompanyCode":"","bpmStatus":"","alertOptionsArray":"","persionArray":"","departName":"尚达豪庭1号配电室","delayTime":0},{"id":"622bae60572d4851a8027a1fd3099f1d","departId":"8a8ab0b246dc81120146dc8180bd0018","orderNum":"01016015132478","urgency":1,"orderOwner":"liupengwu","createTime":1508133093000,"applyTime":1508133060000,"feedTime":"","handlePersion":"","address":"保定市莲池区A座204","beginTime":"","endTime":"","applyStatus":"","status":0,"rejectCause":"","feedCause":"","feedOption":"","cause":"出门维修","remark":"","createName":"","createBy":"","createDate":"","updateName":"","updateBy":"","updateDate":"","sysOrgCode":"","sysCompanyCode":"","bpmStatus":"","alertOptionsArray":"","persionArray":"","departName":"尚达豪庭1号配电室","delayTime":0},{"id":"7d20b44ab9f049ab915be04bff7adff2","departId":"8a8ab0b246dc81120146dc8180bd0018","orderNum":"01016011221706","urgency":1,"orderOwner":"liupengwu","createTime":1508130742000,"applyTime":1508130720000,"feedTime":"","handlePersion":"","address":"保定市莲池区A座204","beginTime":1508130660000,"endTime":1508303460000,"applyStatus":"","status":4,"rejectCause":"","feedCause":"","feedOption":"","cause":"漏电","remark":"","createName":"","createBy":"","createDate":"","updateName":"","updateBy":"","updateDate":"","sysOrgCode":"","sysCompanyCode":"","bpmStatus":"","alertOptionsArray":"","persionArray":"","departName":"尚达豪庭1号配电室","delayTime":0},{"id":"ff96271344c948eab3f3a7c4739240c3","departId":"8a8ab0b246dc81120146dc8180bd0018","orderNum":"01016085256135","urgency":0,"orderOwner":"liupengwu","createTime":1508115177000,"applyTime":1508115120000,"feedTime":"","handlePersion":"","address":"保定市莲池区A座204","beginTime":1508115120000,"endTime":1508115180000,"applyStatus":"","status":0,"rejectCause":"","feedCause":"","feedOption":"","cause":"配电室异常","remark":"","createName":"","createBy":"","createDate":"","updateName":"","updateBy":"","updateDate":"","sysOrgCode":"","sysCompanyCode":"","bpmStatus":"","alertOptionsArray":"","persionArray":"","departName":"尚达豪庭1号配电室","delayTime":0}]}
      */
 
     private int code;
@@ -43,7 +44,7 @@ public class HisOrderListBean implements Serializable {
         this.data = data;
     }
 
-    public static class DataBean implements Serializable {
+    public static class DataBean {
         private List<ResultBean> result;
 
         public List<ResultBean> getResult() {
@@ -54,26 +55,26 @@ public class HisOrderListBean implements Serializable {
             this.result = result;
         }
 
-        public static class ResultBean implements Serializable {
+        public static class ResultBean {
             /**
-             * id : 078bf059079144edbcfeeeb926c25bde
-             * departId :
-             * orderNum : 00909025141643
-             * urgency : 2
-             * orderOwner : liupengyou
-             * createTime : 1504939901523
-             * applyTime : 1504939860000
+             * id : 38cd626202bd4251be37956aa331a97b
+             * departId : 8a8ab0b246dc81120146dc8180bd0018
+             * orderNum : 01016021116296
+             * urgency : 1
+             * orderOwner : liupengwu
+             * createTime : 1508134276000
+             * applyTime : 1508134260000
              * feedTime :
              * handlePersion :
-             * address : 看见了
-             * beginTime : 1504939680000
-             * endTime : 1504939680000
+             * address : 保定市莲池区A座204
+             * beginTime :
+             * endTime :
              * applyStatus :
-             * status : 1
+             * status : 0
              * rejectCause :
              * feedCause :
              * feedOption :
-             * cause : 看见了
+             * cause : 出门维修
              * remark :
              * createName :
              * createBy :
@@ -86,6 +87,8 @@ public class HisOrderListBean implements Serializable {
              * bpmStatus :
              * alertOptionsArray :
              * persionArray :
+             * departName : 尚达豪庭1号配电室
+             * delayTime : 0
              */
 
             private String id;
@@ -98,8 +101,8 @@ public class HisOrderListBean implements Serializable {
             private String feedTime;
             private String handlePersion;
             private String address;
-            private long beginTime;
-            private long endTime;
+            private String beginTime;
+            private String endTime;
             private String applyStatus;
             private int status;
             private String rejectCause;
@@ -118,6 +121,8 @@ public class HisOrderListBean implements Serializable {
             private String bpmStatus;
             private String alertOptionsArray;
             private String persionArray;
+            private String departName;
+            private int delayTime;
 
             public String getId() {
                 return id;
@@ -199,19 +204,19 @@ public class HisOrderListBean implements Serializable {
                 this.address = address;
             }
 
-            public long getBeginTime() {
+            public String getBeginTime() {
                 return beginTime;
             }
 
-            public void setBeginTime(long beginTime) {
+            public void setBeginTime(String beginTime) {
                 this.beginTime = beginTime;
             }
 
-            public long getEndTime() {
+            public String getEndTime() {
                 return endTime;
             }
 
-            public void setEndTime(long endTime) {
+            public void setEndTime(String endTime) {
                 this.endTime = endTime;
             }
 
@@ -357,6 +362,22 @@ public class HisOrderListBean implements Serializable {
 
             public void setPersionArray(String persionArray) {
                 this.persionArray = persionArray;
+            }
+
+            public String getDepartName() {
+                return departName;
+            }
+
+            public void setDepartName(String departName) {
+                this.departName = departName;
+            }
+
+            public int getDelayTime() {
+                return delayTime;
+            }
+
+            public void setDelayTime(int delayTime) {
+                this.delayTime = delayTime;
             }
         }
     }

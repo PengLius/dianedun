@@ -1,6 +1,7 @@
 package cn.dianedun.fragment;
 
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,6 +22,7 @@ import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.CameraUpdate;
 import com.amap.api.maps2d.CameraUpdateFactory;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.model.BitmapDescriptorFactory;
 import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.amap.api.maps2d.model.Marker;
@@ -82,6 +84,9 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
 
     @Bind(R.id.tv_detection_adress)
     TextView tv_detection_adress;
+
+    @Bind(R.id.srl_detection)
+    SmartRefreshLayout srl_detection;
 
     private MyAsyncTast myAsyncTast;
     private HashMap<String, String> hashMap;
@@ -154,7 +159,19 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         vp_fdetection.setAdapter(myAdapter);
         vp_fdetection.setCurrentItem(0);
         vp_fdetection.setOnPageChangeListener(new MyOnPageChangeListener());
-        fristData();
+        initRefreshLayout();
+        srl_detection.autoRefresh();
+    }
+
+
+    private void initRefreshLayout() {
+        srl_detection.setLoadmoreFinished(true);
+        srl_detection.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                fristData();
+            }
+        });
     }
 
     @Override
@@ -219,7 +236,33 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
             Double lat = Double.parseDouble(mapBean.getData().getDepartList().get(i).getLat());
             Double lng = Double.parseDouble(mapBean.getData().getDepartList().get(i).getLng());
             LatLng latLng = new LatLng(lat, lng);
-            Marker marker = aMap.addMarker(new MarkerOptions().position(latLng).title("").snippet(""));
+            Marker marker = null;
+            if (mapBean.getData().getDepartList().get(i).getAlarmLevel().equals("0")) {
+                MarkerOptions markerOption = new MarkerOptions();
+                markerOption.title("").snippet("");
+                markerOption.draggable(false);//设置Marker可拖动
+                markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                        .decodeResource(getResources(), R.mipmap.map_green)));
+                markerOption.position(latLng);
+                marker = aMap.addMarker(markerOption);
+            } else if (mapBean.getData().getDepartList().get(i).getAlarmLevel().equals("1")) {
+                MarkerOptions markerOption = new MarkerOptions();
+                markerOption.title("").snippet("");
+                markerOption.draggable(false);//设置Marker可拖动
+                markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                        .decodeResource(getResources(), R.mipmap.map_ye)));
+                markerOption.position(latLng);
+                marker = aMap.addMarker(markerOption);
+
+            } else if (mapBean.getData().getDepartList().get(i).getAlarmLevel().equals("2")) {
+                MarkerOptions markerOption = new MarkerOptions();
+                markerOption.title("").snippet("");
+                markerOption.draggable(false);//设置Marker可拖动
+                markerOption.icon(BitmapDescriptorFactory.fromBitmap(BitmapFactory
+                        .decodeResource(getResources(), R.mipmap.map_red)));
+                markerOption.position(latLng);
+                marker = aMap.addMarker(markerOption);
+            }
             markList.add(marker.getId());
         }
         AMap.InfoWindowAdapter infoWindowAdapter = new AMap.InfoWindowAdapter() {
@@ -440,6 +483,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
             if (aMap == null) {
                 aMap = mapView.getMap();
             }
+            aMap.clear();
             setImgRightVisibility(View.GONE);
             setTitleBack(R.mipmap.home_backg_null);
             initMap();

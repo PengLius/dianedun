@@ -16,7 +16,7 @@ android {
         minSdkVersion 16
         targetSdkVersion 23
         versionCode 1
-        versionName "1.0"
+        versionName "v1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
         ndk {
@@ -78,8 +78,9 @@ dependencies {
     compile 'com.github.nanchen2251:CompressHelper:1.0.5'
     compile 'com.android.support:multidex:1.0.0'
     compile 'com.github.lecho:hellocharts-library:1.5.8@aar'
-
-//    compile project(':picture_library')
-//    compile project(':ucrop')
+    //    compile project(':picture_library')
+    //    compile project(':ucrop')
+    compile files('libs/jcore-android-1.1.7.jar')
+    compile files('libs/jpush-android-3.0.9.jar')
 }
 

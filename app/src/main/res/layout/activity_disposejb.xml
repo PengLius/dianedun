@@ -76,7 +76,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
                         android:text="高压侧1号柜电压异常"
-                        android:textColor="#FF0000"
+                        android:textColor="#E83A17"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
             </LinearLayout>
@@ -200,4 +200,6 @@
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>
+
+
 </LinearLayout>

@@ -212,8 +212,10 @@
                 <TextView
                     android:id="@+id/tv_amendgd_xxadress"
                     android:layout_width="match_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
+                    android:paddingTop="7dp"
+                    android:paddingBottom="7dp"
                     android:background="@drawable/ed_5_gray"
                     android:gravity="center_vertical"
                     android:paddingLeft="5dp"

@@ -125,13 +125,14 @@
             android:background="@null"
             android:gravity="right"
             android:inputType="number"
-            android:maxLines="11"
+            android:maxLength="11"
             android:text="15933227792"
             android:textColor="#FFF"
             android:textColorHint="#FFF"
             android:textSize="@dimen/content_text_s14" />
 
         <ImageView
+            android:id="@+id/img_person_clear"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@mipmap/login_clear"
@@ -165,30 +166,8 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_centerVertical="true"
-            android:text="完成"
+            android:text="保存"
             android:textColor="#FFF"
-            android:textSize="@dimen/content_text_s18" />
-    </RelativeLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="10dp">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:src="@mipmap/button_white" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:layout_centerVertical="true"
-            android:text="取消"
-            android:textColor="#000"
             android:textSize="@dimen/content_text_s18" />
     </RelativeLayout>
 

@@ -55,8 +55,6 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
     @Bind(R.id.tv_forget_yzm)
     TextView tv_forget_yzm;
 
-    @Bind(R.id.rl_forget_failure)
-    RelativeLayout rl_forget_failure;
 
     @Bind(R.id.rl_forget_ok)
     RelativeLayout rl_forget_ok;
@@ -83,14 +81,13 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forgetpsw);
-        setTvTitleText("忘记密码");
+        setTvTitleText("找回密码");
         setTitleBack(R.mipmap.home_backg_rightnull);
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
         img_forget_clear.setOnClickListener(this);
         img_forget_eyes.setOnClickListener(this);
         tv_forget_yzm.setOnClickListener(this);
-        rl_forget_failure.setOnClickListener(this);
         rl_forget_ok.setOnClickListener(this);
 
         ed_forget_user.setOnFocusChangeListener(new View.OnFocusChangeListener() {
@@ -172,16 +169,13 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
                     });
                 }
                 break;
-            case R.id.rl_forget_failure:
-                finish();
-                break;
             case R.id.rl_forget_ok:
                 if (ed_forget_psw.getText().length() == 0 || ed_forget_psw.getText().toString() == null) {
                     showToast("请输入用户名");
-                } else if (ed_forget_psw.getText().length() < 6 || ed_forget_psw.getText().length() > 12) {
-                    showToast("请输入6~12位密码");
                 } else if (ed_forget_yzm.getText().length() < 4) {
                     showToast("请输入4位短信验证码");
+                } else if (ed_forget_psw.getText().length() < 6 || ed_forget_psw.getText().length() > 12) {
+                    showToast("请输入6~12位密码");
                 } else {
                     HashMap hashMap = new HashMap();
                     hashMap.put("username", ed_forget_user.getText().toString());
@@ -191,7 +185,7 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
 
                         @Override
                         public void onError(String result) {
-                            
+
                         }
 
                         @Override
@@ -216,6 +210,8 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
                                     startActivity(intent);
                                     Toast.makeText(getApplicationContext(), "登录成功", Toast.LENGTH_SHORT).show();
                                     finish();
+                                } else {
+                                    showToast(jsonObject.getString("msg"));
                                 }
                             } catch (JSONException e) {
                                 e.printStackTrace();

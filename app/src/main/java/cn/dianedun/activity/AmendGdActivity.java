@@ -135,6 +135,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     TextView tv_amendgd_gdh;
 
 
+    private LinearLayout ll_view;
     private String beginTime, endTime;
     private GridView gv_amendgd;
     private LinearLayout ll_adress_close;
@@ -197,6 +198,13 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
         gv_amendgd = (GridView) view.findViewById(R.id.gv_amendgd);
         tv_sqr_qd = (TextView) view.findViewById(R.id.tv_sqr_qd);
         tv_sqr_cz = (TextView) view.findViewById(R.id.tv_sqr_cz);
+        ll_view = (LinearLayout) view.findViewById(R.id.ll_view);
+        ll_view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                pop.dismiss();
+            }
+        });
         lv_itemadress = (ListView) view2.findViewById(R.id.lv_itemadress);
         ll_adress_close = (LinearLayout) view2.findViewById(R.id.ll_adress_close);
         rl_luyin_type = (RelativeLayout) view3.findViewById(R.id.rl_luyin_type);
@@ -308,10 +316,11 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     tv_amendgd_pt.setCompoundDrawables(drawable2, null, null, null);
                     level = "1";
                 }
-                String beginTime = bean.getData().getBeginTime() / 1000 + "";
-                String endTime = bean.getData().getEndTime() / 1000 + "";
-                startTimer = DataUtil.getDate(beginTime);
-                endTimer = DataUtil.getDate(endTime);
+                beginTime = bean.getData().getBeginTime() / 1000 + "";
+                endTime = bean.getData().getEndTime() / 1000 + "";
+                startTimer = DataUtil.getDate(bean.getData().getBeginTime() + "");
+                endTimer = DataUtil.getDate(bean.getData().getEndTime() + "");
+
                 beginTime = DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm");
                 endTime = DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm");
                 tv_amendgd_gdh.setText(bean.getData().getOrderNum() + "");
@@ -325,6 +334,12 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 xxAdress = bean.getData().getAddress() + "";
                 tv_amendgd_xxadress.setText(xxAdress);
                 if (bean.getData().getAlertOptionsArray().size() > 0) {
+                    toJsonBean = new ToJsonBean();
+                    toJsonBean.setOptionType(1);
+                    toJsonBean.setContents(bean.getData().getAlertOptionsArray().get(0).getContents());
+                    toJsonBean.setType(4);
+                    Gson gson = new Gson();
+                    obj2 = "[" + gson.toJson(toJsonBean) + "]";
                     rl_amendgd_ly.setVisibility(View.VISIBLE);
                     player = MediaPlayer.create(getApplicationContext(), Uri.parse(bean.getData().getAlertOptionsArray().get(0).getContents()));
                     long a = player.getDuration() / 1000 / 60;
@@ -392,7 +407,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                                     tv_amendgd_lytime.setText(a + "'" + b + "\"");
                                 }
                             }
-                            if(animationDrawable!=null){
+                            if (animationDrawable != null) {
                                 animationDrawable.stop();
                             }
                             img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);
@@ -430,7 +445,6 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 level = "0";
                 tv_amendgd_pt.setCompoundDrawables(drawable, null, null, null);
                 tv_amendgd_jj.setCompoundDrawables(drawable2, null, null, null);
-
                 break;
             case R.id.tv_amendgd_jj:
                 //紧急
@@ -446,7 +460,6 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.GETUSERBYDEPARTID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
                         public void onError(String result) {
-
                         }
 
                         @Override
@@ -502,15 +515,19 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
             case R.id.img_amendgd_yuyin:
                 //语音
-                showDialog3();
+                if (obj2.equals("")) {
+                    showDialog3();
+                } else {
+                    showToast("已存在录音文件");
+                }
                 break;
             case R.id.rl_amendgd_tj:
                 //提交
                 SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm");
                 Date curDate = new Date(System.currentTimeMillis());//获取当前时间
                 String applyTime = formatter.format(curDate);
-                String handlePersion = "";
                 if (nameList.size() > 0) {
+                    handlePersion = "";
                     for (int i = 0; i < nameList.size(); i++) {
                         if ((i + 1) != nameList.size()) {
                             handlePersion = handlePersion + nameList.get(i) + ",";
@@ -520,49 +537,45 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     }
                 }
                 HashMap hashMap = new HashMap();
-                if (departId != null) {
+                if (beginTime == null) {
+                    showToast("请选择开始时间");
+                } else if (endTime == null) {
+                    showToast("请选择结束时间");
+                } else if (departId == null) {
+                    showToast("请选择地点");
+                } else if (handlePersion == null) {
+                    showToast("请选择申请人");
+                } else if (ed_amendgd_sqyy.getText() == null || ed_amendgd_sqyy.getText().toString().equals("")) {
+                    showToast("请填写申请原因");
+                } else {
                     hashMap.put("departId", departId);
-                }
-                if (level != null) {
                     hashMap.put("urgency", level);
-                }
-                if (applyTime != null) {
+                    hashMap.put("id", bean.getData().getId());
                     hashMap.put("applyTime", applyTime + ":00");
-                }
-                if (handlePersion != null) {
                     hashMap.put("handlePersion", handlePersion);
-                }
-                hashMap.put("address", xxAdress);
-                if (beginTime != null) {
+                    hashMap.put("address", xxAdress);
                     hashMap.put("beginTime", beginTime + ":00");
-                }
-                if (endTime != null) {
                     hashMap.put("endTime", endTime + ":00");
-                }
-                if (ed_amendgd_sqyy.getText() != null) {
                     hashMap.put("cause", ed_amendgd_sqyy.getText().toString());
-                }
-                if (!obj2.equals("")) {
                     hashMap.put("jsonStr", obj2);
-                }
-                myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.APPLYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-                    @Override
-                    public void onError(String result) {
-
-                    }
-
-                    @Override
-                    public void send(String result) {
-                        ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
-                        if (bean.getCode() == 0) {
-                            showToast("工单修改成功");
-                            finish();
-                        } else {
-                            showToast(bean.getMsg());
+                    myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.MODIFYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                        @Override
+                        public void onError(String result) {
                         }
-                    }
-                });
-                myAsyncTast.execute();
+
+                        @Override
+                        public void send(String result) {
+                            ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
+                            if (bean.getCode() == 0) {
+                                showToast("工单修改成功");
+                                finish();
+                            } else {
+                                showToast(bean.getMsg());
+                            }
+                        }
+                    });
+                    myAsyncTast.execute();
+                }
                 break;
             case R.id.rl_luyin_type:
                 //开始录音
@@ -843,7 +856,8 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     tv_amendgd_adress.setText(applyBean.getData().getResult().get(position).getDepartname());
                     departId = applyBean.getData().getResult().get(position).getId();
                     xxAdress = applyBean.getData().getResult().get(position).getAddress();
-                    tv_amendgd_adress.setText(xxAdress);
+                    tv_amendgd_xxadress.setText(xxAdress);
+                    tv_amendgd_adress.setText(applyBean.getData().getResult().get(position).getDepartname());
                     pop2.dismiss();
                     nameList = new ArrayList<String>();
                     tv_amendgd_name.setText("");
@@ -959,7 +973,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                                         tv_amendgd_lytime.setText(a + "'" + b + "\"");
                                     }
                                 }
-                                if(animationDrawable!=null){
+                                if (animationDrawable != null) {
                                     animationDrawable.stop();
                                 }
                                 img_amendgd_lyic.setImageResource(R.mipmap.yp_bf);

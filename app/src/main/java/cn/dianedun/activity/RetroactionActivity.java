@@ -276,7 +276,11 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                         }
                         break;
                     case 2:
-                        showDialog3();
+                        if (ypUri.equals("")) {
+                            showDialog3();
+                        } else {
+                            showToast("已存在录音文件");
+                        }
                         break;
 
                     default:
@@ -317,29 +321,50 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                 obj2 = "[" + obS.substring(0, obS.length() - 1) + "]";
             }
         }
-        if (ed_retroaction_cause.getText() != null) {
-            hashMap.put("feedCause", ed_retroaction_cause.getText().toString());
-        }
         if (confirmTime != null) {
             hashMap.put("feedTime", confirmTime + ":00");
         }
+        hashMap.put("id", bean.getData().getId() + "");
         if ((!obj2.equals("")) && obj2 != null) {
             hashMap.put("jsonStr", obj2);
+            if (ed_retroaction_cause.getText() != null) {
+                hashMap.put("feedCause", ed_retroaction_cause.getText().toString());
+            }
+            myAsyncTast = new MyAsyncTast(RetroactionActivity.this, hashMap, AppConfig.FEEDBACKHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                @Override
+                public void onError(String result) {
+
+                }
+
+                @Override
+                public void send(String result) {
+                    showToast("提交成功");
+                    finish();
+                }
+            });
+            myAsyncTast.execute();
+        } else {
+            if (ed_retroaction_cause.getText() == null || ed_retroaction_cause.getText().toString().equals("")) {
+                showToast("请填写反馈详情");
+            } else {
+                hashMap.put("feedCause", ed_retroaction_cause.getText().toString());
+                myAsyncTast = new MyAsyncTast(RetroactionActivity.this, hashMap, AppConfig.FEEDBACKHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                    @Override
+                    public void onError(String result) {
+
+                    }
+
+                    @Override
+                    public void send(String result) {
+                        showToast("提交成功");
+                        finish();
+                    }
+                });
+                myAsyncTast.execute();
+            }
         }
-        hashMap.put("id", bean.getData().getId() + "");
-        myAsyncTast = new MyAsyncTast(RetroactionActivity.this, hashMap, AppConfig.FEEDBACKHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-            @Override
-            public void onError(String result) {
 
-            }
 
-            @Override
-            public void send(String result) {
-                showToast("提交成功");
-                finish();
-            }
-        });
-        myAsyncTast.execute();
     }
 
     private void initData() {
@@ -358,8 +383,8 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                 tv_retroaction_sqr.setText(bean.getData().getHandlePersion() + "");
                 String beginTime = bean.getData().getBeginTime() / 1000 + "";
                 String endTime = bean.getData().getEndTime() / 1000 + "";
-                tv_annul_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm"));
-                tv_annul_time.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm"));
+                tv_annul_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm") + ":00");
+                tv_annul_time.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm") + ":00");
                 tv_retroaction_cause.setText(bean.getData().getCause() + "");
                 tv_annul_adr.setText(bean.getData().getDepartName() + "");
                 tv_annul_xxadr.setText(bean.getData().getAddress() + "");
@@ -500,7 +525,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                     img_retroation_yy.setImageResource(R.drawable.animation1);
                     animationDrawables = (AnimationDrawable) img_retroation_yy.getDrawable();
                     animationDrawables.start();
-                    type = 1;
+                    types = 1;
                 } else if (types == 1) {
                     img_retroation_yy.setImageResource(R.mipmap.yp_bf);
                     player.pause();
@@ -719,7 +744,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                                 tv_fjyp_time.setText(a + "'" + b + "\"");
                             }
                         }
-                        if(animationDrawable!=null){
+                        if (animationDrawable != null) {
                             animationDrawable.stop();
                         }
                         img_fjyp_yy.setImageResource(R.mipmap.yp_bf);
@@ -758,7 +783,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                         lyType = NOLY;
                         player.stop();
                         countDownTimer.onFinish();
-                        if(animationDrawable!=null){
+                        if (animationDrawable != null) {
                             animationDrawable.stop();
                         }
                         type = 0;

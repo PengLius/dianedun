@@ -260,7 +260,7 @@
                         android:id="@+id/img_examine_pass"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:src="@mipmap/dot_null" />
+                        android:src="@mipmap/dot_bule" />
 
                     <TextView
                         android:id="@+id/tv_examine_pass"
@@ -287,7 +287,7 @@
                         android:id="@+id/img_examine_reject"
                         android:layout_width="30dp"
                         android:layout_height="30dp"
-                        android:src="@mipmap/dot_bule" />
+                        android:src="@mipmap/dot_null" />
 
                     <TextView
                         android:id="@+id/tv_examine_reject"
@@ -301,10 +301,12 @@
             </LinearLayout>
 
             <RelativeLayout
+                android:id="@+id/rl_examine_con"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:layout_marginTop="10dp"
-                android:background="#6019246B">
+                android:background="#6019246B"
+                android:visibility="gone">
 
                 <TextView
                     android:id="@+id/tv_examine_numb"
@@ -328,9 +330,12 @@
                     android:layout_marginTop="10dp"
                     android:background="@null"
                     android:gravity="left|top"
+                    android:hint="请输入驳回原因"
+                    android:maxLength="500"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
                     android:textColor="#FFF"
+                    android:textColorHint="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
 

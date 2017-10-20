@@ -110,6 +110,11 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                         intent = new Intent(context, LoginActivity.class);
                         context.startActivity(intent);
                         AppManager.getInstance().finishAllActivity();
+                    } else {
+                        Toast.makeText(context, jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();
+                        if (callback != null) {
+                            callback.send(result);
+                        }
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -124,7 +129,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                 if (loding) {
                     diaglog.dismiss();
                 }
-                callback.onError("网络错误，请检查网路是否通畅");
+                callback.onError("网络异常，请检查网络是否畅通");
             }
 
             @Override

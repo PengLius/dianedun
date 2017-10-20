@@ -43,6 +43,8 @@ public class DisposeJBBean {
     }
 
     public static class DataBean {
+
+
         /**
          * id : 402823815dc47a36015dc47b4ed90000
          * departId : 8a8ab0b246dc81120146dc8180ba0017
@@ -66,6 +68,7 @@ public class DisposeJBBean {
         private int status;
         private String createTime;
         private List<OptionsBean> options;
+        private String updateName;
 
         public String getId() {
             return id;
@@ -105,6 +108,13 @@ public class DisposeJBBean {
 
         public void setType(int type) {
             this.type = type;
+        }
+        public String getUpdateName() {
+            return updateName;
+        }
+
+        public void setUpdateName(String updateName) {
+            this.updateName = updateName;
         }
 
         public String getAddress() {

@@ -36,6 +36,8 @@ public class AppConfig {
     public static final String MODIFYMESSAGESTATSALL = PORTS + "/user/modifyMessageStatsAll";// 更新所有消息状态为已读
     public static final String MODIFYMESSAGESTATS = PORTS + "/user/modifyMessageStats";//根据message id 修改消息读取状态
     public static final String ANDROIDVERSION = PORTS + "/index/androidVersion";//安卓版本信息
+    public static final String FINDABOUTUS = PORTS + "/aboutus/findAboutUs";//关于我们
+    public static final String MODIFYHANDLEORDER = PORTS + "/handleorder/modifyHandleOrder";//工单修改
 
 
     public static final String WEB_CARMERA_PORTS = "http://47.92.155.108:8082";//线上WEB

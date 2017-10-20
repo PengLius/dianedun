@@ -73,7 +73,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="待反馈"
-                    android:textColor="#FF0000"
+                    android:textColor="#E83A17"
                     android:textSize="@dimen/content_text_s14" />
 
                 <ImageView
@@ -106,7 +106,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="高压侧1号柜电压异常"
-                android:textColor="#FF0000" />
+                android:textColor="#E83A17" />
 
             <ImageView
                 android:layout_width="wrap_content"
