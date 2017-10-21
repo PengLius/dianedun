@@ -25,6 +25,7 @@ import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 
+import android.util.Log;
 import android.util.SparseArray;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -83,8 +84,10 @@ import com.vise.xsnow.net.callback.ApiCallback;
 import com.vise.xsnow.net.exception.ApiException;
 
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Timer;
@@ -95,6 +98,7 @@ import cn.dianedun.R;
 import cn.dianedun.adapter.SpitFragmentAdapter;
 import cn.dianedun.base.BaseActivity;
 import cn.dianedun.bean.AccesstokenBean;
+import cn.dianedun.bean.CarmerListBean;
 import cn.dianedun.fragment.SpitVideoFragment;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
@@ -105,8 +109,13 @@ import cn.dianedun.tools.EZUtils;
 import cn.dianedun.tools.ScreenOrientationHelper;
 import cn.dianedun.tools.VerifyCodeInput;
 import cn.dianedun.tools.ViewServer;
+import cn.dianedun.view.DateTimeDialog;
+import cn.dianedun.view.DateTimeDialogOnlyTime;
+import cn.dianedun.view.DateTimeDialogOnlyYMD;
 import cn.dianedun.view.EZUIPlayer.EZUIPlayer;
+import cn.dianedun.view.SpitVideoPopView;
 import cn.dianedun.view.WaitDialog;
+import cn.dianedun.view.timeshaftbar.TimerShaftBar;
 
 import static android.view.View.GONE;
 import static cn.dianedun.tools.App.AppKey;
@@ -117,8 +126,8 @@ import static cn.dianedun.tools.App.getOpenSDK;
  */
 
 public class VideoShowActivity extends BaseActivity  implements View.OnClickListener, SurfaceHolder.Callback,
-        Handler.Callback, View.OnTouchListener, VerifyCodeInput.VerifyCodeInputListener,SpitVideoFragment.OnSpitVideoSelect {
-
+        Handler.Callback, View.OnTouchListener, VerifyCodeInput.VerifyCodeInputListener,SpitVideoFragment.OnSpitVideoSelect,
+        DateTimeDialogOnlyYMD.MyOnDateSetListener, DateTimeDialogOnlyTime.MyOnDateSetListener, DateTimeDialog.MyOnDateSetListener {
     @Bind(R.id.av_ll_voice)
     LinearLayout mLLVoice;
 
@@ -161,7 +170,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Bind(R.id.realplay_full_ptz_prompt_iv)
     ImageView mRealPlayFullPtzPromptIv;
 
-
     @Bind(R.id.realplay_loading_rl)
     RelativeLayout mRealPlayLoadingRl;
 
@@ -188,6 +196,46 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     @Bind(R.id.realplay_prompt_rl)
     RelativeLayout mRlPrompt;
+
+    /**
+     * //回放相关---------------
+     */
+//
+//    @Bind(R.id.av_ezuiplayerback)
+//    EZUIPlayer mEzPlayerBack;
+//
+//    @Bind(R.id.av_ll_playbackcontainer)
+//    LinearLayout mLlPlayBackContainer;
+//
+//    @Bind(R.id.av_rl_playback_1_)
+//    RelativeLayout mRlPlayback_1_;
+//
+//    @Bind(R.id.av_rl_playback_2_)
+//    RelativeLayout mRlPlayback_2_;
+//
+//    @Bind(R.id.av_rl_playback_1)
+//    RelativeLayout mRlPlayback_1;
+//
+//    @Bind(R.id.av_rl_playback_2)
+//    RelativeLayout mRlPlayback_2;
+//
+//    @Bind(R.id.av_rl_playback_go)
+//    RelativeLayout mRlPlayback_go;
+//
+//    @Bind(R.id.av_rl_playback_voice)
+//    RelativeLayout mRlPlayBackVoice;
+//
+//    @Bind(R.id.av_rl_playback_takephoto)
+//    RelativeLayout mRlPlayBackTakePhoto;
+//
+//    @Bind(R.id.av_rl_playback_video)
+//    RelativeLayout mRlPlayBackVideo;
+//
+//    @Bind(R.id.av_rl_playback_stream)
+//    RelativeLayout mRlPlayBackStream;
+//
+//    @Bind(R.id.av_timershaftbar)
+//    TimerShaftBar mTimerShaftBar;
 
     private static final String TAG = "RealPlayerActivity";
     /**
@@ -294,7 +342,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         getWindow().setFormat(PixelFormat.TRANSLUCENT);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_videoshow);
-        ViewServer.get(this).addWindow(this);
+//        ViewServer.get(this).addWindow(this);
     }
 
     @Bind(R.id.av_rl_videocontainer)
@@ -323,15 +371,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     @Bind(R.id.av_img_spit)
     ImageView mImgSpit;
-
-//    @Bind(R.id.realplay_full_flow_ly)
-//    LinearLayout mRealPlayFullFlowLy;
-
-    //测试
-//    @Bind(R.id.av_ezplayer_1)
-//    EZUIPlayer av_ezplayer_1;
-//    @Bind(R.id.av_ezplayer_2)
-//    EZUIPlayer av_ezplayer_2;
 
     private SurfaceHolder mRealPlaySh = null;
     private CustomTouchListener mRealPlayTouchListener = null;
@@ -400,6 +439,37 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             //                    : RealPlayStatus.PTZ_ZOOMOUT, RealPlayStatus.PTZ_SPEED_DEFAULT, EZPlayer.PTZ_COMMAND_START);
         }
     }
+
+    @Override
+    public void onDateSet(Date date, int type) {
+        Log.e("d","d");
+        String url = "ezopen://open.ys7.com/";
+        if (mDeviceInfo.getIsEncrypt() == 1){
+            //加密
+            url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
+        }else{
+            url += mDeviceInfo.getDeviceSerial() + "/1.rec";
+        }
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        url += "?begin=" + calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
+
+        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url);
+    }
+
+    private String getMonth(Calendar calendar){
+        int month = calendar.get(Calendar.MONTH) + 1;
+        if (month < 10){
+            return "0" + month;
+        }
+        return String.valueOf(month);
+    }
+
+    @Override
+    public void onDateSet(Date date) {
+
+    }
+
     private void stopZoom() {
         if (mEZPlayer == null) {
             return;
@@ -416,7 +486,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Override
     protected void onResume() {
         super.onResume();
-        ViewServer.get(this).setFocusedWindow(this);
+//        ViewServer.get(this).setFocusedWindow(this);
         if (m4BoxOr9Box != null){
             for (int i= 0;i < mSpitPlayerArr.size(); i++){
                 EZUIPlayer ezuiPlayer = mSpitPlayerArr.get(i);
@@ -432,7 +502,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ViewServer.get(this).removeWindow(this);
+//        ViewServer.get(this).removeWindow(this);
         //防止黑色遮罩
         for (int i= 0;i < mSpitPlayerArr.size(); i++){
             EZUIPlayer ezuiPlayer = mSpitPlayerArr.get(i);
@@ -736,7 +806,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         super.onActivityLoadFinish();
         ViseApi api = new ViseApi.Builder(this).build();
         HashMap hashMap = new HashMap();
-        hashMap.put("departId","admin");
+        hashMap.put("departId",getIntent().getStringExtra("id"));
         api.apiPost(AppConfig.GETACCESSTOKEN,App.getInstance().getToken(),hashMap,false,new ApiCallback<AccesstokenBean.DataBean>(){
             @Override
             public void onNext(AccesstokenBean.DataBean dataBean) {
@@ -753,6 +823,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onError(ApiException e) {
                 showToast(e.getMessage());
+                setRealPlayFailUI("暂无设备在线");
             }
 
             @Override
@@ -765,38 +836,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             }
         });
-//        ViseApi api = new ViseApi.Builder(this).build();
-//        HashMap hashMap = new HashMap();
-//        hashMap.put("appKey",AppKey);
-//        hashMap.put("appSecret",AppSecret);
-//        api.apiPost(AppConfig.GETTOKENKEY,hashMap,false,new ApiCallback<AccesstokenBean.DataBean>(){
-//            @Override
-//            public void onNext(AccesstokenBean.DataBean dataBean) {
-//                mAccessTokenBean = dataBean;
-//                EZUIKit.setDebug(true);
-//                //appkey初始化
-//                EZUIKit.initWithAppKey(App.getInstance(),AppKey);
-//                //设置授权accesstoken
-//                EZUIKit.setAccessToken(mAccessTokenBean.getAccessToken());
-//                App.getOpenSDK().setAccessToken(mAccessTokenBean.getAccessToken());
-//                new GetCamersInfoListTask().execute();
-//            }
-//
-//            @Override
-//            public void onError(ApiException e) {
-//                showToast(e.getMessage());
-//            }
-//
-//            @Override
-//            public void onStart() {
-//
-//            }
-//
-//            @Override
-//            public void onCompleted() {
-//
-//            }
-//        });
     }
 
     @Bind(R.id.av_img_sound)
@@ -821,14 +860,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
 //                mRealPlayFullSoundBtn.setBackgroundResource(R.drawable.play_full_soundoff_btn_selector);
             }
-
-//            mRealPlayCaptureBtnLy.setVisibility(View.VISIBLE);
-//            mRealPlayFullCaptureBtn.setVisibility(View.VISIBLE);
-//            mRealPlayRecordContainerLy.setVisibility(View.VISIBLE);
-//            mRealPlayFullRecordContainer.setVisibility(View.VISIBLE);
-//            mRealPlayQualityBtn.setVisibility(View.VISIBLE);
-//            mRealPlayFullSoundBtn.setVisibility(View.VISIBLE);
-//            mRealPlayFullPtzAnimBtn.setVisibility(View.GONE);
             mRealPlayFullPtzPromptIv.setVisibility(GONE);
 
             updateUI();
@@ -857,24 +888,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             fullScreen(false);
             updateOrientation();
             mRlTitleLayout.setVisibility(View.VISIBLE);
-//            mLlFcContainer.setVisibility(View.VISIBLE);
-
-////            mPortraitTitleBar.setVisibility(View.VISIBLE);
-//            mLandscapeTitleBar.setVisibility(View.GONE);
-////            mRealPlayControlRl.setVisibility(View.VISIBLE);
-//            if (mRtspUrl == null) {
-////                mLlRootContainer.setBackgroundColor(getResources().getColor(R.color.black_bg));
-////                mRealPlayOperateBar.setVisibility(View.VISIBLE);
-//                mRealPlayFullOperateBar.setVisibility(View.GONE);
-//                mFullscreenFullButton.setVisibility(View.GONE);
-//                if (mIsRecording) {
-//                    mRealPlayRecordBtn.setVisibility(View.GONE);
-////                    mRealPlayRecordStartBtn.setVisibility(View.VISIBLE);
-//                } else {
-//                    mRealPlayRecordBtn.setVisibility(View.VISIBLE);
-////                    mRealPlayRecordStartBtn.setVisibility(View.GONE);
-//                }
-//            }
             mFlDisplayContainer.setLayoutParams(mSvLayoutParams);
         } else {
             // 隐藏状态栏
@@ -883,33 +896,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             LinearLayout.LayoutParams realPlayPlayRlLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
             realPlayPlayRlLp.gravity = Gravity.CENTER;
-//            realPlayPlayRlLp.weight = 1;
             mFlDisplayContainer.setLayoutParams(realPlayPlayRlLp);
-//            mLlFcContainer.setVisibility(View.GONE);
-//            mPortraitTitleBar.setVisibility(View.GONE);
-            // hide the
-//            mRealPlayControlRl.setVisibility(View.GONE);
-//            if (!mIsOnTalk && !mIsOnPtz) {
-//                mLandscapeTitleBar.setVisibility(View.VISIBLE);
-//            }
-//            if (mRtspUrl == null) {
-////                mRealPlayOperateBar.setVisibility(View.GONE);
-////                mLlRootContainer.setBackgroundColor(getResources().getColor(R.color.black_bg));
-////                mRealPlayFullOperateBar.setVisibility(View.GONE);
-////                if (!mIsOnTalk && !mIsOnPtz) {
-////                    mFullscreenFullButton.setVisibility(View.GONE);
-////                }
-////                if (mIsRecording) {
-////                    mRealPlayFullRecordBtn.setVisibility(View.GONE);
-////                    mRealPlayFullRecordStartBtn.setVisibility(View.VISIBLE);
-////                } else {
-////                    mRealPlayFullRecordBtn.setVisibility(View.VISIBLE);
-////                    mRealPlayFullRecordStartBtn.setVisibility(View.GONE);
-//                }
-//            }
         }
-
-        //        mRealPlayControlRl.setVisibility(View.GONE);
         closeQualityPopupWindow();
         if (mStatus == RealPlayStatus.STATUS_START) {
             showControlRlAndFullOperateBar();
@@ -1315,11 +1303,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     private void updateCaptureUI() {
         if (mRealPlayCaptureRl.getVisibility() == View.VISIBLE) {
             if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
-//                if (mRealPlayControlRl.getVisibility() == View.VISIBLE) {
-                    mRealPlayCaptureRlLp.setMargins(0, 0, 0, Utils.dip2px(this, 40));
-//                } else {
-//                    mRealPlayCaptureRlLp.setMargins(0, 0, 0, 0);
-//                }
+                mRealPlayCaptureRlLp.setMargins(0, 0, 0, Utils.dip2px(this, 40));
                 mRealPlayCaptureRl.setLayoutParams(mRealPlayCaptureRlLp);
             } else {
                 RelativeLayout.LayoutParams realPlayCaptureRlLp = new RelativeLayout.LayoutParams(
@@ -1343,10 +1327,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Override
     protected void initData() {
         super.initData();
-
         // 保持屏幕常亮
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-
 //        initTitleBar();
 //        initRealPlayPageLy();
 //        initLoadingUI();
@@ -2787,6 +2769,14 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Override
     protected void bindEvent() {
         super.bindEvent();
+        mLLPlayBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //回放
+                DateTimeDialog dateTimeDialog = new DateTimeDialog(VideoShowActivity.this, null, VideoShowActivity.this, 0);
+                dateTimeDialog.show();
+            }
+        });
         mImgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

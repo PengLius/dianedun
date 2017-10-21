@@ -197,6 +197,10 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
     }
 
+    public EZPlayer getEzPlayer(){
+        return mEZPlayer;
+    }
+
     public EZUIPlayer(Context context) {
         super(context);
         this.mContext = context;
@@ -398,7 +402,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                                     if(!TextUtils.isEmpty(EZUIPlayer.this.ezPlayURLParams.alarmId)) {
                                         EZUIPlayer.this.searchRecordFilesByAlarmId(EZUIPlayer.this.ezPlayURLParams.deviceSerial, EZUIPlayer.this.ezPlayURLParams.cameraNo, EZUIPlayer.this.ezPlayURLParams.alarmId);
                                     } else {
-//                                        EZUIPlayer.access$1800(EZUIPlayer.this, EZUIPlayer.this.ezPlayURLParams.deviceSerial, EZUIPlayer.this.ezPlayURLParams.cameraNo, EZUIPlayer.this.ezPlayURLParams.startTime.getTimeInMillis(), EZUIPlayer.this.ezPlayURLParams.endTime.getTimeInMillis(), EZUIPlayer.this.ezPlayURLParams.recodeType);
+                                        EZUIPlayer.this.searchDeviceFilesByTime( EZUIPlayer.this.ezPlayURLParams.deviceSerial, EZUIPlayer.this.ezPlayURLParams.cameraNo, EZUIPlayer.this.ezPlayURLParams.startTime.getTimeInMillis(), EZUIPlayer.this.ezPlayURLParams.endTime.getTimeInMillis(), EZUIPlayer.this.ezPlayURLParams.recodeType);
                                     }
 
                                 }
@@ -456,8 +460,8 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
             this.post(new Runnable() {
                 public void run() {
                     if((EZUIPlayer.this.mRecordFiles == null || EZUIPlayer.this.mRecordFiles.size() <= 0) && EZUIPlayer.this.mEzUIPlayerCallBack != null) {
-                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("UE108", -1));
-                        EZUIPlayer.this.showPlayError("UE108(-1)");
+                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("未查到录像文件", -1));
+                        EZUIPlayer.this.showPlayError("未查到录像文件(UE108)");
                     }
 
                     if(EZUIPlayer.this.mEzUIPlayerCallBack != null) {
@@ -601,7 +605,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                 if(index < 0) {
                     this.dismissomLoading();
                     if(this.mEzUIPlayerCallBack != null) {
-                        this.mEzUIPlayerCallBack.onPlayFinish();
+                        this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("此时段暂无视频",0));
                     }
 
                 } else {
@@ -776,8 +780,8 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
     private void dismissomLoading() {
         if(this.mLoadView != null) {
-            this.removeView(mLoadView);
-            this.mLoadView = null;
+//            this.removeView(mLoadView);
+            this.mLoadView.setVisibility(GONE);
 //            this.mLoadView.setVisibility(GONE);
         }
 
