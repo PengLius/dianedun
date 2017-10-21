@@ -45,7 +45,9 @@ public class AppConfig {
 
     public static final String WEB_CARMERA_PORTS = "http://47.92.155.108:8082";//线上WEB
     public static final String APP_CARMERA_PORTS = "http://47.92.155.108:8081";//线上APP
+
     public static final String GETACCESSTOKEN = WEB_CARMERA_PORTS + "/cameraController/getAccessTokenByDepartId";//获取token
+    public static final String GET_CARMERLIST = WEB_CARMERA_PORTS + "/cameraController/getCameraList";//获取摄像头列表
     public static final String GETDEPARTPLACES = APP_CARMERA_PORTS + "/handleorder/getDepartByUser";//获取配电室地址列表
 
     public static final String GETTOKENKEY = "https://open.ys7.com/api/lapp/token/get";//通过萤石获取token

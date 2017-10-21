@@ -96,9 +96,6 @@ public class SpitVideoFragment extends SupportFragment {
 
     private boolean mAutoPlay = false;
     protected void initView(final View contentView) {
-
-//        mEZDeviceInfoList = getArguments().getParcelableArrayList("device");
-//        mAutoPlay = getArguments().getBoolean("auto");
         contentView.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
             @Override
             public void onGlobalLayout() {
@@ -167,9 +164,6 @@ public class SpitVideoFragment extends SupportFragment {
     public void startPlay(){
         if (!mIsPlay){
             mIsPlay = true;
-//            View view = mLLRootView.findViewById(R.id.fs_videocontainer);
-//            if (view == null)
-//                mLLRootView.addView(mLlVideoContainer);
             for (int i=0; i<mSpitPlayerArr.size(); i++){
                 int key = mSpitPlayerArr.keyAt(i);
                 VideoBrother videoBrother = mSpitPlayerArr.get(key);

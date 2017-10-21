@@ -132,18 +132,9 @@ public class VideoFragment extends BaseTitlFragment {
                             mRefreshLayout.setLoadmoreFinished(true);
                         }else{
                             addCameraList(dataBean.getResult());
-//                            mCameraAdapter.addDatas(dataBean.getResult());
-//                            mCameraAdapter.notifyDataSetChanged();
                         }
                     }
                 }
-
-//                if (mErrorCode != 0) {
-//                    onError(mErrorCode);
-//                }else{
-//                    mRlLoadFaild.setVisibility(GONE);
-//                }
-//                new GetCamersInfoListTask(headOrLoadMore).execute();
             }
 
             @Override
@@ -176,13 +167,6 @@ public class VideoFragment extends BaseTitlFragment {
                 getData(mRefreshOrLoadMore);
             }
         });
-//        mRefreshLayout.setOnLoadmoreListener(new OnLoadmoreListener() {
-//            @Override
-//            public void onLoadmore(RefreshLayout refreshlayout) {
-//                mRefreshOrLoadMore = false;
-//                getData(mRefreshOrLoadMore);
-//            }
-//        });
     }
 
 
@@ -196,9 +180,8 @@ public class VideoFragment extends BaseTitlFragment {
                     holder.setOnClickListener(R.id.ic_img_spitVideo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
                             SpitVideoPopView spitVideoPopView = new SpitVideoPopView(LayoutInflater.from(_mActivity).inflate(R.layout.view_pop_spitvideo,null),
-                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true);
+                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true,bean.getId());
                             spitVideoPopView.setOnVideoSelect(new SpitVideoPopView.OnVideoSelect() {
                                 @Override
                                 public void onVideoSelect(int tag) {
@@ -238,7 +221,6 @@ public class VideoFragment extends BaseTitlFragment {
             public void onClick(View v) {
                 mRlLoadFaild.setVisibility(GONE);
                 mRefreshLayout.autoRefresh();
-//                getData(mRefreshOrLoadMore);
             }
         });
     }
