@@ -38,6 +38,9 @@ public class AppConfig {
     public static final String ANDROIDVERSION = PORTS + "/index/androidVersion";//安卓版本信息
     public static final String FINDABOUTUS = PORTS + "/aboutus/findAboutUs";//关于我们
     public static final String MODIFYHANDLEORDER = PORTS + "/handleorder/modifyHandleOrder";//工单修改
+    public static final String STATSHDEVICE = PORTS + "/count/statsHDevice";//高压数据统计
+    public static final String STATSLDEVICE = PORTS + "/count/statsLDevice";//低压数据统计
+//    public static final String STATSLDEVICE = PORTS + "/count/statsLDevice";//低压数据统计
 
 
     public static final String WEB_CARMERA_PORTS = "http://47.92.155.108:8082";//线上WEB

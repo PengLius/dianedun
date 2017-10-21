@@ -15,7 +15,6 @@ import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.bean.RealTimeConBean;
 import cn.dianedun.tools.App;
-import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
 import lecho.lib.hellocharts.gesture.ZoomType;
@@ -28,50 +27,78 @@ import lecho.lib.hellocharts.model.Viewport;
 import lecho.lib.hellocharts.view.LineChartView;
 
 /**
- * Created by Administrator on 2017/9/26.
+ * Created by Administrator on 2017/10/20.
  */
 
-public class TempChartActivity extends BaseTitlActivity implements View.OnClickListener {
+public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickListener {
 
+    @Bind(R.id.lcv_xgtension)
+    LineChartView lcv_xgtension;
 
-    @Bind(R.id.tv_tempchart_1)
-    TextView tv_tempchart_1;
+    @Bind(R.id.lcv_xntension)
+    LineChartView lcv_xntension;
 
-    @Bind(R.id.tv_tempchart_2)
-    TextView tv_tempchart_2;
+    @Bind(R.id.lcv_electricity)
+    LineChartView lcv_electricity;
 
-    @Bind(R.id.tv_tempchart_3)
-    TextView tv_tempchart_3;
+    @Bind(R.id.tv_gdchart_1)
+    TextView tv_gdchart_1;
 
-    @Bind(R.id.tv_tempchart_4)
-    TextView tv_tempchart_4;
+    @Bind(R.id.tv_gdchart_2)
+    TextView tv_gdchart_2;
 
-    @Bind(R.id.cash_chart)
-    LineChartView lineChart;
+    @Bind(R.id.tv_gdchart_3)
+    TextView tv_gdchart_3;
+
+    @Bind(R.id.tv_gdchart_4)
+    TextView tv_gdchart_4;
+
+    @Bind(R.id.tv_xg_mean)
+    TextView tv_xg_mean;
+
+    @Bind(R.id.tv_xg_max)
+    TextView tv_xg_max;
+
+    @Bind(R.id.tv_xn_max)
+    TextView tv_xn_max;
+
+    @Bind(R.id.tv_xn_mean)
+    TextView tv_xn_mean;
+
+    @Bind(R.id.tv_il_max)
+    TextView tv_il_max;
+
+    @Bind(R.id.tv_il_mean)
+    TextView tv_il_mean;
 
     @Bind(R.id.tv_tempchart_adress)
     TextView tv_tempchart_adress;
 
+    private RealTimeConBean bean;
     private String RoomId;
+    private String url;
     private String deviceNum;
     private int type = 1;
+    private int maxXg, maxXn, maxIl, meanXg, meanXn, meanIl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tempchart);
+        setContentView(R.layout.activity_gdcechar);
         setTvTitleText("实时监测");
         setTitleBack(R.mipmap.home_backg_rightnull);
         setImgLeftVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
-        tv_tempchart_1.setOnClickListener(this);
-        tv_tempchart_2.setOnClickListener(this);
-        tv_tempchart_3.setOnClickListener(this);
-        tv_tempchart_4.setOnClickListener(this);
-        tv_tempchart_adress.setText(getIntent().getStringExtra("depart"));
+        tv_gdchart_1.setOnClickListener(this);
+        tv_gdchart_2.setOnClickListener(this);
+        tv_gdchart_3.setOnClickListener(this);
+        tv_gdchart_4.setOnClickListener(this);
         RoomId = getIntent().getStringExtra("RoomId");
+        url = getIntent().getStringExtra("url");
         deviceNum = getIntent().getStringExtra("deviceNum");
+        tv_tempchart_adress.setText(getIntent().getStringExtra("depart"));
         getData("day", "1");
+
     }
 
     /**
@@ -161,41 +188,41 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.tv_tempchart_1:
-                tv_tempchart_1.setBackgroundResource(R.mipmap.jc_tab1);
-                tv_tempchart_2.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_3.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_4.setBackgroundResource(R.mipmap.jc_tab);
+            case R.id.tv_gdchart_1:
+                tv_gdchart_1.setBackgroundResource(R.mipmap.jc_tab1);
+                tv_gdchart_2.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_3.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_4.setBackgroundResource(R.mipmap.jc_tab);
                 if (type != 1) {
                     getData("day", "1");
                     type = 1;
                 }
                 break;
-            case R.id.tv_tempchart_2:
-                tv_tempchart_1.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_2.setBackgroundResource(R.mipmap.jc_tab1);
-                tv_tempchart_3.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_4.setBackgroundResource(R.mipmap.jc_tab);
+            case R.id.tv_gdchart_2:
+                tv_gdchart_1.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_2.setBackgroundResource(R.mipmap.jc_tab1);
+                tv_gdchart_3.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_4.setBackgroundResource(R.mipmap.jc_tab);
                 if (type != 2) {
                     getData("week", "1");
                     type = 2;
                 }
                 break;
-            case R.id.tv_tempchart_3:
-                tv_tempchart_1.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_2.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_3.setBackgroundResource(R.mipmap.jc_tab1);
-                tv_tempchart_4.setBackgroundResource(R.mipmap.jc_tab);
+            case R.id.tv_gdchart_3:
+                tv_gdchart_1.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_2.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_3.setBackgroundResource(R.mipmap.jc_tab1);
+                tv_gdchart_4.setBackgroundResource(R.mipmap.jc_tab);
                 if (type != 3) {
                     getData("month", "1");
                     type = 3;
                 }
                 break;
-            case R.id.tv_tempchart_4:
-                tv_tempchart_1.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_2.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_3.setBackgroundResource(R.mipmap.jc_tab);
-                tv_tempchart_4.setBackgroundResource(R.mipmap.jc_tab1);
+            case R.id.tv_gdchart_4:
+                tv_gdchart_1.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_2.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_3.setBackgroundResource(R.mipmap.jc_tab);
+                tv_gdchart_4.setBackgroundResource(R.mipmap.jc_tab1);
                 if (type != 4) {
                     getData("custon", "1");
                     type = 4;
@@ -205,16 +232,36 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
                 break;
         }
     }
+
     public void getData(String flag, String num) {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
         hashMap.put("flag", flag);
         hashMap.put("num", num);
         hashMap.put("deviceNum", deviceNum);
-        MyAsyncTast myAsyncTast = new MyAsyncTast(TempChartActivity.this, hashMap, "", App.getInstance().getToken(), new MyAsyncTast.Callback() {
+        MyAsyncTast myAsyncTast = new MyAsyncTast(GdCeCharActivity.this, hashMap, url, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void send(String result) {
-//                initLineChart(lcv_xgtension, bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList(), xList, maxXg);
+                bean = GsonUtil.parseJsonWithGson(result, RealTimeConBean.class);
+                maxXg = getMaxNumb(bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList());
+                maxXn = getMaxNumb(bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList());
+                maxIl = getMaxNumb(bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList());
+                meanXg = getmMeanNumb(bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList());
+                meanXn = getmMeanNumb(bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList());
+                meanIl = getmMeanNumb(bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList());
+                tv_xg_max.setText(maxXg + "V");
+                tv_xg_mean.setText(meanXg + "V");
+                tv_xn_max.setText(maxXn + "V");
+                tv_xn_mean.setText(meanXn + "V");
+                tv_il_max.setText(maxIl + "A");
+                tv_il_mean.setText(meanIl + "A");
+                List<String> xList = new ArrayList<>();
+                for (int i = 0; i < bean.getData().getXList().size(); i++) {
+                    xList.add(bean.getData().getXList().get(i).substring(5, bean.getData().getXList().get(i).length()));
+                }
+                initLineChart(lcv_xgtension, bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList(), xList, maxXg);
+                initLineChart(lcv_xntension, bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList(), xList, maxXn);
+                initLineChart(lcv_electricity, bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList(), xList, maxIl);
             }
 
             @Override
@@ -223,5 +270,45 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
             }
         });
         myAsyncTast.execute();
+    }
+
+    public int getMaxNumb(List<String> numbList, List<String> numbList1, List<String> numbList2) {
+        int a = 0;
+        for (int i = 0; i < numbList.size(); i++) {
+            int numb = Integer.parseInt(numbList.get(i));
+            if (a < numb) {
+                a = numb;
+            }
+        }
+        for (int i = 0; i < numbList1.size(); i++) {
+            int numb = Integer.parseInt(numbList1.get(i));
+            if (a < numb) {
+                a = numb;
+            }
+        }
+        for (int i = 0; i < numbList2.size(); i++) {
+            int numb = Integer.parseInt(numbList2.get(i));
+            if (a < numb) {
+                a = numb;
+            }
+        }
+        return a;
+    }
+
+    public int getmMeanNumb(List<String> numbList, List<String> numbList1, List<String> numbList2) {
+        int a = 0;
+        for (int i = 0; i < numbList.size(); i++) {
+            int numb = Integer.parseInt(numbList.get(i));
+            a = numb + a;
+        }
+        for (int i = 0; i < numbList1.size(); i++) {
+            int numb = Integer.parseInt(numbList1.get(i));
+            a = numb + a;
+        }
+        for (int i = 0; i < numbList2.size(); i++) {
+            int numb = Integer.parseInt(numbList2.get(i));
+            a = numb + a;
+        }
+        return a / (numbList.size() + numbList1.size() + numbList2.size());
     }
 }

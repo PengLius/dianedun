@@ -1,5 +1,6 @@
 package cn.dianedun.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -14,7 +15,10 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.dianedun.R;
+import cn.dianedun.activity.GdCeCharActivity;
 import cn.dianedun.bean.DetactionXBean;
+import cn.dianedun.tools.App;
+import cn.dianedun.tools.AppConfig;
 
 /**
  * Created by Administrator on 2017/8/8.
@@ -24,6 +28,7 @@ public class GaoCeFragment extends Fragment {
 
     private IndentCusAdapter adapter = new IndentCusAdapter();
     private DetactionXBean bean;
+    private String RoomId, depart;
 
     View view;
 
@@ -38,8 +43,10 @@ public class GaoCeFragment extends Fragment {
         return view;
     }
 
-    public void setData(DetactionXBean xBean) {
+    public void setData(DetactionXBean xBean, String RoomId, String depart) {
         bean = xBean;
+        this.RoomId = RoomId;
+        this.depart = depart;
         adapter.notifyDataSetChanged();
     }
 
@@ -105,7 +112,6 @@ public class GaoCeFragment extends Fragment {
             cache.tv_gyc_DA.setText(bean.getData().getHdevice().get(position).getIa().getVal() + "A");
             cache.tv_gyc_DB.setText(bean.getData().getHdevice().get(position).getIb().getVal() + "A");
             cache.tv_gyc_DC.setText(bean.getData().getHdevice().get(position).getIc().getVal() + "A");
-
             setImag(cache.img_gyc_GA, bean.getData().getHdevice().get(position).getVa().getLevel());
             setImag(cache.img_gyc_GB, bean.getData().getHdevice().get(position).getVb().getLevel());
             setImag(cache.img_gyc_GC, bean.getData().getHdevice().get(position).getVc().getLevel());
@@ -115,6 +121,17 @@ public class GaoCeFragment extends Fragment {
             setImag(cache.img_gyc_DA, bean.getData().getHdevice().get(position).getIa().getLevel());
             setImag(cache.img_gyc_DB, bean.getData().getHdevice().get(position).getIb().getLevel());
             setImag(cache.img_gyc_DC, bean.getData().getHdevice().get(position).getIc().getLevel());
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), GdCeCharActivity.class);
+                    intent.putExtra("RoomId", RoomId);
+                    intent.putExtra("depart", depart);
+                    intent.putExtra("url", AppConfig.STATSHDEVICE);
+                    intent.putExtra("deviceNum", bean.getData().getHdevice().get(position).getDeviceno());
+                    startActivity(intent);
+                }
+            });
             return convertView;
         }
     }

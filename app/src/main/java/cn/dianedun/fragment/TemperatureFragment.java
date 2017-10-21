@@ -1,5 +1,6 @@
 package cn.dianedun.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -18,7 +19,10 @@ import java.util.List;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.dianedun.R;
+import cn.dianedun.activity.GdCeCharActivity;
+import cn.dianedun.activity.TempChartActivity;
 import cn.dianedun.bean.DetactionXBean;
+import cn.dianedun.tools.AppConfig;
 
 /**
  * Created by Administrator on 2017/8/8.
@@ -35,6 +39,7 @@ public class TemperatureFragment extends Fragment {
     private DetactionXBean bean;
     private List<HashMap<String, String>> allList;
     private HashMap<String, String> hashMap;
+    private String RoomId, depart;
 
 
     @Override
@@ -65,8 +70,10 @@ public class TemperatureFragment extends Fragment {
         return view;
     }
 
-    public void setData(DetactionXBean xBean) {
+    public void setData(DetactionXBean xBean, String RoomId, String depart) {
         bean = xBean;
+        this.RoomId = RoomId;
+        this.depart = depart;
         if (adapter != null) {
             allList = new ArrayList<>();
             for (int i = 0; i < bean.getData().getTemp().getTransformer().size(); i++) {
@@ -139,6 +146,16 @@ public class TemperatureFragment extends Fragment {
             } else if (allList.get(position).get("level").equals("2")) {
                 cache.img_wd_type.setImageResource(R.mipmap.jc_red);
             }
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), TempChartActivity.class);
+                    intent.putExtra("RoomId", RoomId);
+                    intent.putExtra("depart", depart);
+                    intent.putExtra("deviceNum", allList.get(position).get("number") + "");
+                    startActivity(intent);
+                }
+            });
 
             return convertView;
         }

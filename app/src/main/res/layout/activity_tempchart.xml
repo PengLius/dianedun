@@ -22,7 +22,7 @@
                 android:layout_marginBottom="15dp"
                 android:layout_marginTop="15dp"
                 android:gravity="center"
-                android:text="保定市炫彩soho大厦B座1号配电室"
+                android:text=""
                 android:textColor="#FFF"
                 android:textSize="@dimen/content_text_s14" />
 
@@ -41,24 +41,24 @@
                     android:layout_weight="1"
                     android:background="@mipmap/jc_tab1"
                     android:gravity="center"
-                    android:text="近一周"
+                    android:text="近一天"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
-                    android:id="@+id/tv_detection_2"
+                    android:id="@+id/tv_tempchart_2"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
                     android:layout_weight="1"
                     android:background="@mipmap/jc_tab"
                     android:gravity="center"
-                    android:text="近两周"
+                    android:text="近一周"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
-                    android:id="@+id/tv_detection_wd"
+                    android:id="@+id/tv_tempchart_3"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
@@ -70,7 +70,7 @@
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
-                    android:id="@+id/tv_detection_sd"
+                    android:id="@+id/tv_tempchart_4"
                     android:layout_width="0dp"
                     android:layout_height="30dp"
                     android:layout_marginLeft="10dp"
@@ -78,7 +78,7 @@
                     android:layout_weight="1"
                     android:background="@mipmap/jc_tab"
                     android:gravity="center"
-                    android:text="近三月"
+                    android:text="近半年"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>

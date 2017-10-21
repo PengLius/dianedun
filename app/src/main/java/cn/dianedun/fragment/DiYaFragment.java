@@ -1,5 +1,6 @@
 package cn.dianedun.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -13,7 +14,9 @@ import android.widget.TextView;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import cn.dianedun.R;
+import cn.dianedun.activity.GdCeCharActivity;
 import cn.dianedun.bean.DetactionXBean;
+import cn.dianedun.tools.AppConfig;
 
 /**
  * Created by Administrator on 2017/8/8.
@@ -24,7 +27,7 @@ public class DiYaFragment extends Fragment {
     private IndentCusAdapter adapter = new IndentCusAdapter();
     private DetactionXBean bean;
     View view;
-    String result;
+    private String RoomId, depart;
 
     @Bind(R.id.lv_diya)
     ListView lv_diya;
@@ -37,8 +40,10 @@ public class DiYaFragment extends Fragment {
         return view;
     }
 
-    public void setData(DetactionXBean xBean) {
+    public void setData(DetactionXBean xBean,String RoomId, String depart) {
         bean = xBean;
+        this.RoomId = RoomId;
+        this.depart = depart;
         adapter.notifyDataSetChanged();
     }
 
@@ -114,6 +119,17 @@ public class DiYaFragment extends Fragment {
             setImag(cache.img_gyc_DA, bean.getData().getLdevice().get(position).getIa().getLevel());
             setImag(cache.img_gyc_DB, bean.getData().getLdevice().get(position).getIb().getLevel());
             setImag(cache.img_gyc_DC, bean.getData().getLdevice().get(position).getIc().getLevel());
+            convertView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), GdCeCharActivity.class);
+                    intent.putExtra("RoomId", RoomId);
+                    intent.putExtra("depart", depart);
+                    intent.putExtra("url", AppConfig.STATSLDEVICE);
+                    intent.putExtra("deviceNum", bean.getData().getLdevice().get(position).getDeviceno());
+                    startActivity(intent);
+                }
+            });
             return convertView;
         }
     }

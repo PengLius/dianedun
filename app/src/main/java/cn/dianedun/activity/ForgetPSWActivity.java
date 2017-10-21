@@ -170,12 +170,12 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
                 }
                 break;
             case R.id.rl_forget_ok:
-                if (ed_forget_psw.getText().length() == 0 || ed_forget_psw.getText().toString() == null) {
+                if (ed_forget_user.getText().length() == 0 || ed_forget_psw.getText().toString() == null) {
                     showToast("请输入用户名");
                 } else if (ed_forget_yzm.getText().length() < 4) {
                     showToast("请输入4位短信验证码");
                 } else if (ed_forget_psw.getText().length() < 6 || ed_forget_psw.getText().length() > 12) {
-                    showToast("请输入6~12位密码");
+                    showToast("请输入6~12位登录密码");
                 } else {
                     HashMap hashMap = new HashMap();
                     hashMap.put("username", ed_forget_user.getText().toString());

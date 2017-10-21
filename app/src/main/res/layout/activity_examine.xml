@@ -35,7 +35,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_examine_gdhs"
-                    android:text="123456789"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -61,15 +61,12 @@
                     android:id="@+id/tv_examine_sqr"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@+id/tv_examine_gdh"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginTop="20dp"
-                    android:layout_toLeftOf="@+id/img_examine_sta"
-                    android:layout_toRightOf="@+id/tv_examine_sqrs"
-                    android:text="张三"
+                    android:text=""
                     android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
+                    android:textSize="@dimen/content_text_s14"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignLeft="@+id/tv_examine_gdh"
+                    android:layout_alignStart="@+id/tv_examine_gdh" />
 
             </RelativeLayout>
 
@@ -92,7 +89,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_annul_gdhs"
-                    android:text="2016-5-12 23:20:11"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -116,7 +113,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_annul_gdhs"
-                    android:text="2016-5-12 23:20:11"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -141,7 +138,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_examine_gdhs"
-                    android:text="保定市北市区炫彩soho"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -165,7 +162,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_examine_gdhs"
-                    android:text="保定市北市区炫彩soho"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -189,7 +186,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_examine_gdhs"
-                    android:text="小区住户电压异常"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>

@@ -103,7 +103,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     private HumidityFragment humidityFragment;
     private DetactionXBean xBean;
     private MapBean mapBean;
-    private String pdsId;
+    private String pdsId, depart;
 
     public static DetectionFragment getInstance() {
         DetectionFragment fragment = new DetectionFragment();
@@ -147,6 +147,10 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         diYaFragment = new DiYaFragment();
         temperatureFragment = new TemperatureFragment();
         humidityFragment = new HumidityFragment();
+        tv_fdetection_gy.setBackgroundResource(R.mipmap.jc_tab1);
+        tv_fdetection_dy.setBackgroundResource(R.mipmap.jc_tab);
+        tv_fdetection_wd.setBackgroundResource(R.mipmap.jc_tab);
+        tv_fdetection_sd.setBackgroundResource(R.mipmap.jc_tab);
         mList.add(gaoCeFragment);
         mList.add(diYaFragment);
         mList.add(temperatureFragment);
@@ -169,7 +173,11 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         srl_detection.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
-                fristData();
+                if (pdsId != null) {
+                    getPDSAll(pdsId);
+                } else {
+                    fristData();
+                }
             }
         });
     }
@@ -185,18 +193,21 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     private void fristData() {
         hashMap = new HashMap<>();
         hashMap.put("id", "");
-        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                srl_detection.finishRefresh();
+                showToast(result);
             }
 
             @Override
             public void send(String result) {
+                srl_detection.finishRefresh();
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
                 pdsId = bean.getData().getSwitchRoomList().get(0).getId();
                 getPDSAll(pdsId);
                 tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
+                depart = bean.getData().getSwitchRoomList().get(0).getDepartname();
             }
         });
         myAsyncTast.execute();
@@ -207,22 +218,24 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
      *
      * @param RoomId 配电室Id
      */
-    private void getPDSAll(String RoomId) {
+    private void getPDSAll(final String RoomId) {
         hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
-        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                srl_detection.finishRefresh();
+                showToast(result);
             }
 
             @Override
             public void send(String result) {
                 xBean = GsonUtil.parseJsonWithGson(result, DetactionXBean.class);
-                gaoCeFragment.setData(xBean);
-                diYaFragment.setData(xBean);
-                temperatureFragment.setData(xBean);
-                humidityFragment.setData(xBean);
+                gaoCeFragment.setData(xBean, RoomId, depart);
+                diYaFragment.setData(xBean, RoomId, depart);
+                temperatureFragment.setData(xBean, RoomId, depart);
+                humidityFragment.setData(xBean, RoomId, depart);
+                srl_detection.finishRefresh();
             }
         });
         myAsyncTast.execute();
@@ -458,10 +471,12 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                 @Override
                 public void onClick(View v) {
                     pdsId = bean.getData().getSwitchRoomList().get(position).getId() + "";
-                    getPDSAll(pdsId);
+                    depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
                     tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
+                    depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
+                    srl_detection.autoRefresh();
                 }
             });
             return convertView;

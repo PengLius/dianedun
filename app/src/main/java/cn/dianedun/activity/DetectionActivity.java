@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,7 +25,6 @@ import cn.dianedun.R;
 import cn.dianedun.base.BaseActivity;
 import cn.dianedun.bean.DetactionXBean;
 import cn.dianedun.bean.PeiDSBean;
-import cn.dianedun.fragment.DetectionFragment;
 import cn.dianedun.fragment.DiYaFragment;
 import cn.dianedun.fragment.GaoCeFragment;
 import cn.dianedun.fragment.HumidityFragment;
@@ -90,6 +88,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
     private DiYaFragment diYaFragment;
     private TemperatureFragment temperatureFragment;
     private HumidityFragment humidityFragment;
+    private String depart;
 
 
     @Override
@@ -306,6 +305,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                 @Override
                 public void onClick(View v) {
                     getPDSAll(bean.getData().getSwitchRoomList().get(position).getId() + "");
+                    depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
                     tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
@@ -324,7 +324,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
      *
      * @param RoomId 配电室Id
      */
-    private void getPDSAll(String RoomId) {
+    private void getPDSAll(final String RoomId) {
         hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
         myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), new MyAsyncTast.Callback() {
@@ -336,10 +336,10 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void send(String result) {
                 xBean = GsonUtil.parseJsonWithGson(result, DetactionXBean.class);
-                gaoCeFragment.setData(xBean);
-                diYaFragment.setData(xBean);
-                temperatureFragment.setData(xBean);
-                humidityFragment.setData(xBean);
+                gaoCeFragment.setData(xBean, RoomId, depart);
+                diYaFragment.setData(xBean, RoomId, depart);
+                temperatureFragment.setData(xBean,RoomId, depart);
+                humidityFragment.setData(xBean,RoomId, depart);
             }
         });
         myAsyncTast.execute();
@@ -359,6 +359,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
                 getPDSAll(bean.getData().getSwitchRoomList().get(0).getId());
+                depart = bean.getData().getSwitchRoomList().get(0).getDepartname();
                 tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
             }
         });

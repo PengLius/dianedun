@@ -106,7 +106,16 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
 
         tv_amendpsw_phone.setText(getIntent().getStringExtra("phone"));
         tv_amendpsw_name.setText(getIntent().getStringExtra("username"));
-        tv_amendpsw_time.setText("您上次于 " + getIntent().getStringExtra("time") + " 登录");
+        String time = getIntent().getStringExtra("time");
+        if (time != null) {
+            if (time.equals("null")) {
+                tv_amendpsw_time.setText("欢迎使用电e盾");
+            } else {
+                tv_amendpsw_time.setText("您上次于 " + getIntent().getStringExtra("time") + " 登录");
+            }
+        } else {
+            tv_amendpsw_time.setText("欢迎使用电e盾");
+        }
 
     }
 
@@ -170,48 +179,48 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
             case R.id.rl_amendpsw_ok:
                 if (ed_amendpsw_yzm.getText().length() < 4) {
                     showToast("请输入4位短信验证码");
+                } else if (ed_amend_psw.getText().length() < 6) {
+                    showToast("请输入6~12位登录密码");
                 } else {
-                    if (ed_amend_psw.getText().length() > 5 && ed_amend_psw.getText() != null) {
-                        HashMap<String, String> hashMap = new HashMap<>();
-                        hashMap.put("username", getIntent().getStringExtra("username"));
-                        hashMap.put("code", ed_amendpsw_yzm.getText().toString());
-                        hashMap.put("password", ed_amend_psw.getText().toString());
-                        MyAsyncTast myAsyncTast = new MyAsyncTast(AmendPSWActivity.this, hashMap, AppConfig.RESETPWD, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-                            @Override
-                            public void onError(String result) {
+                    HashMap<String, String> hashMap = new HashMap<>();
+                    hashMap.put("username", getIntent().getStringExtra("username"));
+                    hashMap.put("code", ed_amendpsw_yzm.getText().toString());
+                    hashMap.put("password", ed_amend_psw.getText().toString());
+                    MyAsyncTast myAsyncTast = new MyAsyncTast(AmendPSWActivity.this, hashMap, AppConfig.RESETPWD, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                        @Override
+                        public void onError(String result) {
 
-                            }
+                        }
 
-                            @Override
-                            public void send(String result) {
-                                try {
-                                    JSONObject jsonObject = new JSONObject(result);
-                                    if (jsonObject.getString("code").equals("0")) {
-                                        JSONObject jsonObject1 = jsonObject.getJSONObject("data");
-                                        String token = jsonObject1.getString("token");
-                                        String isAdmin = jsonObject1.getString("isAdmin");
-                                        App.getInstance().setToken(token);
-                                        App.getInstance().setIsAdmin(isAdmin);
-                                        SharedPreferences mySharedPreferences = getSharedPreferences("user", Activity.MODE_PRIVATE);
-                                        SharedPreferences.Editor editor = mySharedPreferences.edit();
-                                        editor.putString("token", token);
-                                        editor.putString("isAdmin", isAdmin);
-                                        editor.commit();
-                                        showToast("修改成功");
-                                        AppManager.getInstance().finishActivity(MainActivity.class);
-                                        Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        showToast(jsonObject.getString("msg"));
-                                    }
-                                } catch (JSONException e) {
-                                    e.printStackTrace();
+                        @Override
+                        public void send(String result) {
+                            try {
+                                JSONObject jsonObject = new JSONObject(result);
+                                if (jsonObject.getString("code").equals("0")) {
+                                    JSONObject jsonObject1 = jsonObject.getJSONObject("data");
+                                    String token = jsonObject1.getString("token");
+                                    String isAdmin = jsonObject1.getString("isAdmin");
+                                    App.getInstance().setToken(token);
+                                    App.getInstance().setIsAdmin(isAdmin);
+                                    SharedPreferences mySharedPreferences = getSharedPreferences("user", Activity.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = mySharedPreferences.edit();
+                                    editor.putString("token", token);
+                                    editor.putString("isAdmin", isAdmin);
+                                    editor.commit();
+                                    showToast("修改成功");
+                                    AppManager.getInstance().finishActivity(MainActivity.class);
+                                    Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    showToast(jsonObject.getString("msg"));
                                 }
+                            } catch (JSONException e) {
+                                e.printStackTrace();
                             }
-                        });
-                        myAsyncTast.execute();
-                    }
+                        }
+                    });
+                    myAsyncTast.execute();
                 }
 
                 break;
@@ -219,6 +228,7 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
                 break;
 
         }
+
     }
 
     Runnable sendable = new Runnable() {

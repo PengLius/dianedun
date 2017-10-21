@@ -76,11 +76,12 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
                 hashMap.put("stats", "0,4");
                 hashMap.put("startIndex", page + "");
                 hashMap.put("pageSize", "10");
-                myAsyncTast = new MyAsyncTast(HisWorkOrderActivity.this, hashMap, AppConfig.GETHANDLEORDERBYSTATS, App.getInstance().getToken(),false, new MyAsyncTast.Callback() {
+                myAsyncTast = new MyAsyncTast(HisWorkOrderActivity.this, hashMap, AppConfig.GETHANDLEORDERBYSTATS, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
                     @Override
                     public void onError(String result) {
                         srl_hisworkorder.finishLoadmore();
                     }
+
                     @Override
                     public void send(String result) {
                         srl_hisworkorder.finishLoadmore();
@@ -109,7 +110,7 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
         hashMap.put("stats", "0,4");
         hashMap.put("startIndex", page + "");
         hashMap.put("pageSize", "10");
-        myAsyncTast = new MyAsyncTast(HisWorkOrderActivity.this, hashMap, AppConfig.GETHANDLEORDERBYSTATS, App.getInstance().getToken(),false, new MyAsyncTast.Callback() {
+        myAsyncTast = new MyAsyncTast(HisWorkOrderActivity.this, hashMap, AppConfig.GETHANDLEORDERBYSTATS, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
                 srl_hisworkorder.finishRefresh();
@@ -176,14 +177,14 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
             if (begin != null) {
                 long beginTimes = Long.parseLong(begin);
                 String beginTime = beginTimes / 1000 + "";
-                cache.item_hometv_startime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm"));
+                cache.item_hometv_startime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm") + ":00");
             } else {
                 cache.item_hometv_startime.setText("");
             }
             if (end != null) {
                 long endTimes = Long.parseLong(end);
                 String endTime = endTimes / 1000 + "";
-                cache.item_hometv_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm"));
+                cache.item_hometv_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm") + ":00");
             } else {
                 cache.item_hometv_endtime.setText("");
             }
