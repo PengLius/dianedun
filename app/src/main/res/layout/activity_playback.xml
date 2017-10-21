@@ -1,0 +1,408 @@
+<?xml version="1.0" encoding="utf-8"?>
+<cn.dianedun.view.PercentLinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/av_ll_container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@mipmap/backall"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical">
+    
+    <RelativeLayout
+        android:id="@+id/av_rl_titlelayout"
+        android:layout_width="match_parent"
+        android:layout_height="45dp"
+        android:background="@mipmap/home_backg_has">
+
+        <ImageView
+            android:id="@+id/av_img_back"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/bt_back" />
+
+        <TextView
+            android:id="@+id/ap_tv_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="@color/blackfont"
+            android:textSize="@dimen/content_text_s16" />
+
+        <ImageView
+            android:id="@+id/av_img_selectdate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:src="@mipmap/jc_topright" />
+
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/av_fl_displaycontainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:background="#ff000000"
+        app:layout_heightPercent="45%"
+        app:layout_widthPercent="100%">
+
+        <RelativeLayout
+            android:id="@+id/av_rl_videocontainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:background="#ff000000"
+            android:visibility="visible">
+
+
+            <cn.dianedun.view.EZUIPlayer.EZUIPlayer
+                android:id="@+id/av_ezuiplayerback"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_alignParentTop="true"
+                android:layout_centerInParent="false"
+                android:layout_margin="5dp"
+                android:background="@android:color/transparent"/>
+
+            <RelativeLayout
+                android:id="@+id/realplay_err_rl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_margin="5dp"
+                android:background="@color/black_bg"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/realplay_tip_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="设备不在线"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/content_text_s12"
+                    android:visibility="visible" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/realplay_capture_rl"
+                android:layout_width="65dp"
+                android:layout_height="45dp"
+                android:layout_above="@+id/av_rl_bottomlayout"
+                android:layout_alignLeft="@+id/av_ezuiplayerback"
+                android:background="@color/white"
+                android:padding="1dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/realplay_capture_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY" />
+
+                <ImageView
+                    android:id="@+id/realplay_capture_watermark_iv"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/video_file_watermark"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+
+            <RelativeLayout
+                android:id="@+id/av_rl_bottomlayout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/av_ezuiplayerback"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:background="#88e9e9e9"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/av_tv_places"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:text="炫彩SOHO大厦B座1号配电室-1号机"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/content_text_s12" />
+
+                <com.videogo.widget.CheckTextButton
+                    android:id="@+id/av_ctb_fullscreen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:background="@mipmap/ic_nor_fullscreen" />
+            </RelativeLayout>
+
+            <!--<include-->
+            <!--layout="@layout/view_realplay_full_operate"-->
+            <!--android:visibility="visible" />-->
+
+            <!--<ImageButton-->
+            <!--android:id="@+id/realplay_full_anim_btn"-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:background="@drawable/yuntai_pressed"-->
+            <!--android:visibility="gone" />-->
+
+            <RelativeLayout
+                android:id="@+id/realplay_prompt_rl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone">
+
+                <com.videogo.widget.TitleBar
+                    android:id="@+id/title_bar_landscape"
+                    style="@style/TitleBar"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone" />
+
+                <TextView
+                    android:id="@+id/realplay_ratio_tv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="70dp"
+                    android:layout_marginTop="20dp"
+                    android:text="2.0X"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/content_text_s24"
+                    android:visibility="gone" />
+
+
+                <LinearLayout
+                    android:id="@+id/realplay_record_ly"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="false"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="false"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="15dp"
+                    android:background="@drawable/circle_graybg"
+                    android:gravity="center"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/realplay_record_iv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="10dp"
+                        android:background="@drawable/play_video_record" />
+
+                    <TextView
+                        android:id="@+id/realplay_record_tv"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="10dp"
+                        android:text="00:25"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/title_text_s12" />
+                </LinearLayout>
+
+                <ImageView
+                    android:id="@+id/realplay_full_ptz_prompt_iv"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/ptz_prompt"
+                    android:scaleType="fitXY"
+                    android:visibility="gone" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+
+    </FrameLayout>
+
+    <android.support.percent.PercentRelativeLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_heightPercent="45%"
+        app:layout_widthPercent="100%">
+
+        <cn.dianedun.view.PercentLinearLayout
+            android:id="@+id/av_ll_playbackcontainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#ff000000"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_heightPercent="25%"
+                app:layout_widthPercent="100%">
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_1_"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_back_1" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_2_"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_back_2" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_go"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:id="@+id/ap_img_play"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_greenplay" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_2"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_move_2" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_move_1" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_heightPercent="25%"
+                app:layout_widthPercent="100%">
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_voice"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:id="@+id/ap_img_sound"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_nohorn" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_takephoto"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_vidicon" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"></View>
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_video"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <FrameLayout
+                        android:id="@+id/av_fl_videocontainer"
+                        android:layout_width="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_height="wrap_content">
+
+                        <ImageView
+                            android:id="@+id/av_img_videostart"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:src="@mipmap/ic_nor_show"
+                            android:visibility="visible" />
+
+                        <ImageView
+                            android:id="@+id/av_img_videostop"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:src="@mipmap/ic_nor_stop"
+                            android:visibility="gone" />
+                    </FrameLayout>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_stream"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_heartjump" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+            <cn.dianedun.view.timeshaftbar.TimerShaftBar
+                android:id="@+id/av_timershaftbar"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="20dp"
+                android:visibility="visible"
+                app:layout_heightPercent="45%"
+                app:layout_widthPercent="100%" />
+
+        </cn.dianedun.view.PercentLinearLayout>
+
+    </android.support.percent.PercentRelativeLayout>
+
+
+</cn.dianedun.view.PercentLinearLayout>
