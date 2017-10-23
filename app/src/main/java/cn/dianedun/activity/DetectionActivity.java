@@ -16,6 +16,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -76,6 +80,9 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
     @Bind(R.id.tv_detection_adress)
     TextView tv_detection_adress;
 
+    @Bind(R.id.srl_acdetection)
+    SmartRefreshLayout srl_acdetection;
+
 
     private List<Fragment> mList;
     private boolean rightState = false;
@@ -88,7 +95,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
     private DiYaFragment diYaFragment;
     private TemperatureFragment temperatureFragment;
     private HumidityFragment humidityFragment;
-    private String depart;
+    private String pdsId, depart;
 
 
     @Override
@@ -129,11 +136,27 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
         tv_detection_sd.setOnClickListener(this);
         img_detection_close.setOnClickListener(this);
         vt_img_right.setOnClickListener(this);
+        rl_detection.setOnClickListener(this);
         MyAdapter myAdapter = new MyAdapter(getSupportFragmentManager(), mList);
         vp_detection.setAdapter(myAdapter);
         vp_detection.setCurrentItem(0);
         vp_detection.setOnPageChangeListener(new MyOnPageChangeListener());
-        fristData();
+        initRefreshLayout();
+        srl_acdetection.autoRefresh();
+    }
+
+    private void initRefreshLayout() {
+        srl_acdetection.setLoadmoreFinished(true);
+        srl_acdetection.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                if (pdsId != null) {
+                    getPDSAll(pdsId);
+                } else {
+                    fristData();
+                }
+            }
+        });
     }
 
     @Override
@@ -171,6 +194,9 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                 break;
             case R.id.img_detection_close:
                 finish();
+                break;
+            case R.id.rl_detection:
+                rl_detection.setVisibility(GONE);
                 break;
 
             case R.id.vt_img_right:
@@ -304,8 +330,8 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
             convertView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    getPDSAll(bean.getData().getSwitchRoomList().get(position).getId() + "");
                     depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
+                    srl_acdetection.autoRefresh();
                     tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
@@ -327,10 +353,10 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
     private void getPDSAll(final String RoomId) {
         hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
-        myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+        myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                srl_acdetection.finishRefresh();
             }
 
             @Override
@@ -338,8 +364,9 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                 xBean = GsonUtil.parseJsonWithGson(result, DetactionXBean.class);
                 gaoCeFragment.setData(xBean, RoomId, depart);
                 diYaFragment.setData(xBean, RoomId, depart);
-                temperatureFragment.setData(xBean,RoomId, depart);
-                humidityFragment.setData(xBean,RoomId, depart);
+                temperatureFragment.setData(xBean, RoomId, depart);
+                humidityFragment.setData(xBean, RoomId, depart);
+                srl_acdetection.finishRefresh();
             }
         });
         myAsyncTast.execute();
@@ -358,7 +385,8 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
-                getPDSAll(bean.getData().getSwitchRoomList().get(0).getId());
+                pdsId = bean.getData().getSwitchRoomList().get(0).getId();
+                getPDSAll(pdsId);
                 depart = bean.getData().getSwitchRoomList().get(0).getDepartname();
                 tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
             }

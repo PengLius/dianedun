@@ -30,12 +30,13 @@ import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by Administrator on 2017/8/4.
  */
 
-public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickListener {
+public class  ForgetPSWActivity extends BaseTitlActivity implements View.OnClickListener {
 
     @Bind(R.id.ed_forget_user)
     EditText ed_forget_user;
@@ -181,6 +182,7 @@ public class ForgetPSWActivity extends BaseTitlActivity implements View.OnClickL
                     hashMap.put("username", ed_forget_user.getText().toString());
                     hashMap.put("password", ed_forget_psw.getText().toString());
                     hashMap.put("code", ed_forget_yzm.getText().toString());
+                    hashMap.put("registrationid", JPushInterface.getRegistrationID(getApplicationContext()));
                     MyAsyncTast myAsyncTast = new MyAsyncTast(ForgetPSWActivity.this, hashMap, AppConfig.RESETPWD, new MyAsyncTast.Callback() {
 
                         @Override

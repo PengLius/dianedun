@@ -42,6 +42,7 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
     private Date date;
     private Calendar calendar;
     private int type;
+    private boolean min = false;
     // 自定义 监听器
     private MyOnDateSetListener myOnDateSetListener;
     // 格式化 工具
@@ -76,6 +77,15 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
         init();
     }
 
+    public DateTimeDialog(Context context, Date date, MyOnDateSetListener myOnDateSetListener, int type, boolean min) {
+        super(context);
+        this.date = date;
+        this.myOnDateSetListener = myOnDateSetListener;
+        this.type = type;
+        this.min = min;
+        init();
+    }
+
     private void init() {
 
         // 用于 控制 timePicker的 显示 样式
@@ -97,7 +107,9 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
 
         datePickerView = localInflater.inflate(R.layout.view_date_picker_layout, null);
         datePicker = (DatePicker) datePickerView.findViewById(R.id.datePicker);
-        datePicker.setMinDate(DataUtil.getDates(new Date().getTime() + "").getTime());
+        if (min) {
+            datePicker.setMinDate(DataUtil.getDates(new Date().getTime() + "").getTime());
+        }
         timePickerView = localInflater.inflate(R.layout.view_time_picker_layout, null);
         timePicker = (TimePicker) timePickerView.findViewById(R.id.timePicker);
 

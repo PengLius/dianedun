@@ -40,7 +40,9 @@ public class AppConfig {
     public static final String MODIFYHANDLEORDER = PORTS + "/handleorder/modifyHandleOrder";//工单修改
     public static final String STATSHDEVICE = PORTS + "/count/statsHDevice";//高压数据统计
     public static final String STATSLDEVICE = PORTS + "/count/statsLDevice";//低压数据统计
-//    public static final String STATSLDEVICE = PORTS + "/count/statsLDevice";//低压数据统计
+    public static final String STATSTEMP = PORTS + "/count/statsTemp";//温度数据统计
+    public static final String STATSHUMIDITY = PORTS + "/count/statsHumidity";//湿度数据统计
+    public static final String STATSWATER = PORTS + "/count/statsWater";//水浸数据统计
 
 
     public static final String WEB_CARMERA_PORTS = "http://47.92.155.108:8082";//线上WEB

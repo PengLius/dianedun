@@ -103,12 +103,12 @@ public class GaoCeFragment extends Fragment {
                 cache = (Cache) convertView.getTag();
             }
             cache.tv_gyc_name.setText(bean.getData().getHdevice().get(position).getDeviceno());
-            cache.tv_gyc_GA.setText(bean.getData().getHdevice().get(position).getVa().getVal() + "V");
-            cache.tv_gyc_GB.setText(bean.getData().getHdevice().get(position).getVb().getVal() + "V");
-            cache.tv_gyc_GC.setText(bean.getData().getHdevice().get(position).getVc().getVal() + "V");
-            cache.tv_gyc_XAB.setText(bean.getData().getHdevice().get(position).getVab().getVal() + "V");
-            cache.tv_gyc_XBC.setText(bean.getData().getHdevice().get(position).getVbc().getVal() + "V");
-            cache.tv_gyc_XCA.setText(bean.getData().getHdevice().get(position).getVca().getVal() + "V");
+            cache.tv_gyc_GA.setText(bean.getData().getHdevice().get(position).getVa().getVal() + "KV");
+            cache.tv_gyc_GB.setText(bean.getData().getHdevice().get(position).getVb().getVal() + "KV");
+            cache.tv_gyc_GC.setText(bean.getData().getHdevice().get(position).getVc().getVal() + "KV");
+            cache.tv_gyc_XAB.setText(bean.getData().getHdevice().get(position).getVab().getVal() + "KV");
+            cache.tv_gyc_XBC.setText(bean.getData().getHdevice().get(position).getVbc().getVal() + "KV");
+            cache.tv_gyc_XCA.setText(bean.getData().getHdevice().get(position).getVca().getVal() + "KV");
             cache.tv_gyc_DA.setText(bean.getData().getHdevice().get(position).getIa().getVal() + "A");
             cache.tv_gyc_DB.setText(bean.getData().getHdevice().get(position).getIb().getVal() + "A");
             cache.tv_gyc_DC.setText(bean.getData().getHdevice().get(position).getIc().getVal() + "A");
@@ -129,6 +129,7 @@ public class GaoCeFragment extends Fragment {
                     intent.putExtra("depart", depart);
                     intent.putExtra("url", AppConfig.STATSHDEVICE);
                     intent.putExtra("deviceNum", bean.getData().getHdevice().get(position).getDeviceno());
+                    intent.putExtra("types", "0");
                     startActivity(intent);
                 }
             });

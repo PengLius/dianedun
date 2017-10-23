@@ -127,6 +127,7 @@ public class DiYaFragment extends Fragment {
                     intent.putExtra("depart", depart);
                     intent.putExtra("url", AppConfig.STATSLDEVICE);
                     intent.putExtra("deviceNum", bean.getData().getLdevice().get(position).getDeviceno());
+                    intent.putExtra("types", "1");
                     startActivity(intent);
                 }
             });

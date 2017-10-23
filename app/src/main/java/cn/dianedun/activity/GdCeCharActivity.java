@@ -2,9 +2,16 @@ package cn.dianedun.activity;
 
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.telecom.Call;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,33 +60,150 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
     @Bind(R.id.tv_gdchart_4)
     TextView tv_gdchart_4;
 
-    @Bind(R.id.tv_xg_mean)
-    TextView tv_xg_mean;
-
-    @Bind(R.id.tv_xg_max)
-    TextView tv_xg_max;
-
-    @Bind(R.id.tv_xn_max)
-    TextView tv_xn_max;
-
-    @Bind(R.id.tv_xn_mean)
-    TextView tv_xn_mean;
-
-    @Bind(R.id.tv_il_max)
-    TextView tv_il_max;
-
-    @Bind(R.id.tv_il_mean)
-    TextView tv_il_mean;
-
     @Bind(R.id.tv_tempchart_adress)
     TextView tv_tempchart_adress;
+
+    @Bind(R.id.tv_gdchar_xg)
+    TextView tv_gdchar_xg;
+
+    @Bind(R.id.tv_gdchar_xn)
+    TextView tv_gdchar_xn;
+
+    @Bind(R.id.srl_gdce)
+    SmartRefreshLayout srl_gdce;
+
+    @Bind(R.id.tv_gdxg_amax)
+    TextView tv_gdxg_amax;
+
+    @Bind(R.id.tv_gdxg_amean)
+    TextView tv_gdxg_amean;
+
+    @Bind(R.id.tv_gdxg_bmax)
+    TextView tv_gdxg_bmax;
+
+    @Bind(R.id.tv_gdxg_bmean)
+    TextView tv_gdxg_bmean;
+
+    @Bind(R.id.tv_gdxg_cmax)
+    TextView tv_gdxg_cmax;
+
+    @Bind(R.id.tv_gdxg_cmean)
+    TextView tv_gdxg_cmean;
+
+    @Bind(R.id.tv_gdxn_abmax)
+    TextView tv_gdxn_abmax;
+
+    @Bind(R.id.tv_gdxn_abmean)
+    TextView tv_gdxn_abmean;
+
+    @Bind(R.id.tv_gdxn_bcmax)
+    TextView tv_gdxn_bcmax;
+
+    @Bind(R.id.tv_gdxn_bcmean)
+    TextView tv_gdxn_bcmean;
+
+    @Bind(R.id.tv_gdxn_acmax)
+    TextView tv_gdxn_acmax;
+
+    @Bind(R.id.tv_gdxn_acmean)
+    TextView tv_gdxn_acmean;
+
+    @Bind(R.id.tv_gdil_amax)
+    TextView tv_gdil_amax;
+
+    @Bind(R.id.tv_gdil_amean)
+    TextView tv_gdil_amean;
+
+    @Bind(R.id.tv_gdil_bmax)
+    TextView tv_gdil_bmax;
+
+    @Bind(R.id.tv_gdil_bmean)
+    TextView tv_gdil_bmean;
+
+    @Bind(R.id.tv_gdil_cmax)
+    TextView tv_gdil_cmax;
+
+    @Bind(R.id.tv_gdil_cmean)
+    TextView tv_gdil_cmean;
+
 
     private RealTimeConBean bean;
     private String RoomId;
     private String url;
     private String deviceNum;
     private int type = 1;
-    private int maxXg, maxXn, maxIl, meanXg, meanXn, meanIl;
+    private int maxXg, maxXn, maxIl;
+    private MyAsyncTast.Callback callback = new MyAsyncTast.Callback() {
+        @Override
+        public void send(String result) {
+            bean = GsonUtil.parseJsonWithGson(result, RealTimeConBean.class);
+            maxXg = getMaxNumb(bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList());
+            maxXn = getMaxNumb(bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList());
+            maxIl = getMaxNumb(bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList());
+            if (getIntent().getStringExtra("types").equals("0")) {
+                tv_gdxg_amax.setText(getmMax1Numb(bean.getData().getVaList()) + "KV");
+                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "KV");
+                tv_gdxg_bmax.setText(getmMax1Numb(bean.getData().getVbList()) + "KV");
+                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "KV");
+                tv_gdxg_cmax.setText(getmMax1Numb(bean.getData().getVcList()) + "KV");
+                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "KV");
+                tv_gdxn_abmax.setText(getmMax1Numb(bean.getData().getVabList()) + "KV");
+                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "KV");
+                tv_gdxn_bcmax.setText(getmMax1Numb(bean.getData().getVbcList()) + "KV");
+                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "KV");
+                tv_gdxn_acmax.setText(getmMax1Numb(bean.getData().getVcaList()) + "KV");
+                tv_gdxn_acmean.setText(getmMeanNumb(bean.getData().getVcaList()) + "KV");
+            } else {
+                tv_gdxg_amax.setText(getmMax1Numb(bean.getData().getVaList()) + "V");
+                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "V");
+                tv_gdxg_bmax.setText(getmMax1Numb(bean.getData().getVbList()) + "V");
+                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "V");
+                tv_gdxg_cmax.setText(getmMax1Numb(bean.getData().getVcList()) + "V");
+                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "V");
+                tv_gdxn_abmax.setText(getmMax1Numb(bean.getData().getVabList()) + "V");
+                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "V");
+                tv_gdxn_bcmax.setText(getmMax1Numb(bean.getData().getVbcList()) + "V");
+                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "V");
+                tv_gdxn_acmax.setText(getmMax1Numb(bean.getData().getVcaList()) + "V");
+                tv_gdxn_acmean.setText(getmMeanNumb(bean.getData().getVcaList()) + "V");
+
+            }
+            tv_gdil_amax.setText(getmMax1Numb(bean.getData().getIaList()) + "A");
+            tv_gdil_amean.setText(getmMeanNumb(bean.getData().getIaList()) + "A");
+            tv_gdil_bmax.setText(getmMax1Numb(bean.getData().getIbList()) + "A");
+            tv_gdil_bmean.setText(getmMeanNumb(bean.getData().getIbList()) + "A");
+            tv_gdil_cmax.setText(getmMax1Numb(bean.getData().getIcList()) + "A");
+            tv_gdil_cmean.setText(getmMeanNumb(bean.getData().getIcList()) + "A");
+
+            List<String> xList = new ArrayList<>();
+            for (int i = 0; i < bean.getData().getXList().size(); i++) {
+                xList.add(bean.getData().getXList().get(i).substring(5, bean.getData().getXList().get(i).length()));
+            }
+            initLineChart(lcv_xgtension, bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList(), xList, maxXg);
+            initLineChart(lcv_xntension, bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList(), xList, maxXn);
+            initLineChart(lcv_electricity, bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList(), xList, maxIl);
+//            new Thread(sendable).start();
+            srl_gdce.finishRefresh();
+        }
+
+        @Override
+        public void onError(String result) {
+            srl_gdce.finishRefresh();
+        }
+    };
+    private Boolean treadoff = true;
+    private String flag = "day";
+    private String num = "1";
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.arg1 == 0) {
+                getData(flag, num);
+            }
+        }
+    };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -97,9 +221,27 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         url = getIntent().getStringExtra("url");
         deviceNum = getIntent().getStringExtra("deviceNum");
         tv_tempchart_adress.setText(getIntent().getStringExtra("depart"));
-        getData("day", "1");
-
+        if (getIntent().getStringExtra("types").equals("0")) {
+            tv_gdchar_xg.setText("相电压（KV）");
+            tv_gdchar_xn.setText("线电压（KV）");
+        } else {
+            tv_gdchar_xg.setText("相电压（V）");
+            tv_gdchar_xn.setText("线电压（V）");
+        }
+        initRefreshLayout();
+        srl_gdce.autoRefresh();
     }
+
+    private void initRefreshLayout() {
+        srl_gdce.setLoadmoreFinished(true);
+        srl_gdce.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                getData(flag, num);
+            }
+        });
+    }
+
 
     /**
      * 初始化图表
@@ -143,6 +285,9 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         datas.setAxisXBottom(axisX); //x 轴在底部
         Axis axisY = new Axis();  //Y轴
         axisY.setName("");//y轴标注
+
+        axisY.setHasLines(true).setLineColor(Color.parseColor("#323944")); //y轴分割线
+
         axisY.setTextSize(10);//设置字体大小
         axisY.setTextColor(Color.WHITE);
         datas.setAxisYLeft(axisY);  //Y轴设置在左边
@@ -194,7 +339,9 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
                 tv_gdchart_3.setBackgroundResource(R.mipmap.jc_tab);
                 tv_gdchart_4.setBackgroundResource(R.mipmap.jc_tab);
                 if (type != 1) {
-                    getData("day", "1");
+                    flag = "day";
+                    num = "1";
+                    srl_gdce.autoRefresh();
                     type = 1;
                 }
                 break;
@@ -204,7 +351,9 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
                 tv_gdchart_3.setBackgroundResource(R.mipmap.jc_tab);
                 tv_gdchart_4.setBackgroundResource(R.mipmap.jc_tab);
                 if (type != 2) {
-                    getData("week", "1");
+                    flag = "week";
+                    num = "1";
+                    srl_gdce.autoRefresh();
                     type = 2;
                 }
                 break;
@@ -214,7 +363,9 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
                 tv_gdchart_3.setBackgroundResource(R.mipmap.jc_tab1);
                 tv_gdchart_4.setBackgroundResource(R.mipmap.jc_tab);
                 if (type != 3) {
-                    getData("month", "1");
+                    flag = "month";
+                    num = "1";
+                    srl_gdce.autoRefresh();
                     type = 3;
                 }
                 break;
@@ -224,7 +375,9 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
                 tv_gdchart_3.setBackgroundResource(R.mipmap.jc_tab);
                 tv_gdchart_4.setBackgroundResource(R.mipmap.jc_tab1);
                 if (type != 4) {
-                    getData("custon", "1");
+                    flag = "month";
+                    num = "6";
+                    srl_gdce.autoRefresh();
                     type = 4;
                 }
                 break;
@@ -233,42 +386,19 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         }
     }
 
+    /**
+     * 获取数据
+     *
+     * @param flag
+     * @param num
+     */
     public void getData(String flag, String num) {
         HashMap<String, String> hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
         hashMap.put("flag", flag);
         hashMap.put("num", num);
         hashMap.put("deviceNum", deviceNum);
-        MyAsyncTast myAsyncTast = new MyAsyncTast(GdCeCharActivity.this, hashMap, url, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-            @Override
-            public void send(String result) {
-                bean = GsonUtil.parseJsonWithGson(result, RealTimeConBean.class);
-                maxXg = getMaxNumb(bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList());
-                maxXn = getMaxNumb(bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList());
-                maxIl = getMaxNumb(bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList());
-                meanXg = getmMeanNumb(bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList());
-                meanXn = getmMeanNumb(bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList());
-                meanIl = getmMeanNumb(bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList());
-                tv_xg_max.setText(maxXg + "V");
-                tv_xg_mean.setText(meanXg + "V");
-                tv_xn_max.setText(maxXn + "V");
-                tv_xn_mean.setText(meanXn + "V");
-                tv_il_max.setText(maxIl + "A");
-                tv_il_mean.setText(meanIl + "A");
-                List<String> xList = new ArrayList<>();
-                for (int i = 0; i < bean.getData().getXList().size(); i++) {
-                    xList.add(bean.getData().getXList().get(i).substring(5, bean.getData().getXList().get(i).length()));
-                }
-                initLineChart(lcv_xgtension, bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList(), xList, maxXg);
-                initLineChart(lcv_xntension, bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList(), xList, maxXn);
-                initLineChart(lcv_electricity, bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList(), xList, maxIl);
-            }
-
-            @Override
-            public void onError(String result) {
-
-            }
-        });
+        MyAsyncTast myAsyncTast = new MyAsyncTast(GdCeCharActivity.this, hashMap, url, App.getInstance().getToken(), false, callback);
         myAsyncTast.execute();
     }
 
@@ -295,20 +425,49 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         return a;
     }
 
-    public int getmMeanNumb(List<String> numbList, List<String> numbList1, List<String> numbList2) {
+    public int getmMeanNumb(List<String> numbList) {
         int a = 0;
         for (int i = 0; i < numbList.size(); i++) {
             int numb = Integer.parseInt(numbList.get(i));
             a = numb + a;
         }
-        for (int i = 0; i < numbList1.size(); i++) {
-            int numb = Integer.parseInt(numbList1.get(i));
-            a = numb + a;
+        return a / numbList.size();
+    }
+
+    public int getmMax1Numb(List<String> numbList) {
+        int a = 0;
+        for (int i = 0; i < numbList.size(); i++) {
+            int numb = Integer.parseInt(numbList.get(i));
+            if (a < numb) {
+                a = numb;
+            }
         }
-        for (int i = 0; i < numbList2.size(); i++) {
-            int numb = Integer.parseInt(numbList2.get(i));
-            a = numb + a;
-        }
-        return a / (numbList.size() + numbList1.size() + numbList2.size());
+        return a;
+    }
+
+    /**
+     * 定时刷新
+     */
+//    Runnable sendable = new Runnable() {
+//        @Override
+//        public void run() {
+//            int a = 10;
+//            while (-1 < a && treadoff) {
+//                try {
+//                    Thread.sleep(1000);
+//                    Message message = new Message();
+//                    message.arg1 = a;
+//                    handler.sendMessage(message);
+//                    a--;
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
+//    };
+    @Override
+    protected void onDestroy() {
+        treadoff = false;
+        super.onDestroy();
     }
 }

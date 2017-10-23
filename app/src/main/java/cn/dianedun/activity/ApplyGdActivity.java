@@ -288,7 +288,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
         switch (v.getId()) {
             case R.id.tv_amendgd_startime:
                 //选择开始时间
-                dateTimeDialog = new DateTimeDialog(this, null, this, STARTTIME);
+                dateTimeDialog = new DateTimeDialog(this, null, this, STARTTIME, true);
                 showAll();
                 break;
             case R.id.tv_amendgd_endtime:
@@ -296,7 +296,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 if (tv_amendgd_startime.getText() == null || tv_amendgd_startime.getText().toString().equals("")) {
                     showToast("请先选择开始时间");
                 } else {
-                    dateTimeDialog = new DateTimeDialog(this, null, this, ENDTTIME);
+                    dateTimeDialog = new DateTimeDialog(this, null, this, ENDTTIME, true);
                     showAll();
                 }
                 break;

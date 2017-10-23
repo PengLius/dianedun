@@ -16,7 +16,15 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
+import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import butterknife.Bind;
 import cn.dianedun.R;
@@ -42,9 +50,17 @@ public class MessageActivity extends BaseTitlActivity {
     @Bind(R.id.tv_message_bj)
     TextView tv_message_bj;
 
+    @Bind(R.id.srl_message)
+    SmartRefreshLayout srl_message;
+
+    @Bind(R.id.cf_message)
+    ClassicsFooter cf_message;
+
     private MessageBean bean;
+    private List<MessageBean.DataBean.ResultBean> allList;
     private Dialog dialog;
     private int type = 0;
+    private int page = 1;
 
 
     @Override
@@ -69,19 +85,92 @@ public class MessageActivity extends BaseTitlActivity {
                 }
             }
         });
-        getDate();
+        initRefreshLayout();
+        srl_message.autoRefresh();
+    }
+
+    private void initRefreshLayout() {
+        srl_message.setOnRefreshListener(new OnRefreshListener() {
+            @Override
+            public void onRefresh(RefreshLayout refreshlayout) {
+                getDate();
+            }
+        });
+        srl_message.setOnLoadmoreListener(new OnLoadmoreListener() {
+            @Override
+            public void onLoadmore(RefreshLayout refreshlayout) {
+                HashMap<String, String> hashMap = new HashMap<>();
+                hashMap.put("pageSize","10" );
+                hashMap.put("startIndex", page + "");
+                myAsyncTast = new MyAsyncTast(MessageActivity.this, hashMap, AppConfig.GETMESSAGELIST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
+                    @Override
+                    public void onError(String result) {
+                        srl_message.finishLoadmore();
+                    }
+
+                    @Override
+                    public void send(String result) {
+                        srl_message.finishLoadmore();
+                        bean = GsonUtil.parseJsonWithGson(result, MessageBean.class);
+                        for (int i = 0; i < bean.getData().getResult().size(); i++) {
+                            allList.add(bean.getData().getResult().get(i));
+                        }
+                        adapter.notifyDataSetChanged();
+                        if (bean.getData().getResult().size() < 10) {
+                            srl_message.setLoadmoreFinished(true);
+                        }
+                        page++;
+                    }
+                });
+                myAsyncTast.execute();
+                tv_message_bj.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        myAsyncTast = new MyAsyncTast(MessageActivity.this, new HashMap<String, String>(), AppConfig.MODIFYMESSAGESTATSALL, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                            @Override
+                            public void onError(String result) {
+                                showToast(result);
+                                tv_message_bj.setVisibility(View.GONE);
+                                type = 0;
+                            }
+
+                            @Override
+                            public void send(String result) {
+                                tv_message_bj.setVisibility(View.GONE);
+                                type = 0;
+                                getDate();
+                            }
+                        });
+                        myAsyncTast.execute();
+                    }
+                });
+            }
+        });
     }
 
     public void getDate() {
-        myAsyncTast = new MyAsyncTast(MessageActivity.this, new HashMap<String, String>(), AppConfig.GETMESSAGELIST, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+        page = 1;
+        allList = new ArrayList<>();
+        HashMap<String, String> hashMap = new HashMap<>();
+        hashMap.put("pageSize","10");
+        hashMap.put("startIndex", page + "" );
+        myAsyncTast = new MyAsyncTast(MessageActivity.this, new HashMap<String, String>(), AppConfig.GETMESSAGELIST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                srl_message.finishRefresh();
             }
 
             @Override
             public void send(String result) {
+                srl_message.finishRefresh();
+                page++;
                 bean = GsonUtil.parseJsonWithGson(result, MessageBean.class);
+                for (int i = 0; i < bean.getData().getResult().size(); i++) {
+                    allList.add(bean.getData().getResult().get(i));
+                }
+                if (bean.getData().getResult().size() < 10) {
+                    srl_message.setLoadmoreFinished(true);
+                }
                 adapter = new IndentCusAdapter();
                 lv_message.setAdapter(adapter);
             }
@@ -114,13 +203,13 @@ public class MessageActivity extends BaseTitlActivity {
     private class IndentCusAdapter extends BaseAdapter {
         @Override
         public int getCount() {
-            return bean.getData().getResult().size();
+            return allList.size();
         }
 
 
         @Override
         public Object getItem(int position) {
-            return bean.getData().getResult().get(position);
+            return allList.get(position);
         }
 
         @Override
@@ -142,31 +231,32 @@ public class MessageActivity extends BaseTitlActivity {
             } else {
                 cache = (Cache) convertView.getTag();
             }
-            cache.tv_message_con.setText(bean.getData().getResult().get(position).getContents());
-            cache.tv_message_time.setText(bean.getData().getResult().get(position).getCreateTime());
-            dialog = createLoadingDialog(MessageActivity.this, bean.getData().getResult().get(position).getContents(), bean.getData().getResult().get(position).getCreateTime());
-            if (bean.getData().getResult().get(position).getStatus() == 0) {
+            cache.tv_message_con.setText(allList.get(position).getContents());
+            cache.tv_message_time.setText(allList.get(position).getCreateTime());
+            if (allList.get(position).getStatus() == 0) {
                 cache.img_itmemessage.setImageResource(R.mipmap.msg);
                 cache.ll_itemmassge.setBackgroundColor(Color.parseColor("#60D9D9D9"));
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
+                        dialog = createLoadingDialog(MessageActivity.this, allList.get(position).getContents(), allList.get(position).getCreateTime());
                         dialog.show();
                     }
                 });
-            } else if (bean.getData().getResult().get(position).getStatus() == 1) {
+            } else if (allList.get(position).getStatus() == 1) {
                 cache.img_itmemessage.setImageResource(R.mipmap.msg1);
                 cache.ll_itemmassge.setBackgroundColor(Color.parseColor("#6019246B"));
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         HashMap<String, String> hashMap = new HashMap<String, String>();
-                        hashMap.put("msgId", bean.getData().getResult().get(position).getId() + "");
+                        hashMap.put("msgId", allList.get(position).getId() + "");
                         myAsyncTast = new MyAsyncTast(MessageActivity.this, hashMap, AppConfig.MODIFYMESSAGESTATS, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                             @Override
                             public void send(String result) {
                                 cache.img_itmemessage.setImageResource(R.mipmap.msg);
                                 cache.ll_itemmassge.setBackgroundColor(Color.parseColor("#60D9D9D9"));
+                                dialog = createLoadingDialog(MessageActivity.this, allList.get(position).getContents(), allList.get(position).getCreateTime());
                                 dialog.show();
                             }
 

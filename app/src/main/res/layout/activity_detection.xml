@@ -44,87 +44,98 @@
             android:background="@mipmap/jc_topright" />
     </RelativeLayout>
 
+
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <LinearLayout
+        <com.scwang.smartrefresh.layout.SmartRefreshLayout
+            android:id="@+id/srl_acdetection"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
+            android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/tv_detection_adress"
+            <com.scwang.smartrefresh.layout.header.ClassicsHeader
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:layout_marginTop="15dp"
-                android:gravity="center"
-                android:text="保定市炫彩soho大厦B座1号配电室"
-                android:textColor="#FFF"
-                android:textSize="@dimen/content_text_s14" />
+                android:layout_height="wrap_content"></com.scwang.smartrefresh.layout.header.ClassicsHeader>
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_detection_gy"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab1"
+                    android:id="@+id/tv_detection_adress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:text="高压侧"
+                    android:text="保定市炫彩soho大厦B座1号配电室"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
-                <TextView
-                    android:id="@+id/tv_detection_dy"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
-                    android:gravity="center"
-                    android:text="低压侧"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
 
-                <TextView
-                    android:id="@+id/tv_detection_wd"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
-                    android:gravity="center"
-                    android:text="温度"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
+                    <TextView
+                        android:id="@+id/tv_detection_gy"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_weight="1"
+                        android:background="@mipmap/jc_tab1"
+                        android:gravity="center"
+                        android:text="高压侧"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
 
-                <TextView
-                    android:id="@+id/tv_detection_sd"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
-                    android:gravity="center"
-                    android:text="湿度/水浸"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
+                    <TextView
+                        android:id="@+id/tv_detection_dy"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1"
+                        android:background="@mipmap/jc_tab"
+                        android:gravity="center"
+                        android:text="低压侧"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+
+                    <TextView
+                        android:id="@+id/tv_detection_wd"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1"
+                        android:background="@mipmap/jc_tab"
+                        android:gravity="center"
+                        android:text="温度"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+
+                    <TextView
+                        android:id="@+id/tv_detection_sd"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_weight="1"
+                        android:background="@mipmap/jc_tab"
+                        android:gravity="center"
+                        android:text="湿度/水浸"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+                </LinearLayout>
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/vp_detection"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"></android.support.v4.view.ViewPager>
             </LinearLayout>
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/vp_detection"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"></android.support.v4.view.ViewPager>
-        </LinearLayout>
+        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
         <RelativeLayout
             android:id="@+id/rl_detection"

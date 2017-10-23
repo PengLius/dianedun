@@ -32,6 +32,7 @@ import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.jpush.android.api.JPushInterface;
 
 /**
  * Created by Administrator on 2017/8/5.
@@ -186,6 +187,7 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
                     hashMap.put("username", getIntent().getStringExtra("username"));
                     hashMap.put("code", ed_amendpsw_yzm.getText().toString());
                     hashMap.put("password", ed_amend_psw.getText().toString());
+                    hashMap.put("registrationid", JPushInterface.getRegistrationID(getApplicationContext()));
                     MyAsyncTast myAsyncTast = new MyAsyncTast(AmendPSWActivity.this, hashMap, AppConfig.RESETPWD, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
                         public void onError(String result) {

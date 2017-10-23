@@ -432,12 +432,12 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
         switch (v.getId()) {
             case R.id.tv_amendgd_startime:
                 //选择开始时间
-                dateTimeDialog = new DateTimeDialog(this, null, this, STARTTIME);
+                dateTimeDialog = new DateTimeDialog(this, null, this, STARTTIME, true);
                 showAll();
                 break;
             case R.id.tv_amendgd_endtime:
                 //选择结束时间
-                dateTimeDialog = new DateTimeDialog(this, null, this, ENDTTIME);
+                dateTimeDialog = new DateTimeDialog(this, null, this, ENDTTIME, true);
                 showAll();
                 break;
             case R.id.tv_amendgd_pt:

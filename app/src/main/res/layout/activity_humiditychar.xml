@@ -6,7 +6,7 @@
     android:orientation="vertical">
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/srl_tempchart"
+        android:id="@+id/srl_humidity"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -24,21 +24,13 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_tempchart_adress"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="15dp"
-                    android:gravity="center"
-                    android:text=""
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
-
-                <TextView
+                    android:id="@+id/tv_humiditychar_adress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="15dp"
+                    android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:text="温度DA变"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -50,7 +42,7 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tv_tempchart_1"
+                        android:id="@+id/tv_humiditychar_1"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_marginLeft="10dp"
@@ -62,7 +54,7 @@
                         android:textSize="@dimen/content_text_s14" />
 
                     <TextView
-                        android:id="@+id/tv_tempchart_2"
+                        android:id="@+id/tv_humiditychar_2"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_marginLeft="10dp"
@@ -74,7 +66,7 @@
                         android:textSize="@dimen/content_text_s14" />
 
                     <TextView
-                        android:id="@+id/tv_tempchart_3"
+                        android:id="@+id/tv_humiditychar_3"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_marginLeft="10dp"
@@ -86,7 +78,7 @@
                         android:textSize="@dimen/content_text_s14" />
 
                     <TextView
-                        android:id="@+id/tv_tempchart_4"
+                        android:id="@+id/tv_humiditychar_4"
                         android:layout_width="0dp"
                         android:layout_height="30dp"
                         android:layout_marginLeft="10dp"
@@ -104,25 +96,72 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:layout_marginTop="20dp"
-                    android:text="温度（℃）"
+                    android:text="湿度（%）"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
                 <lecho.lib.hellocharts.view.LineChartView
-                    android:id="@+id/cash_chart"
+                    android:id="@+id/lcv_sd"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:paddingRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="20dp"
                     android:paddingTop="10dp" />
 
-                <TextView
+                <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
-                    android:gravity="center"
-                    android:text="DA变"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
+                    android:layout_marginTop="5dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="平均湿度："
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s14" />
+
+                        <TextView
+                            android:id="@+id/tv_sd_mean"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textColor="#04BFE7"
+                            android:textSize="@dimen/content_text_s14" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="最大湿度："
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s14" />
+
+                        <TextView
+                            android:id="@+id/tv_sd_max"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textColor="#e84b06"
+                            android:textSize="@dimen/content_text_s14" />
+                    </LinearLayout>
+                </LinearLayout>
             </LinearLayout>
         </ScrollView>
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>

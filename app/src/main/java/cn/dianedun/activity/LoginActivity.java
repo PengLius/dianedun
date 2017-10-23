@@ -258,7 +258,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         if (ed_login_yzm.getText() != null) {
             params1.addBodyParameter("code", ed_login_yzm.getText().toString());
         }
-//        params1.addBodyParameter("registrationId", JPushInterface.getRegistrationID(getApplicationContext()));
+        params1.addBodyParameter("registrationid", JPushInterface.getRegistrationID(getApplicationContext()));
         x.http().post(params1, new Callback.CommonCallback<String>() {
 
             @Override
