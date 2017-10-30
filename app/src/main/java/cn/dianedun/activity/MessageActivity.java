@@ -72,7 +72,7 @@ public class MessageActivity extends BaseTitlActivity {
         setImgLeftVisibility(View.VISIBLE);
         setImgRightVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.bt_back);
-        setImgRight(R.mipmap.jc_topright);
+        setImgRight(R.mipmap.home_look);
         setImgRightOnClick(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -100,7 +100,7 @@ public class MessageActivity extends BaseTitlActivity {
             @Override
             public void onLoadmore(RefreshLayout refreshlayout) {
                 HashMap<String, String> hashMap = new HashMap<>();
-                hashMap.put("pageSize","10" );
+                hashMap.put("pageSize", "10");
                 hashMap.put("startIndex", page + "");
                 myAsyncTast = new MyAsyncTast(MessageActivity.this, hashMap, AppConfig.GETMESSAGELIST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
                     @Override
@@ -151,10 +151,11 @@ public class MessageActivity extends BaseTitlActivity {
     public void getDate() {
         page = 1;
         allList = new ArrayList<>();
+        srl_message.setLoadmoreFinished(false);
         HashMap<String, String> hashMap = new HashMap<>();
-        hashMap.put("pageSize","10");
-        hashMap.put("startIndex", page + "" );
-        myAsyncTast = new MyAsyncTast(MessageActivity.this, new HashMap<String, String>(), AppConfig.GETMESSAGELIST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
+        hashMap.put("pageSize", "10");
+        hashMap.put("startIndex", page + "");
+        myAsyncTast = new MyAsyncTast(MessageActivity.this, hashMap, AppConfig.GETMESSAGELIST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
                 srl_message.finishRefresh();

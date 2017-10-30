@@ -460,6 +460,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.GETUSERBYDEPARTID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
                         public void onError(String result) {
+                            showToast(result);
                         }
 
                         @Override
@@ -500,7 +501,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMaps, AppConfig.GETDEPARTBYUSER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                     @Override
                     public void onError(String result) {
-
+                        showToast(result);
                     }
 
                     @Override

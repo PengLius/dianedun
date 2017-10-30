@@ -119,6 +119,63 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Override
     protected void initView(View contentView) {
         super.initView(contentView);
+        if (App.getInstance().getIsAdmin().equals("2")) {
+            setTvTitleText("概览");
+            mapView.setVisibility(View.VISIBLE);
+            ll_detection_all.setVisibility(View.GONE);
+            mapView.onCreate(savedInstanceState);
+            if (aMap == null) {
+                aMap = mapView.getMap();
+            }
+            aMap.clear();
+            setImgRightVisibility(View.GONE);
+            setTitleBack(R.mipmap.home_backg_null);
+            initMap();
+        } else {
+            initListV();
+            setTvTitleText("监测");
+            mapView.setVisibility(View.GONE);
+            ll_detection_all.setVisibility(View.VISIBLE);
+            setTitleBack(R.mipmap.home_backg_leftnull);
+            setImgRightVisibility(View.VISIBLE);
+            setImgRight(R.mipmap.jc_topright);
+            setImgRightOnClick(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (rightState) {
+                        rl_detection.setVisibility(View.GONE);
+                        rightState = false;
+                    } else {
+                        hashMap = new HashMap<>();
+                        hashMap.put("id", "");
+                        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                            @Override
+                            public void onError(String result) {
+
+                            }
+
+                            @Override
+                            public void send(String result) {
+                                bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
+                                adapter = new IndentCusAdapter();
+                                lv_detection.setAdapter(adapter);
+                                rl_detection.setVisibility(View.VISIBLE);
+                                rightState = true;
+                            }
+                        });
+                        myAsyncTast.execute();
+                    }
+
+                }
+            });
+            rl_detection.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    rl_detection.setVisibility(View.GONE);
+                    rightState = false;
+                }
+            });
+        }
 
     }
 
@@ -163,8 +220,8 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         vp_fdetection.setAdapter(myAdapter);
         vp_fdetection.setCurrentItem(0);
         vp_fdetection.setOnPageChangeListener(new MyOnPageChangeListener());
+        vp_fdetection.setOffscreenPageLimit(3);
         initRefreshLayout();
-        srl_detection.autoRefresh();
     }
 
 
@@ -174,7 +231,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
                 if (pdsId != null) {
-                    getPDSAll(pdsId);
+                    getPDSAll(pdsId, false);
                 } else {
                     fristData();
                 }
@@ -205,7 +262,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                 srl_detection.finishRefresh();
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
                 pdsId = bean.getData().getSwitchRoomList().get(0).getId();
-                getPDSAll(pdsId);
+                getPDSAll(pdsId, true);
                 tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
                 depart = bean.getData().getSwitchRoomList().get(0).getDepartname();
             }
@@ -218,10 +275,11 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
      *
      * @param RoomId 配电室Id
      */
-    private void getPDSAll(final String RoomId) {
+    private void getPDSAll(final String RoomId, boolean loading) {
+
         hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
-        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
+        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), loading, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
                 srl_detection.finishRefresh();
@@ -490,62 +548,6 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Override
     public void onSupportVisible() {
         super.onSupportVisible();
-        if (App.getInstance().getIsAdmin().equals("2")) {
-            setTvTitleText("概览");
-            mapView.setVisibility(View.VISIBLE);
-            ll_detection_all.setVisibility(View.GONE);
-            mapView.onCreate(savedInstanceState);
-            if (aMap == null) {
-                aMap = mapView.getMap();
-            }
-            aMap.clear();
-            setImgRightVisibility(View.GONE);
-            setTitleBack(R.mipmap.home_backg_null);
-            initMap();
-        } else {
-            setTvTitleText("监测");
-            mapView.setVisibility(View.GONE);
-            ll_detection_all.setVisibility(View.VISIBLE);
-            setTitleBack(R.mipmap.home_backg_leftnull);
-            setImgRightVisibility(View.VISIBLE);
-            setImgRight(R.mipmap.jc_topright);
-            setImgRightOnClick(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    if (rightState) {
-                        rl_detection.setVisibility(View.GONE);
-                        rightState = false;
-                    } else {
-                        hashMap = new HashMap<>();
-                        hashMap.put("id", "");
-                        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-                            @Override
-                            public void onError(String result) {
-
-                            }
-
-                            @Override
-                            public void send(String result) {
-                                bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
-                                adapter = new IndentCusAdapter();
-                                lv_detection.setAdapter(adapter);
-                                rl_detection.setVisibility(View.VISIBLE);
-                                rightState = true;
-                            }
-                        });
-                        myAsyncTast.execute();
-                    }
-
-                }
-            });
-            rl_detection.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    rl_detection.setVisibility(View.GONE);
-                    rightState = false;
-                }
-            });
-            initListV();
-        }
+        srl_detection.autoRefresh();
     }
 }

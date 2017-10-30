@@ -129,7 +129,15 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                 if (loding) {
                     diaglog.dismiss();
                 }
-                callback.onError("网络异常，请检查网络是否畅通");
+                if (ex instanceof HttpException) {
+                    HttpException httpEx = (HttpException) ex;
+                    int responseCode = httpEx.getCode();
+                    String responseMsg = httpEx.getMessage();
+                    String errorResult = httpEx.getResult();
+                    callback.onError(responseMsg);
+                } else {
+                    callback.onError("网络异常，请检查网络是否畅通");
+                }
             }
 
             @Override

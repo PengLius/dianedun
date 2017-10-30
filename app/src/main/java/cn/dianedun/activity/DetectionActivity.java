@@ -140,6 +140,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
         MyAdapter myAdapter = new MyAdapter(getSupportFragmentManager(), mList);
         vp_detection.setAdapter(myAdapter);
         vp_detection.setCurrentItem(0);
+        vp_detection.setOffscreenPageLimit(3);
         vp_detection.setOnPageChangeListener(new MyOnPageChangeListener());
         initRefreshLayout();
         srl_acdetection.autoRefresh();
@@ -331,6 +332,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                 @Override
                 public void onClick(View v) {
                     depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
+                    pdsId = bean.getData().getSwitchRoomList().get(position).getId();
                     srl_acdetection.autoRefresh();
                     tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
                     rl_detection.setVisibility(View.GONE);
@@ -376,12 +378,11 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
         hashMap = new HashMap<>();
         hashMap.put("id", getIntent().getStringExtra("id"));
         myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
-
             @Override
             public void onError(String result) {
-
+                srl_acdetection.finishRefresh();
+                showToast(result);
             }
-
             @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);

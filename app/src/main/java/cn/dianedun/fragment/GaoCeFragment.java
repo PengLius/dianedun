@@ -26,7 +26,7 @@ import cn.dianedun.tools.AppConfig;
 
 public class GaoCeFragment extends Fragment {
 
-    private IndentCusAdapter adapter = new IndentCusAdapter();
+    private IndentCusAdapter adapter;
     private DetactionXBean bean;
     private String RoomId, depart;
 
@@ -39,6 +39,7 @@ public class GaoCeFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_gaoya, null);
         ButterKnife.bind(this, view);
+        adapter = new IndentCusAdapter();
         lv_gaoya.setAdapter(adapter);
         return view;
     }
@@ -55,8 +56,15 @@ public class GaoCeFragment extends Fragment {
         @Override
         public int getCount() {
             if (bean != null) {
-
-                return bean.getData().getHdevice().size();
+                if (bean.getData() != null) {
+                    if (bean.getData().getHdevice() != null) {
+                        return bean.getData().getHdevice().size();
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    return 0;
+                }
             } else {
                 return 0;
             }

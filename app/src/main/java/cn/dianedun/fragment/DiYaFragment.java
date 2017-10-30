@@ -24,7 +24,7 @@ import cn.dianedun.tools.AppConfig;
 
 public class DiYaFragment extends Fragment {
 
-    private IndentCusAdapter adapter = new IndentCusAdapter();
+    private IndentCusAdapter adapter;
     private DetactionXBean bean;
     View view;
     private String RoomId, depart;
@@ -36,11 +36,12 @@ public class DiYaFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_diya, null);
         ButterKnife.bind(this, view);
+        adapter= new IndentCusAdapter();
         lv_diya.setAdapter(adapter);
         return view;
     }
 
-    public void setData(DetactionXBean xBean,String RoomId, String depart) {
+    public void setData(DetactionXBean xBean, String RoomId, String depart) {
         bean = xBean;
         this.RoomId = RoomId;
         this.depart = depart;
@@ -52,11 +53,18 @@ public class DiYaFragment extends Fragment {
         @Override
         public int getCount() {
             if (bean != null) {
-                return bean.getData().getLdevice().size();
+                if (bean.getData() != null) {
+                    if (bean.getData().getLdevice() != null) {
+                        return bean.getData().getLdevice().size();
+                    } else {
+                        return 0;
+                    }
+                } else {
+                    return 0;
+                }
             } else {
                 return 0;
             }
-
         }
 
         @Override

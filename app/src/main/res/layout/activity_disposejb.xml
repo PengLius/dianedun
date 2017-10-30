@@ -57,7 +57,7 @@
                         android:id="@+id/tv_disposejb_adress"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="炫彩soho啊啊啊啊啊a啊啊啊啊啊啊啊啊啊啊啊啊啊"
+                        android:text=""
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 
@@ -66,7 +66,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="2017-8-20 14:20:20"
+                        android:text=""
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 
@@ -75,7 +75,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="5dp"
-                        android:text="高压侧1号柜电压异常"
+                        android:text=""
                         android:textColor="#E83A17"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
@@ -101,7 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_toRightOf="@+id/tv_annul_gdhs"
-                    android:text="保定市北市区炫彩soho"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>

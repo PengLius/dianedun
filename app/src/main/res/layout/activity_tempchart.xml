@@ -112,7 +112,7 @@
                     android:id="@+id/cash_chart"
                     android:layout_width="match_parent"
                     android:layout_height="200dp"
-                    android:paddingRight="10dp"
+                    android:paddingRight="20dp"
                     android:paddingTop="10dp" />
 
                 <TextView

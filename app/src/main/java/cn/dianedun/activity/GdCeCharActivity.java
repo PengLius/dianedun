@@ -194,15 +194,6 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
     private Boolean treadoff = true;
     private String flag = "day";
     private String num = "1";
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.arg1 == 0) {
-                getData(flag, num);
-            }
-        }
-    };
 
 
     @Override
@@ -445,26 +436,6 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         return a;
     }
 
-    /**
-     * 定时刷新
-     */
-//    Runnable sendable = new Runnable() {
-//        @Override
-//        public void run() {
-//            int a = 10;
-//            while (-1 < a && treadoff) {
-//                try {
-//                    Thread.sleep(1000);
-//                    Message message = new Message();
-//                    message.arg1 = a;
-//                    handler.sendMessage(message);
-//                    a--;
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    };
     @Override
     protected void onDestroy() {
         treadoff = false;

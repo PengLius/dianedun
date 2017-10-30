@@ -159,9 +159,9 @@ public class DateTimeDialog extends AlertDialog implements RadioGroup.OnCheckedC
         cancleButton.setOnClickListener(this);
         okButton.setOnClickListener(this);
         //初始化 显示 时间
-//        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), this);
-//        timePicker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
-//        timePicker.setCurrentMinute(calendar.get(Calendar.MINUTE));
+        datePicker.init(calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH), this);
+        timePicker.setCurrentHour(calendar.get(Calendar.HOUR_OF_DAY));
+        timePicker.setCurrentMinute(calendar.get(Calendar.MINUTE));
     }
 
     /**

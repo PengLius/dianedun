@@ -46,27 +46,9 @@ public class TemperatureFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         view = inflater.inflate(R.layout.fragment_temperature, null);
         ButterKnife.bind(this, view);
-        if (bean != null) {
-            allList = new ArrayList<>();
-            for (int i = 0; i < bean.getData().getTemp().getTransformer().size(); i++) {
-                hashMap = new HashMap<>();
-                hashMap.put("level", bean.getData().getTemp().getTransformer().get(i).getLevel());
-                hashMap.put("number", bean.getData().getTemp().getTransformer().get(i).getNumber());
-                hashMap.put("val", bean.getData().getTemp().getTransformer().get(i).getVal() + "");
-                allList.add(hashMap);
-            }
-            for (int i = 0; i < bean.getData().getTemp().getBusbar().size(); i++) {
-                hashMap = new HashMap<>();
-                hashMap.put("level", bean.getData().getTemp().getBusbar().get(i).getLevel());
-                hashMap.put("number", bean.getData().getTemp().getBusbar().get(i).getNumber());
-                hashMap.put("val", bean.getData().getTemp().getBusbar().get(i).getVal() + "");
-                allList.add(hashMap);
-            }
-            adapter = new IndentCusAdapter();
-            lv_temperature.setAdapter(adapter);
-        }
-
-
+        allList = new ArrayList<>();
+        adapter= new IndentCusAdapter();
+        lv_temperature.setAdapter(adapter);
         return view;
     }
 
@@ -74,25 +56,22 @@ public class TemperatureFragment extends Fragment {
         bean = xBean;
         this.RoomId = RoomId;
         this.depart = depart;
-        if (adapter != null) {
-            allList = new ArrayList<>();
-            for (int i = 0; i < bean.getData().getTemp().getTransformer().size(); i++) {
-                hashMap = new HashMap<>();
-                hashMap.put("level", bean.getData().getTemp().getTransformer().get(i).getLevel());
-                hashMap.put("number", bean.getData().getTemp().getTransformer().get(i).getNumber());
-                hashMap.put("val", bean.getData().getTemp().getTransformer().get(i).getVal() + "");
-                allList.add(hashMap);
-            }
-            for (int i = 0; i < bean.getData().getTemp().getBusbar().size(); i++) {
-                hashMap = new HashMap<>();
-                hashMap.put("level", bean.getData().getTemp().getBusbar().get(i).getLevel());
-                hashMap.put("number", bean.getData().getTemp().getBusbar().get(i).getNumber());
-                hashMap.put("val", bean.getData().getTemp().getBusbar().get(i).getVal() + "");
-                allList.add(hashMap);
-            }
-            adapter = new IndentCusAdapter();
-            lv_temperature.setAdapter(adapter);
+        allList = new ArrayList<>();
+        for (int i = 0; i < bean.getData().getTemp().getTransformer().size(); i++) {
+            hashMap = new HashMap<>();
+            hashMap.put("level", bean.getData().getTemp().getTransformer().get(i).getLevel());
+            hashMap.put("number", bean.getData().getTemp().getTransformer().get(i).getNumber());
+            hashMap.put("val", bean.getData().getTemp().getTransformer().get(i).getVal() + "");
+            allList.add(hashMap);
         }
+        for (int i = 0; i < bean.getData().getTemp().getBusbar().size(); i++) {
+            hashMap = new HashMap<>();
+            hashMap.put("level", bean.getData().getTemp().getBusbar().get(i).getLevel());
+            hashMap.put("number", bean.getData().getTemp().getBusbar().get(i).getNumber());
+            hashMap.put("val", bean.getData().getTemp().getBusbar().get(i).getVal() + "");
+            allList.add(hashMap);
+        }
+        adapter.notifyDataSetChanged();
     }
 
     private class IndentCusAdapter extends BaseAdapter {
