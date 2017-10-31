@@ -200,42 +200,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     /**
      * //回放相关---------------
      */
-//
-//    @Bind(R.id.av_ezuiplayerback)
-//    EZUIPlayer mEzPlayerBack;
-//
-//    @Bind(R.id.av_ll_playbackcontainer)
-//    LinearLayout mLlPlayBackContainer;
-//
-//    @Bind(R.id.av_rl_playback_1_)
-//    RelativeLayout mRlPlayback_1_;
-//
-//    @Bind(R.id.av_rl_playback_2_)
-//    RelativeLayout mRlPlayback_2_;
-//
-//    @Bind(R.id.av_rl_playback_1)
-//    RelativeLayout mRlPlayback_1;
-//
-//    @Bind(R.id.av_rl_playback_2)
-//    RelativeLayout mRlPlayback_2;
-//
-//    @Bind(R.id.av_rl_playback_go)
-//    RelativeLayout mRlPlayback_go;
-//
-//    @Bind(R.id.av_rl_playback_voice)
-//    RelativeLayout mRlPlayBackVoice;
-//
-//    @Bind(R.id.av_rl_playback_takephoto)
-//    RelativeLayout mRlPlayBackTakePhoto;
-//
-//    @Bind(R.id.av_rl_playback_video)
-//    RelativeLayout mRlPlayBackVideo;
-//
-//    @Bind(R.id.av_rl_playback_stream)
-//    RelativeLayout mRlPlayBackStream;
-//
-//    @Bind(R.id.av_timershaftbar)
-//    TimerShaftBar mTimerShaftBar;
 
     private static final String TAG = "RealPlayerActivity";
     /**
@@ -288,8 +252,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     private int mOrientation = Configuration.ORIENTATION_PORTRAIT;
     private int mForceOrientation = 0;
     private Rect mRealPlayRect = null;
-
-
 
     /**
      * 演示点预览控制对象
@@ -773,7 +735,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             }
             setRealPlayFailUI("设备不在线");
         } else {
-            if (mStatus == RealPlayStatus.STATUS_INIT || mStatus == RealPlayStatus.STATUS_PAUSE
+            if (mStatus == RealPlayStatus.STATUS_INIT || mStatus == RealPlayStatus.STATUS_PAUSE || mStatus == RealPlayStatus.STATUS_STOP
                     || mStatus == RealPlayStatus.STATUS_DECRYPT) {
                 // 开始播放
                 startRealPlay();
@@ -1024,6 +986,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mLLStream.setEnabled(false);
             mLLTalkBack.setEnabled(false);
             mLLControl.setEnabled(false);
+            mLLPlayBack.setEnabled(false);
             if (mDeviceInfo.getStatus() == 1) {
 //                mRealPlayQualityBtn.setEnabled(true);
             } else {
@@ -1084,34 +1047,16 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
         hideControlRlAndFullOperateBar(true);
 
+        mRealPlayCaptureBtn.setEnabled(false);
+        mRealPlayRecordBtn.setEnabled(false);
+        mLLVoice.setEnabled(false);
+        mLLStream.setEnabled(false);
+        mLLTalkBack.setEnabled(false);
+        mLLControl.setEnabled(false);
+        mLLPlayBack.setEnabled(false);
         if (mCameraInfo != null && mDeviceInfo != null) {
             closePtzPopupWindow();
             setFullPtzStopUI(false);
-
-            mRealPlayCaptureBtn.setEnabled(false);
-            mRealPlayRecordBtn.setEnabled(false);
-            mLLVoice.setEnabled(false);
-            mLLStream.setEnabled(false);
-            mLLTalkBack.setEnabled(false);
-            mLLControl.setEnabled(false);
-            if (mDeviceInfo.getStatus() == 1 && (mEZPlayer == null)) {
-//                mRealPlayQualityBtn.setEnabled(true);
-            } else {
-//                mRealPlayQualityBtn.setEnabled(false);
-            }
-//            mRealPlayPtzBtn.setEnabled(false);
-            if (mDeviceInfo.getStatus() == 1) {
-//                mRealPlayPrivacyBtn.setEnabled(true);
-//                mRealPlaySslBtn.setEnabled(true);
-            } else {
-//                mRealPlayPrivacyBtn.setEnabled(false);
-//                mRealPlaySslBtn.setEnabled(false);
-            }
-
-//            mRealPlayFullPlayBtn.setBackgroundResource(R.drawable.play_full_play_selector);
-//            mRealPlayFullCaptureBtn.setEnabled(false);
-//            mRealPlayFullRecordBtn.setEnabled(false);
-//            mRealPlayFullPtzBtn.setEnabled(false);
         }
     }
 
@@ -1162,33 +1107,18 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         setStopLoading();
         hideControlRlAndFullOperateBar(true);
 //        mRealPlayBtn.setBackgroundResource(R.drawable.play_play_selector);
+        mRealPlayCaptureBtn.setEnabled(false);
+        mRealPlayRecordBtn.setEnabled(false);
+        mLLVoice.setEnabled(false);
+        mLLStream.setEnabled(false);
+        mLLTalkBack.setEnabled(false);
+        mLLControl.setEnabled(false);
+        mLLPlayBack.setEnabled(false);
+
         if (mCameraInfo != null && mDeviceInfo != null) {
             closePtzPopupWindow();
             setFullPtzStopUI(false);
-            mRealPlayCaptureBtn.setEnabled(false);
-            mRealPlayRecordBtn.setEnabled(false);
-            mLLVoice.setEnabled(false);
-            mLLStream.setEnabled(false);
-            mLLTalkBack.setEnabled(false);
-            mLLControl.setEnabled(false);
-            if (mDeviceInfo.getStatus() == 1) {
-//                mRealPlayQualityBtn.setEnabled(true);
-            } else {
-//                mRealPlayQualityBtn.setEnabled(false);
-            }
-//            mRealPlayFullPtzBtn.setEnabled(false);
-            if (mDeviceInfo.getStatus() == 1) {
-//                mRealPlayPrivacyBtn.setEnabled(true);
-//                mRealPlaySslBtn.setEnabled(true);
-            } else {
-//                mRealPlayPrivacyBtn.setEnabled(false);
-//                mRealPlaySslBtn.setEnabled(false);
-            }
 
-//            mRealPlayFullPlayBtn.setBackgroundResource(R.drawable.play_full_play_selector);
-//            mRealPlayFullCaptureBtn.setEnabled(false);
-//            mRealPlayFullRecordBtn.setEnabled(false);
-//            mRealPlayPtzBtn.setEnabled(false);
         }
     }
 
@@ -2278,11 +2208,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     private void onOrientationChanged() {
         updateOperatorUI();
-        setRealPlaySvLayout();
+//        setRealPlaySvLayout();
         updateCaptureUI();
         updateTalkUI();
         updatePtzUI();
     }
+
     private void updatePtzUI() {
         if (!mIsOnPtz) {
             return;
@@ -2678,6 +2609,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mLLStream.setEnabled(true);
             mLLTalkBack.setEnabled(true);
             mLLControl.setEnabled(true);
+            mLLPlayBack.setEnabled(true);
         }
 
 
@@ -2759,7 +2691,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mStatus != RealPlayStatus.STATUS_STOP) {
             mIsOnStop = true;
             stopRealPlay();
-            mStatus = RealPlayStatus.STATUS_PAUSE;
+            mStatus = RealPlayStatus.STATUS_STOP;
             setRealPlayStopUI();
         } else {
             setStopLoading();
@@ -3251,7 +3183,15 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     }
 
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mStatus != RealPlayStatus.STATUS_PAUSE) {
+            stopRealPlay();
+            mStatus = RealPlayStatus.STATUS_PAUSE;
+            setRealPlayStopUI();
+        }
+    }
 
     /**
      * 获取摄像头列表

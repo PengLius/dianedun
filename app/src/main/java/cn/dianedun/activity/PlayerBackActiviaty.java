@@ -15,8 +15,10 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.Display;
+import android.view.Gravity;
 import android.view.OrientationEventListener;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -37,6 +39,7 @@ import com.videogo.openapi.EZConstants;
 import com.videogo.openapi.bean.EZRecordFile;
 import com.videogo.realplay.RealPlayStatus;
 import com.videogo.util.LocalInfo;
+import com.videogo.util.LogUtil;
 import com.videogo.util.MediaScanner;
 import com.videogo.util.RotateViewUtil;
 import com.videogo.util.SDCardUtil;
@@ -45,6 +48,8 @@ import com.videogo.widget.CheckTextButton;
 import com.videogo.widget.TitleBar;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.Bind;
 import cn.dianedun.R;
@@ -52,18 +57,21 @@ import cn.dianedun.base.BaseActivity;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AudioPlayUtil;
 import cn.dianedun.tools.EZUtils;
+import cn.dianedun.tools.ScreenOrientationHelper;
 import cn.dianedun.tools.WindowSizeChangeNotifier;
 import cn.dianedun.view.EZUIPlayer.EZUIPlayer;
 import cn.dianedun.view.timeshaftbar.TimerShaftBar;
 import cn.dianedun.view.timeshaftbar.TimerShaftRegionItem;
 
 import static android.view.View.GONE;
+import static cn.dianedun.activity.VideoShowActivity.MSG_PLAY_UI_UPDATE;
+import static java.security.AccessController.getContext;
 
 /**
  * Created by Administrator on 2017/10/14.
  */
 
-public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUIPlayerCallBack {
+public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUIPlayerCallBack ,WindowSizeChangeNotifier.OnWindowSizeChangedListener {
 
     @Bind(R.id.av_img_back)
     ImageView mImgBack;
@@ -168,8 +176,6 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
 
     @Bind(R.id.ap_img_sound)
     ImageView mRealPlaySoundBtn;
-
-    private Handler mHandler = null;
 
     private ArrayList<TimerShaftRegionItem> mTimeShaftItems;
     private static final String TAG = "PlayBackActivity";
@@ -316,9 +322,19 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         Log.d(TAG, "onDestroy");
         //释放资源
         mEZUiPlayBack.releasePlayer();
+        mScreenOrientationHelper = null;
     }
 
-//    /**
+    @Override
+    public void onBackPressedSupport() {
+        if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
+            mScreenOrientationHelper.portrait();
+            return;
+        }
+        super.onBackPressedSupport();
+    }
+
+    //    /**
 //     * 屏幕旋转时调用此方法
 //     */
 //    @Override
@@ -338,6 +354,19 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     @Override
     protected void bindEvent() {
         super.bindEvent();
+        mCtbFullscreen.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateOrientation();
+            }
+        });
+        mRlPlayBackVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //录像
+                onRecordBtnClick();
+            }
+        });
         mRlPlayBackStream.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -436,6 +465,175 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             }
         });
     }
+
+    /**
+     * 屏幕当前方向
+     */
+    @Bind(R.id.av_rl_titlelayout)
+    RelativeLayout mRlTitleLayout;
+    @Bind(R.id.av_fl_displaycontainer)
+    FrameLayout mFlDisplayContainer;
+    ViewGroup.LayoutParams mSvLayoutParams;
+    private int mOrientation = Configuration.ORIENTATION_PORTRAIT;
+    private void updateOperatorUI() {
+        if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
+            // 显示状态栏
+            fullScreen(false);
+//            updateOrientation();
+            mRlTitleLayout.setVisibility(View.VISIBLE);
+            mFlDisplayContainer.setLayoutParams(mSvLayoutParams);
+        } else {
+            // 隐藏状态栏
+            fullScreen(true);
+            mRlTitleLayout.setVisibility(GONE);
+            LinearLayout.LayoutParams realPlayPlayRlLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT);
+            realPlayPlayRlLp.gravity = Gravity.CENTER;
+            mFlDisplayContainer.setLayoutParams(realPlayPlayRlLp);
+        }
+    }
+    private void updateOrientation() {
+        if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
+//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+        } else {
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        }
+    }
+    private int mForceOrientation = 0;
+    private ScreenOrientationHelper mScreenOrientationHelper;
+    private void setOrientation(int sensor) {
+        if (mForceOrientation != 0) {
+            LogUtil.debugLog(TAG, "setOrientation mForceOrientation:" + mForceOrientation);
+            return;
+        }
+
+        if (mScreenOrientationHelper==null) return;
+        if (sensor == ActivityInfo.SCREEN_ORIENTATION_SENSOR)
+            mScreenOrientationHelper.enableSensorOrientation();
+        else
+            mScreenOrientationHelper.disableSensorOrientation();
+    }
+    private void fullScreen(boolean enable) {
+        if (enable) {
+            WindowManager.LayoutParams lp = getWindow().getAttributes();
+            lp.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+            getWindow().setAttributes(lp);
+            getWindow().addFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        } else {
+            WindowManager.LayoutParams attr = getWindow().getAttributes();
+            attr.flags &= (~WindowManager.LayoutParams.FLAG_FULLSCREEN);
+            getWindow().setAttributes(attr);
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS);
+        }
+    }
+    private Handler mHandler = new Handler(new Handler.Callback() {
+        @Override
+        public boolean handleMessage(Message msg) {
+            switch (msg.what){
+                case MSG_PLAY_UI_UPDATE:
+                    updateRealPlayUI();
+                    break;
+            }
+            return false;
+        }
+    });
+    private void updateRealPlayUI() {
+        if (mIsRecording) {
+            updateRecordTime();
+        }
+    }
+    /**
+     * 更新录像时间
+     *
+     * @see
+     * @since V1.0
+     */
+    private void updateRecordTime() {
+        if (mRealPlayRecordIv.getVisibility() == View.VISIBLE) {
+            mRealPlayRecordIv.setVisibility(View.INVISIBLE);
+        } else {
+            mRealPlayRecordIv.setVisibility(View.VISIBLE);
+        }
+        // 计算分秒
+        int leftSecond = mRecordSecond % 3600;
+        int minitue = leftSecond / 60;
+        int second = leftSecond % 60;
+
+        // 显示录像时间
+        String recordTime = String.format("%02d:%02d", minitue, second);
+        mRealPlayRecordTv.setText(recordTime);
+    }
+    /**
+     * 启动定时器
+     *
+     * @see
+     * @since V1.0
+     */
+    /**
+     * 定时器
+     */
+    private Timer mUpdateTimer = null;
+    /**
+     * 定时器执行的任务
+     */
+    private TimerTask mUpdateTimerTask = null;
+    private void startUpdateTimer() {
+        stopUpdateTimer();
+        // 开始录像计时
+        mUpdateTimer = new Timer();
+        mUpdateTimerTask = new TimerTask() {
+            @Override
+            public void run() {
+//                if (mLandscapeTitleBar != null && (mLandscapeTitleBar.getVisibility() == View.VISIBLE )
+//                        && mControlDisplaySec < 5) {
+//                    mControlDisplaySec++;
+//                }
+//                if (mRealPlayCaptureRl != null && mRealPlayCaptureRl.getVisibility() == View.VISIBLE
+//                        && mCaptureDisplaySec < 4) {
+//                    mCaptureDisplaySec++;
+//                }
+
+                // 更新录像时间
+                if (mEZUiPlayBack != null && mIsRecording) {
+                    // 更新录像时间
+                    Calendar OSDTime = mEZUiPlayBack.getOSDTime();
+                    if (OSDTime != null) {
+                        String playtime = Utils.OSD2Time(OSDTime);
+                        if (!TextUtils.equals(playtime, mRecordTime)) {
+                            mRecordSecond++;
+                            mRecordTime = playtime;
+                        }
+                    }
+                }
+                if (mHandler != null) {
+                    mHandler.sendEmptyMessage(MSG_PLAY_UI_UPDATE);
+                }
+            }
+        };
+        // 延时1000ms后执行，1000ms执行一次
+        mUpdateTimer.schedule(mUpdateTimerTask, 0, 1000);
+    }
+    /**
+     * 停止定时器
+     *
+     * @see
+     * @since V1.0
+     */
+    private void stopUpdateTimer() {
+        if (mHandler!=null)
+            mHandler.removeMessages(MSG_PLAY_UI_UPDATE);
+        // 停止录像计时
+        if (mUpdateTimer != null) {
+            mUpdateTimer.cancel();
+            mUpdateTimer = null;
+        }
+
+        if (mUpdateTimerTask != null) {
+            mUpdateTimerTask.cancel();
+            mUpdateTimerTask = null;
+        }
+    }
     /**
      * 开始录像
      *
@@ -504,15 +702,16 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     @Bind(R.id.av_img_videostop)
     ImageView mImgVideoStop;
     protected RotateViewUtil mRecordRotateViewUtil;
+    private boolean mIsOnStop = false;
     private void handleRecordSuccess(String recordFilePath) {
         // 设置录像按钮为check状态
-//        if (!mIsOnStop) {
-//            mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
-//                    mImgVideoStop, 0, 90);
-//        } else {
-//            mImgVideoStart.setVisibility(GONE);
-//            mImgVideoStop.setVisibility(View.VISIBLE);
-//        }
+        if (!mIsOnStop) {
+            mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
+                    mImgVideoStop, 0, 90);
+        } else {
+            mImgVideoStart.setVisibility(GONE);
+            mImgVideoStop.setVisibility(View.VISIBLE);
+        }
         mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
                 mImgVideoStop, 0, 90);
         mIsRecording = true;
@@ -521,6 +720,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRealPlayRecordLy.setVisibility(View.VISIBLE);
         mRealPlayRecordTv.setText("00:00");
         mRecordSecond = 0;
+        startUpdateTimer();
     }
     /**
      * 停止录像
@@ -535,18 +735,13 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         Toast.makeText(PlayerBackActiviaty.this, getResources().getString(R.string.already_saved_to_volume), Toast.LENGTH_SHORT).show();
 
         // 设置录像按钮为check状态
-//        if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
-//            if (!mIsOnStop) {
-//                mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStop,
-//                        mImgVideoStart, 0, 90);
-//            } else {
-//                mImgVideoStop.setVisibility(GONE);
-//                mImgVideoStart.setVisibility(View.VISIBLE);
-//            }
-//        } else {
-//            mImgVideoStop.setVisibility(GONE);
-//            mImgVideoStart.setVisibility(View.VISIBLE);
-//        }
+        if (!mIsOnStop) {
+            mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStop,
+                    mImgVideoStart, 0, 90);
+        } else {
+            mImgVideoStop.setVisibility(GONE);
+            mImgVideoStart.setVisibility(View.VISIBLE);
+        }
         mAudioPlayUtil.playAudioFile(AudioPlayUtil.RECORD_SOUND);
         mEZUiPlayBack.getEzPlayer().stopLocalRecord();
 
@@ -629,85 +824,96 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         // 获取本地信息
         mAudioPlayUtil = AudioPlayUtil.getInstance(App.getInstance());
         mRecordRotateViewUtil = new RotateViewUtil();
-
-//        mHandler = new Handler(new Handler.Callback() {
-//            @Override
-//            public boolean handleMessage(Message msg) {
-//                if (this.isFinishing()) {
-//                    return false;
-//                }
-//                switch (msg.what) {
-//                    case EZConstants.EZRealPlayConstants.MSG_GET_CAMERA_INFO_SUCCESS:
-//                        updateLoadingProgress(20);
-//                        handleGetCameraInfoSuccess();
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_REALPLAY_PLAY_START:
-//                        updateLoadingProgress(40);
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_REALPLAY_CONNECTION_START:
-//                        updateLoadingProgress(60);
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_REALPLAY_CONNECTION_SUCCESS:
-//                        updateLoadingProgress(80);
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_REALPLAY_PLAY_SUCCESS:
-//                        handlePlaySuccess(msg);
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_REALPLAY_PLAY_FAIL:
-//                        handlePlayFail(msg.obj);
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_SET_VEDIOMODE_SUCCESS:
-//                        handleSetVedioModeSuccess();
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_SET_VEDIOMODE_FAIL:
-//                        handleSetVedioModeFail(msg.arg1);
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_PTZ_SET_FAIL:
-//                        handlePtzControlFail(msg);
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_REALPLAY_VOICETALK_SUCCESS:
-//                        handleVoiceTalkSucceed();
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_REALPLAY_VOICETALK_STOP:
-//                        handleVoiceTalkStoped();
-//                        break;
-//                    case EZConstants.EZRealPlayConstants.MSG_REALPLAY_VOICETALK_FAIL:
-//                        ErrorInfo errorInfo = (ErrorInfo) msg.obj;
-//                        handleVoiceTalkFailed(errorInfo);
-//                        break;
-//                    case MSG_PLAY_UI_UPDATE:
-//                        updateRealPlayUI();
-//                        break;
-//                    case MSG_AUTO_START_PLAY:
-//                        startRealPlay();
-//                        break;
-//                    case MSG_CLOSE_PTZ_PROMPT:
-//                        mRealPlayFullPtzPromptIv.setVisibility(GONE);
-//                        break;
-//                    case MSG_HIDE_PTZ_DIRECTION:
-//                        handleHidePtzDirection(msg);
-//                        break;
-//                    case MSG_HIDE_PAGE_ANIM:
-//                        hidePageAnim();
-//                        break;
-//                    case MSG_PLAY_UI_REFRESH:
-//                        initUI();
-//                        break;
-//                    case MSG_PREVIEW_START_PLAY:
-//                        mPageAnimIv.setVisibility(GONE);
-////                mRealPlayPreviewTv.setVisibility(View.GONE);
-//                        mStatus = RealPlayStatus.STATUS_INIT;
-//                        startRealPlay();
-//                        break;
-//                    default:
-//                        break;
-//                }
-//                return false;
-//            }
-//        });
+        mOrientationDetector = new MyOrientationDetector(this);
+        new WindowSizeChangeNotifier(this, this);
+        mSvLayoutParams = mFlDisplayContainer.getLayoutParams();
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        mOrientation = newConfig.orientation;
+        updateOperatorUI();
+        setSurfaceSize();
+    }
+    private MyOrientationDetector mOrientationDetector;
 
+    private void setSurfaceSize() {
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
+        boolean isWideScrren = mOrientationDetector.isWideScrren();
+        //竖屏
+        if (!isWideScrren) {
+            //竖屏调整播放区域大小，宽全屏，高根据视频分辨率自适应
+            mEZUiPlayBack.setSurfaceSize(dm.widthPixels, 0);
+        } else {
+            //横屏屏调整播放区域大小，宽、高均全屏，播放区域根据视频分辨率自适应
+            mEZUiPlayBack.setSurfaceSize(dm.widthPixels, dm.heightPixels);
+        }
+    }
+
+    @Override
+    public void onWindowSizeChanged(int w, int h, int oldW, int oldH) {
+        if (mEZUiPlayBack != null) {
+            setSurfaceSize();
+        }
+    }
+
+    public class MyOrientationDetector extends OrientationEventListener {
+
+        private WindowManager mWindowManager;
+        private int mLastOrientation = 0;
+
+        public MyOrientationDetector(Context context) {
+            super(context);
+            mWindowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        }
+
+        public boolean isWideScrren() {
+            Display display = mWindowManager.getDefaultDisplay();
+            Point pt = new Point();
+            display.getSize(pt);
+            return pt.x > pt.y;
+        }
+
+        @Override
+        public void onOrientationChanged(int orientation) {
+            int value = getCurentOrientationEx(orientation);
+            if (value != mLastOrientation) {
+                mLastOrientation = value;
+                int current = getRequestedOrientation();
+                if (current == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        || current == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
+                    setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+                }
+            }
+        }
+
+        private int getCurentOrientationEx(int orientation) {
+            int value = 0;
+            if (orientation >= 315 || orientation < 45) {
+                // 0度
+                value = 0;
+                return value;
+            }
+            if (orientation >= 45 && orientation < 135) {
+                // 90度
+                value = 90;
+                return value;
+            }
+            if (orientation >= 135 && orientation < 225) {
+                // 180度
+                value = 180;
+                return value;
+            }
+            if (orientation >= 225 && orientation < 315) {
+                // 270度
+                value = 270;
+                return value;
+            }
+            return value;
+        }
+    }
     @Override
     public void onPlayFail(EZUIError var1) {
         showToast(var1.getErrorString());
@@ -729,6 +935,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlErr.setVisibility(GONE);
         mTimerShaftBar.setRefereshPlayTimeWithPlayer();
         mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+//        updateOrientation();
     }
 
     @Override

@@ -177,6 +177,10 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
         }
     };
 
+    public void sendMessage(Message message){
+        mHandler.sendMessage(message);
+    }
+
     public void setOpenSound(boolean openSound) {
         this.isOpenSound = openSound;
         this.optionSound();

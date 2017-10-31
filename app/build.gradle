@@ -30,12 +30,12 @@ android {
         }
     }
     signingConfigs {
-        debug {
-            storeFile file('C:/dianedun.jks')
-            storePassword "123456"
-            keyAlias "dianedun"
-            keyPassword "123456"
-        }
+//        debug {
+//            storeFile file('C:/dianedun.jks')
+//            storePassword "123456"
+//            keyAlias "dianedun"
+//            keyPassword "123456"
+//        }
     }
     android {
         useLibrary 'org.apache.http.legacy'
