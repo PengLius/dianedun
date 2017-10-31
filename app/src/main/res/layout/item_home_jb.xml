@@ -47,7 +47,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:maxLines="2"
-                    android:text="保定市炫彩soho大厦B座1号配电室"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -57,7 +57,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="10dp"
                     android:maxLines="2"
-                    android:text="2017-3-10 14:28:30"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -72,7 +72,7 @@
                     android:id="@+id/tv_itemjb_stats"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="待反馈"
+                    android:text=""
                     android:textColor="#E83A17"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -105,8 +105,9 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="高压侧1号柜电压异常"
-                android:textColor="#E83A17" />
+                android:text=""
+                android:textColor="#E83A17"
+                android:textSize="@dimen/content_text_s12" />
 
             <ImageView
                 android:layout_width="wrap_content"

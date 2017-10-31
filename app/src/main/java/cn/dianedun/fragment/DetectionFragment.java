@@ -151,7 +151,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                         myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                             @Override
                             public void onError(String result) {
-
+                                showToast(result);
                             }
 
                             @Override
@@ -534,7 +534,8 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                     depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
-                    srl_detection.autoRefresh();
+//                    srl_detection.autoRefresh();
+                    getPDSAll(pdsId, true);
                 }
             });
             return convertView;

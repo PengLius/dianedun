@@ -448,6 +448,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
 
                         @Override
                         public void onError(String result) {
+                            showToast(result);
                         }
 
                         @Override
@@ -876,7 +877,6 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
 
                         @Override
                         public void onCancelled(CancelledException cex) {
-
                         }
 
                         @Override

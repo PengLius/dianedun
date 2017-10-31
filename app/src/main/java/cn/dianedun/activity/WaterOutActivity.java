@@ -86,6 +86,7 @@ public class WaterOutActivity extends BaseTitlActivity implements View.OnClickLi
         @Override
         public void onError(String result) {
             srl_waterout.finishRefresh();
+            showToast(result);
         }
     };
     private Boolean treadoff = true;

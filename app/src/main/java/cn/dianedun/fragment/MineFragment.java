@@ -213,7 +213,7 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
 
                     @Override
                     public void onError(String result) {
-
+                        showToast(result);
                     }
                 });
                 myAsyncTast.execute();
@@ -235,7 +235,7 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
                 myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.LOGINOUT, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
                     @Override
                     public void onError(String result) {
-
+                        showToast(result);
                     }
 
                     @Override

@@ -153,7 +153,7 @@ public class  ForgetPSWActivity extends BaseTitlActivity implements View.OnClick
 
                         @Override
                         public void onError(Throwable ex, boolean isOnCallback) {
-                            Toast.makeText(getApplicationContext(), "网络不可用", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), "网络异常，请检查网络是否畅通", Toast.LENGTH_SHORT).show();
                             tv_forget_yzm.setClickable(true);
                         }
 
@@ -187,7 +187,7 @@ public class  ForgetPSWActivity extends BaseTitlActivity implements View.OnClick
 
                         @Override
                         public void onError(String result) {
-
+                            showToast(result);
                         }
 
                         @Override

@@ -185,7 +185,7 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
         myAsyncTast = new MyAsyncTast(AnnulActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override
@@ -234,6 +234,7 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                         myAsyncTast = new MyAsyncTast(AnnulActivity.this, hashMap, AppConfig.REVOKEDHANDLERORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                             @Override
                             public void onError(String result) {
+                                showToast(result);
                             }
 
                             @Override
@@ -252,6 +253,7 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                     myAsyncTast = new MyAsyncTast(AnnulActivity.this, hashMap, AppConfig.REVOKEDHANDLERORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
                         public void onError(String result) {
+                            showToast(result);
                         }
 
                         @Override

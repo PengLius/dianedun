@@ -152,7 +152,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
                 if (pdsId != null) {
-                    getPDSAll(pdsId);
+                    getPDSAll(pdsId, false);
                 } else {
                     fristData();
                 }
@@ -210,7 +210,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                     myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
                         public void onError(String result) {
-
+                            showToast(result);
                         }
 
                         @Override
@@ -333,10 +333,11 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                 public void onClick(View v) {
                     depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
                     pdsId = bean.getData().getSwitchRoomList().get(position).getId();
-                    srl_acdetection.autoRefresh();
+//                    srl_acdetection.autoRefresh();
                     tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
+                    getPDSAll(pdsId, true);
                 }
             });
             return convertView;
@@ -352,12 +353,13 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
      *
      * @param RoomId 配电室Id
      */
-    private void getPDSAll(final String RoomId) {
+    private void getPDSAll(final String RoomId, boolean laodoff) {
         hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
-        myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
+        myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), laodoff, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
+                showToast(result);
                 srl_acdetection.finishRefresh();
             }
 
@@ -383,11 +385,12 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                 srl_acdetection.finishRefresh();
                 showToast(result);
             }
+
             @Override
             public void send(String result) {
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
                 pdsId = bean.getData().getSwitchRoomList().get(0).getId();
-                getPDSAll(pdsId);
+                getPDSAll(pdsId, false);
                 depart = bean.getData().getSwitchRoomList().get(0).getDepartname();
                 tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
             }

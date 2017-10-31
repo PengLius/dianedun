@@ -106,6 +106,7 @@ public class MessageActivity extends BaseTitlActivity {
                     @Override
                     public void onError(String result) {
                         srl_message.finishLoadmore();
+                        showToast(result);
                     }
 
                     @Override
@@ -159,6 +160,7 @@ public class MessageActivity extends BaseTitlActivity {
             @Override
             public void onError(String result) {
                 srl_message.finishRefresh();
+                showToast(result);
             }
 
             @Override
@@ -263,6 +265,7 @@ public class MessageActivity extends BaseTitlActivity {
 
                             @Override
                             public void onError(String result) {
+                                showToast(result);
                             }
                         });
                         myAsyncTast.execute();

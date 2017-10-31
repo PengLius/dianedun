@@ -77,8 +77,9 @@ public class PersonActivity extends BaseTitlActivity {
 
     private Dialog diaglog;
     private List<LocalMedia> selectList;
-    private String imgUrl, phone, imgUri, realname, username, imgUrs;
+    private String phone, imgUri, realname, username, imgUrs;
     private ImagBean imgBean;
+    private File imgUrl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -149,7 +150,7 @@ public class PersonActivity extends BaseTitlActivity {
                         MyAsyncTast myAsyncTast = new MyAsyncTast(PersonActivity.this, hashMap, AppConfig.MONDIFYUSERHEADIMG, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                             @Override
                             public void onError(String result) {
-
+                                showToast(result);
                             }
 
                             @Override
@@ -217,7 +218,7 @@ public class PersonActivity extends BaseTitlActivity {
                 case PictureConfig.CHOOSE_REQUEST:
                     // 图片选择结果回调
                     selectList = PictureSelector.obtainMultipleResult(data);
-                    imgUrl = selectList.get(0).getCutPath();
+                    imgUrl = CompressHelper.getDefault(this).compressToFile(new File(selectList.get(0).getPath()));
                     MyAsync myAsync = new MyAsync();
                     myAsync.execute();
                     break;
@@ -237,8 +238,9 @@ public class PersonActivity extends BaseTitlActivity {
         @Override
         protected String doInBackground(Object... params) {
             RequestParams param = new RequestParams(AppConfig.UPLOADFILE);
-            param.addBodyParameter("file", new File(imgUrl));
+            param.addBodyParameter("file", imgUrl);
             param.addBodyParameter("optionType", "0");
+            param.setConnectTimeout(10000);
             param.addHeader("token", App.getInstance().getToken());
             x.http().post(param,
                     new Callback.CommonCallback<String>() {

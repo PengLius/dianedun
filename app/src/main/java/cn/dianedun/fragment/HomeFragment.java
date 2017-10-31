@@ -294,8 +294,6 @@ public class HomeFragment extends BaseTitlFragment {
                 } else {
                     ((ImageView) convertView.findViewById(R.id.item_homeimg_jbsta)).setImageResource(R.mipmap.home_jg_red);
                 }
-
-
             } else {
                 convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_home_gd, null);
                 if (position == jg) {

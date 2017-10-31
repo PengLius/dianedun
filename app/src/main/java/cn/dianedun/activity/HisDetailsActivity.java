@@ -98,6 +98,7 @@ public class HisDetailsActivity extends BaseTitlActivity {
     private AnimationDrawable animationDrawable;
     private MediaPlayer player;
     private CountDownTimer countDownTimer;
+    private List<HashMap<String, String>> adjList;
 
 
     @Override
@@ -117,11 +118,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
         myAsyncTast = new MyAsyncTast(HisDetailsActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override
             public void send(String result) {
+                adjList = new ArrayList<>();
                 bean = GsonUtil.parseJsonWithGson(result, DetailsBean.class);
                 if (bean.getData().getUrgency() == 0) {
                     tv_hisdetails_urgency.setText("普通");
@@ -144,6 +146,13 @@ public class HisDetailsActivity extends BaseTitlActivity {
                     } else {
                         tv_hisdetails_cl.setText(bean.getData().getRemark() + "");
                     }
+                } else if (bean.getData().getStatus() == 3) {
+                    tv_hisdetails_tit.setText("驳回原因：");
+                    if (bean.getData().getRejectCause().equals("null")) {
+                        tv_hisdetails_cl.setText("");
+                    } else {
+                        tv_hisdetails_cl.setText(bean.getData().getRejectCause() + "");
+                    }
                 } else {
                     if (bean.getData().getFeedCause().equals("null")) {
                         tv_hisdetails_cl.setText("");
@@ -154,6 +163,7 @@ public class HisDetailsActivity extends BaseTitlActivity {
                 if (bean.getData().getAlertOptionsArray().size() > 0) {
                     GirdAdapter adapter = new GirdAdapter();
                     gv_hisdetauls.setAdapter(adapter);
+                    HashMap<String, String> has;
                     for (int i = 0; i < bean.getData().getAlertOptionsArray().size(); i++) {
                         if (bean.getData().getAlertOptionsArray().get(i).getOptionType() == 0) {
                             imgList.add(bean.getData().getAlertOptionsArray().get(i).getContents());
@@ -162,6 +172,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
                                 .getType() == 4) {
                             rl_hisdetails.setVisibility(View.VISIBLE);
                             contents = bean.getData().getAlertOptionsArray().get(i).getContents();
+                        }
+                        if (bean.getData().getAlertOptionsArray().get(i).getType() == 5) {
+                            has = new HashMap<>();
+                            has.put("contents", bean.getData().getAlertOptionsArray().get(i).getContents());
+                            has.put("type", bean.getData().getAlertOptionsArray().get(i).getOptionType() + "");
+                            adjList.add(has);
                         }
                     }
                     player = MediaPlayer.create(getApplicationContext(), Uri.parse(contents));
@@ -276,12 +292,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
         @Override
         public int getCount() {
 
-            return bean.getData().getAlertOptionsArray().size();
+            return adjList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return bean.getData().getAlertOptionsArray().get(position);
+            return adjList.get(position);
         }
 
         @Override
@@ -292,10 +308,10 @@ public class HisDetailsActivity extends BaseTitlActivity {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            if (bean.getData().getAlertOptionsArray().get(position).getOptionType() == 0) {
+            if (adjList.get(position).get("type").equals("0")) {
                 //图片
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_fjimg, null);
-                Glide.with(HisDetailsActivity.this).load(bean.getData().getAlertOptionsArray().get(position).getContents()).into(((ImageView) convertView.findViewById(R.id.img_fjimg_img)));
+                Glide.with(HisDetailsActivity.this).load(adjList.get(position).get("contents")).into(((ImageView) convertView.findViewById(R.id.img_fjimg_img)));
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -305,13 +321,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
                         startActivity(intent);
                     }
                 });
-
             } else {
                 //音频
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_fjyp, null);
                 final TextView tv_fjyp_time = (TextView) convertView.findViewById(R.id.tv_fjyp_time);
                 final ImageView img_fjyp_yy = (ImageView) convertView.findViewById(R.id.img_fjyp_yy);
-                final MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(bean.getData().getAlertOptionsArray().get(position).getContents()));
+                final MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(adjList.get(position).get("contents")));
 
                 long f = player.getDuration() / 1000 / 60;
                 long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
@@ -414,5 +429,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
             }
             return convertView;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Glide.get(this).clearMemory();
+        System.gc();
     }
 }

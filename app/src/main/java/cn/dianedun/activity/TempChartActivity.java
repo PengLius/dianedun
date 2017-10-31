@@ -12,6 +12,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -62,6 +63,15 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
     @Bind(R.id.srl_tempchart)
     SmartRefreshLayout srl_tempchart;
 
+    @Bind(R.id.tv_tempchart_name)
+    TextView tv_tempchart_name;
+
+    @Bind(R.id.tv_tempchart_mean)
+    TextView tv_tempchart_mean;
+
+    @Bind(R.id.tv_tempchart_max)
+    TextView tv_tempchart_max;
+
     private String RoomId;
     private String deviceNum;
     private int type = 1;
@@ -70,31 +80,24 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
     private Boolean treadoff = true;
     private String flag = "day";
     private String num = "1";
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.arg1 == 0) {
-                getData(flag, num);
-            }
-        }
-    };
     private MyAsyncTast.Callback callback = new MyAsyncTast.Callback() {
         @Override
         public void send(String result) {
             bean = GsonUtil.parseJsonWithGson(result, TempCharBean.class);
             maxXg = getMaxNumb(bean.getData().getTempList());
+            tv_tempchart_max.setText(new DecimalFormat("0.00").format(maxXg) + "℃");
+            tv_tempchart_mean.setText(getmMeanNumb(bean.getData().getTempList()) + "℃");
             List<String> xList = new ArrayList<>();
             for (int i = 0; i < bean.getData().getXList().size(); i++) {
                 xList.add(bean.getData().getXList().get(i).substring(5, bean.getData().getXList().get(i).length()));
             }
             initLineChart(lineChart, bean.getData().getTempList(), xList, maxXg);
-//            new Thread(sendable).start();
             srl_tempchart.finishRefresh();
         }
 
         @Override
         public void onError(String result) {
+            showToast(result);
             srl_tempchart.finishRefresh();
         }
     };
@@ -114,6 +117,11 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
         tv_tempchart_adress.setText(getIntent().getStringExtra("depart"));
         RoomId = getIntent().getStringExtra("RoomId");
         deviceNum = getIntent().getStringExtra("deviceNum");
+        if (getIntent().getStringExtra("type").equals("0")) {
+            tv_tempchart_name.setText("变压器温度" + deviceNum);
+        } else {
+            tv_tempchart_name.setText("母排温度" + deviceNum);
+        }
         initRefreshLayout();
         srl_tempchart.autoRefresh();
     }
@@ -279,26 +287,16 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
         return a;
     }
 
-    /**
-     * 定时刷新
-     */
-//    Runnable sendable = new Runnable() {
-//        @Override
-//        public void run() {
-//            int a = 10;
-//            while (-1 < a && treadoff) {
-//                try {
-//                    Thread.sleep(1000);
-//                    Message message = new Message();
-//                    message.arg1 = a;
-//                    handler.sendMessage(message);
-//                    a--;
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//        }
-//    };
+    public String getmMeanNumb(List<String> numbList) {
+        Float a = Float.valueOf(0);
+        for (int i = 0; i < numbList.size(); i++) {
+            Float numb = Float.parseFloat(numbList.get(i));
+            a = numb + a;
+        }
+        String b = new DecimalFormat("0.00").format(a / numbList.size());
+        return b;
+    }
+
     @Override
     protected void onDestroy() {
         treadoff = false;

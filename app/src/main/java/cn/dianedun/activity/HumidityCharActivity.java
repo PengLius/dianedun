@@ -102,6 +102,7 @@ public class HumidityCharActivity extends BaseTitlActivity implements View.OnCli
         @Override
         public void onError(String result) {
             srl_humidity.finishRefresh();
+            showToast(result);
         }
     };
 
