@@ -3,7 +3,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@mipmap/backall"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
@@ -19,10 +18,6 @@
             android:id="@+id/fv_recycleview"
             android:layout_height="match_parent">
         </android.support.v7.widget.RecyclerView>
-        <com.scwang.smartrefresh.layout.footer.ClassicsFooter
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:srlClassicsSpinnerStyle="FixedBehind"/>
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
     <RelativeLayout

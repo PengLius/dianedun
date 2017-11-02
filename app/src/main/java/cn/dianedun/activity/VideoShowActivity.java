@@ -99,6 +99,7 @@ import cn.dianedun.adapter.SpitFragmentAdapter;
 import cn.dianedun.base.BaseActivity;
 import cn.dianedun.bean.AccesstokenBean;
 import cn.dianedun.bean.CarmerListBean;
+import cn.dianedun.bean.CommonBean;
 import cn.dianedun.fragment.SpitVideoFragment;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
@@ -149,8 +150,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Bind(R.id.av_ll_playback)
     LinearLayout mLLPlayBack;
 
-    @Bind(R.id.av_ll_set)
-    LinearLayout mLLSet;
+    @Bind(R.id.av_ll_light)
+    LinearLayout mLLlight;
 
     @Bind(R.id.realplay_sv)
     SurfaceView mRealPlaySv;
@@ -336,6 +337,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     private SurfaceHolder mRealPlaySh = null;
     private CustomTouchListener mRealPlayTouchListener = null;
+    private String mDepartName;
     @Override
     protected void initView() {
         super.initView();
@@ -415,8 +417,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         url += "?begin=" + calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
-
-        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
+        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url,dateStr);
     }
 
     private String getMonth(Calendar calendar){
@@ -762,13 +765,15 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
     }
 
+    private String mDepartId;
     private AccesstokenBean.DataBean mAccessTokenBean;
     @Override
     protected void onActivityLoadFinish() {
         super.onActivityLoadFinish();
+        mDepartId = getIntent().getStringExtra("id");
         ViseApi api = new ViseApi.Builder(this).build();
         HashMap hashMap = new HashMap();
-        hashMap.put("departId",getIntent().getStringExtra("id"));
+        hashMap.put("departId",mDepartId);
         api.apiPost(AppConfig.GETACCESSTOKEN,App.getInstance().getToken(),hashMap,false,new ApiCallback<AccesstokenBean.DataBean>(){
             @Override
             public void onNext(AccesstokenBean.DataBean dataBean) {
@@ -1053,7 +1058,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mLLStream.setEnabled(false);
         mLLTalkBack.setEnabled(false);
         mLLControl.setEnabled(false);
-        mLLPlayBack.setEnabled(false);
+        mLLPlayBack.setEnabled(true);
         if (mCameraInfo != null && mDeviceInfo != null) {
             closePtzPopupWindow();
             setFullPtzStopUI(false);
@@ -1078,7 +1083,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
      */
     private void showType() {
         if (Config.LOGGING && mEZPlayer != null) {
-            Utils.showLog(VideoShowActivity.this, "getType " + ",取流耗时：" + (mStopTime - mStartTime));
+//            Utils.showLog(VideoShowActivity.this, "getType " + ",取流耗时：" + (mStopTime - mStartTime));
         }
     }
 
@@ -1113,7 +1118,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mLLStream.setEnabled(false);
         mLLTalkBack.setEnabled(false);
         mLLControl.setEnabled(false);
-        mLLPlayBack.setEnabled(false);
+        mLLPlayBack.setEnabled(true);
 
         if (mCameraInfo != null && mDeviceInfo != null) {
             closePtzPopupWindow();
@@ -1194,7 +1199,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     }
 
     @Override
-    public void onVideoSelect(EZDeviceInfo deviceInfo) {
+    public void onVideoSelect(EZDeviceInfo deviceInfo,int pos) {
         m4BoxOr9Box = null;
         removeSpitPlayer();
         closeSpitPopupWindow();
@@ -1203,6 +1208,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mDeviceInfo = deviceInfo;
         mCameraInfo = EZUtils.getCameraInfoFromDevice(mDeviceInfo, 0);
         mEZPlayer = getOpenSDK().createPlayer(mCameraInfo.getDeviceSerial(), mCameraInfo.getCameraNo());
+        mTvPlaces.setText(mDepartName + pos  + "号机");
         startRealPlay();
     }
 
@@ -1258,6 +1264,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     protected void initData() {
         super.initData();
         // 保持屏幕常亮
+        mDepartName = getIntent().getStringExtra("place");
+        mTvPlaces.setText(mDepartName + getIntent().getStringExtra("pos")  + "号机");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 //        initTitleBar();
 //        initRealPlayPageLy();
@@ -2698,9 +2706,57 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
         mRealPlaySv.setVisibility(View.INVISIBLE);
     }
+    private int mLightCmd = 0; // 0-关 1-开
+
+    @Bind(R.id.av_img_light)
+    ImageView mImgLight;
+
     @Override
     protected void bindEvent() {
         super.bindEvent();
+        mLLlight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(VideoShowActivity.this, "正在灯控操作中", Toast.LENGTH_LONG).show();
+                ViseApi api = new ViseApi.Builder(VideoShowActivity.this).build();
+                HashMap hashMap = new HashMap();
+                hashMap.put("departId",mDepartId);
+                hashMap.put("cmd",mLightCmd);
+                api.post(AppConfig.CONTROLLIGHT,App.getInstance().getToken(),hashMap,false,new ApiCallback<CommonBean>(){
+                    @Override
+                    public void onNext(CommonBean dataBean) {
+                        if (dataBean.getCode() == 0){
+                            showToast("操作成功");
+                            if (mLightCmd == 0){
+                                mLightCmd = 1;
+                                mImgLight.setImageResource(R.mipmap.ic_nor_closelight);
+                            }else{
+                                mLightCmd = 0;
+                                mImgLight.setImageResource(R.mipmap.ic_nor_openlight);
+                            }
+                        }else{
+                            showToast(dataBean.getMsg());
+                        }
+                    }
+
+                    @Override
+                    public void onError(ApiException e) {
+                        showToast(e.getMessage());
+//                        setRealPlayFailUI("暂无设备在线");
+                    }
+
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+                });
+            }
+        });
         mLLPlayBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2899,6 +2955,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mCameraInfo == null) {
             return;
         }
+
+        EZUtils.updateVideo(this,recordFilePath);
 
         // 设置录像按钮为check状态
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -3116,7 +3174,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
                             // 可以采用deviceSerial+时间作为文件命名，demo中简化，只用时间命名
                             java.util.Date date = new java.util.Date();
-                            final String path = Environment.getExternalStorageDirectory().getPath() + "/EZOpenSDK/CapturePicture/" + String.format("%tY", date)
+                            final String path = Environment.getExternalStorageDirectory().getPath() + "/DianeDun/CapturePicture/" + String.format("%tY", date)
                                     + String.format("%tm", date) + String.format("%td", date) + "/"
                                     + String.format("%tH", date) + String.format("%tM", date) + String.format("%tS", date) + String.format("%tL", date) +".jpg";
 

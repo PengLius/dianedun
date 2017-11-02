@@ -65,7 +65,6 @@ import cn.dianedun.view.timeshaftbar.TimerShaftRegionItem;
 
 import static android.view.View.GONE;
 import static cn.dianedun.activity.VideoShowActivity.MSG_PLAY_UI_UPDATE;
-import static java.security.AccessController.getContext;
 
 /**
  * Created by Administrator on 2017/10/14.
@@ -115,8 +114,8 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     @Bind(R.id.av_rl_playback_video)
     RelativeLayout mRlPlayBackVideo;
 
-    @Bind(R.id.av_rl_playback_stream)
-    RelativeLayout mRlPlayBackStream;
+//    @Bind(R.id.av_rl_playback_stream)
+//    RelativeLayout mRlPlayBackStream;
 
     @Bind(R.id.av_timershaftbar)
     TimerShaftBar mTimerShaftBar;
@@ -183,6 +182,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     public static final String APPKEY = "AppKey";
     public static final String AccessToekn = "AccessToekn";
     public static final String PLAY_URL = "play_url";
+    public static final String PLAY_DATE = "play_date";
     /**
      * onresume时是否恢复播放
      */
@@ -208,10 +208,11 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
      * @param accesstoken 开发者登录授权的accesstoken
      * @param url         预览url
      */
-    public static void startPlayBackActivity(Context context,String accesstoken, String url) {
+    public static void startPlayBackActivity(Context context,String accesstoken, String url,String dateStr) {
         Intent intent = new Intent(context, PlayerBackActiviaty.class);
         intent.putExtra(AccessToekn, accesstoken);
         intent.putExtra(PLAY_URL, url);
+        intent.putExtra(PLAY_DATE, dateStr);
         context.startActivity(intent);
     }
 
@@ -229,7 +230,9 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mAppkey = getIntent().getStringExtra(APPKEY);
         mAccesstoken = getIntent().getStringExtra(AccessToekn);
         mPlayUrl = getIntent().getStringExtra(PLAY_URL);
+        mTvTitleDate.setText(getIntent().getStringExtra(PLAY_DATE));
         mLocalInfo = LocalInfo.getInstance();
+        mEZUiPlayBack.setbPlayBackUse(true);
         DisplayMetrics metric = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metric);
         mLocalInfo.setScreenWidthHeight(metric.widthPixels, metric.heightPixels);
@@ -364,52 +367,64 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             @Override
             public void onClick(View v) {
                 //录像
+                if (!TextUtils.isEmpty(mPlayErrStr)) {
+                    showToast(mPlayErrStr);
+                    return;
+                }
                 onRecordBtnClick();
             }
         });
-        mRlPlayBackStream.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertView("选择码流", null,"取消", null,
-                        new String[]{"高清","标清","流畅"},
-                        PlayerBackActiviaty.this, AlertView.Style.ActionSheet, new OnItemClickListener() {
-                    @Override
-                    public void onItemClick(Object o, int position) {
-                        if (mEZUiPlayBack == null) {
-                            return;
-                        }
-//                        int tag = -1;
-//                        // 视频质量，2-高清，1-标清，0-流畅
-//                        if (mEZUiPlayBack.getEzPlayer().getStreamFlow().getVideoLevel() == EZConstants.EZVideoLevel.VIDEO_LEVEL_FLUNET) {
-//                            tag = 2;
-//                        } else if (mCameraInfo.getVideoLevel() == EZConstants.EZVideoLevel.VIDEO_LEVEL_BALANCED) {
-//                            tag = 1;
-//                        } else if (mCameraInfo.getVideoLevel() == EZConstants.EZVideoLevel.VIDEO_LEVEL_HD) {
-//                            tag = 0;
-//                        }
-//                        if (tag == position)
+//        mRlPlayBackStream.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (!TextUtils.isEmpty(mPlayErrStr)) {
+//                    showToast(mPlayErrStr);
+//                    return;
+//                }
+//                new AlertView("选择码流", null,"取消", null,
+//                        new String[]{"高清","标清","流畅"},
+//                        PlayerBackActiviaty.this, AlertView.Style.ActionSheet, new OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(Object o, int position) {
+//                        if (mEZUiPlayBack == null) {
 //                            return;
-//                        switch (position){
-//                            case 0:
-//                                //高清
-//                                setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_HD);
-//                                break;
-//                            case 1:
-//                                //标清
-//                                setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_BALANCED);
-//                                break;
-//                            case 2:
-//                                //流畅
-//                                setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_FLUNET);
-//                                break;
 //                        }
-                    }
-                }).show();
-            }
-        });
+////                        int tag = -1;
+////                        // 视频质量，2-高清，1-标清，0-流畅
+////                        if (mEZUiPlayBack.getEzPlayer().getStreamFlow().getVideoLevel() == EZConstants.EZVideoLevel.VIDEO_LEVEL_FLUNET) {
+////                            tag = 2;
+////                        } else if (mCameraInfo.getVideoLevel() == EZConstants.EZVideoLevel.VIDEO_LEVEL_BALANCED) {
+////                            tag = 1;
+////                        } else if (mCameraInfo.getVideoLevel() == EZConstants.EZVideoLevel.VIDEO_LEVEL_HD) {
+////                            tag = 0;
+////                        }
+////                        if (tag == position)
+////                            return;
+////                        switch (position){
+////                            case 0:
+////                                //高清
+////                                setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_HD);
+////                                break;
+////                            case 1:
+////                                //标清
+////                                setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_BALANCED);
+////                                break;
+////                            case 2:
+////                                //流畅
+////                                setQualityMode(EZConstants.EZVideoLevel.VIDEO_LEVEL_FLUNET);
+////                                break;
+////                        }
+//                    }
+//                }).show();
+//            }
+//        });
         mRlPlayBackVoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!TextUtils.isEmpty(mPlayErrStr)) {
+                    showToast(mPlayErrStr);
+                    return;
+                }
                 //声音
                 onSoundBtnClick();
             }
@@ -417,6 +432,10 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlPlayBackTakePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!TextUtils.isEmpty(mPlayErrStr)) {
+                    showToast(mPlayErrStr);
+                    return;
+                }
                 //拍照
                 onCapturePicBtnClick();
             }
@@ -449,6 +468,10 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlPlayback_go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (!TextUtils.isEmpty(mPlayErrStr)) {
+                    showToast(mPlayErrStr);
+                    return;
+                }
                 if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PLAY) {
                     //播放状态，点击停止播放
                     mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
@@ -845,7 +868,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         //竖屏
         if (!isWideScrren) {
             //竖屏调整播放区域大小，宽全屏，高根据视频分辨率自适应
-            mEZUiPlayBack.setSurfaceSize(dm.widthPixels, 0);
+//            mEZUiPlayBack.setSurfaceSize(dm.widthPixels, 0);
         } else {
             //横屏屏调整播放区域大小，宽、高均全屏，播放区域根据视频分辨率自适应
             mEZUiPlayBack.setSurfaceSize(dm.widthPixels, dm.heightPixels);
@@ -854,9 +877,9 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
 
     @Override
     public void onWindowSizeChanged(int w, int h, int oldW, int oldH) {
-        if (mEZUiPlayBack != null) {
-            setSurfaceSize();
-        }
+//        if (mEZUiPlayBack != null) {
+//            setSurfaceSize();
+//        }
     }
 
     public class MyOrientationDetector extends OrientationEventListener {
@@ -922,7 +945,10 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             mRlErr.setVisibility(View.VISIBLE);
             mTvErrTip.setText(var1.getErrorString());
         }
+        mPlayErrStr = var1.getErrorString();
     }
+
+    private String mPlayErrStr = "正在加载，请稍后";
 
     @Override
     public void onPlayFinish() {
@@ -932,6 +958,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     @Override
     public void onPlaySuccess() {
         Log.d(TAG,"onPlaySuccess");
+        mPlayErrStr = null;
         mRlErr.setVisibility(GONE);
         mTimerShaftBar.setRefereshPlayTimeWithPlayer();
         mImgPlay.setImageResource(R.mipmap.ic_nor_stop);

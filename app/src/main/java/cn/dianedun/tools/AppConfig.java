@@ -50,6 +50,7 @@ public class AppConfig {
 
     public static final String GETACCESSTOKEN = WEB_CARMERA_PORTS + "/cameraController/getAccessTokenByDepartId";//获取token
     public static final String GET_CARMERLIST = WEB_CARMERA_PORTS + "/cameraController/getCameraList";//获取摄像头列表
+    public static final String CONTROLLIGHT = WEB_CARMERA_PORTS + "/cameraController/onlight";//开关灯
     public static final String GETDEPARTPLACES = APP_CARMERA_PORTS + "/handleorder/getDepartByUser";//获取配电室地址列表
 
     public static final String GETTOKENKEY = "https://open.ys7.com/api/lapp/token/get";//通过萤石获取token
