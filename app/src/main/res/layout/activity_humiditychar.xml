@@ -27,10 +27,18 @@
                     android:id="@+id/tv_humiditychar_adress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
                     android:layout_marginTop="15dp"
                     android:gravity="center"
                     android:text=""
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s12" />
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:gravity="center"
+                    android:text="湿度"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
@@ -128,7 +136,7 @@
                             android:layout_height="wrap_content"
                             android:text="平均湿度："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_sd_mean"
@@ -136,7 +144,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#04BFE7"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -151,7 +159,7 @@
                             android:layout_height="wrap_content"
                             android:text="最大湿度："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_sd_max"
@@ -159,7 +167,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#e84b06"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
                 </LinearLayout>
             </LinearLayout>

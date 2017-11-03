@@ -94,10 +94,11 @@ public class HisDetailsActivity extends BaseTitlActivity {
     private DetailsBean bean;
     private List<String> imgList;
     private int type = 0;
-    private String contents;
+    private String contents = "";
     private AnimationDrawable animationDrawable;
     private MediaPlayer player;
     private CountDownTimer countDownTimer;
+    private List<HashMap<String, String>> adjList;
 
 
     @Override
@@ -117,11 +118,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
         myAsyncTast = new MyAsyncTast(HisDetailsActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override
             public void send(String result) {
+                adjList = new ArrayList<>();
                 bean = GsonUtil.parseJsonWithGson(result, DetailsBean.class);
                 if (bean.getData().getUrgency() == 0) {
                     tv_hisdetails_urgency.setText("普通");
@@ -144,6 +146,15 @@ public class HisDetailsActivity extends BaseTitlActivity {
                     } else {
                         tv_hisdetails_cl.setText(bean.getData().getRemark() + "");
                     }
+                } else if (bean.getData().getStatus() == 2) {
+                    tv_hisdetails_cl.setText("");
+                } else if (bean.getData().getStatus() == 3) {
+                    tv_hisdetails_tit.setText("驳回原因：");
+                    if (bean.getData().getRejectCause().equals("null")) {
+                        tv_hisdetails_cl.setText("");
+                    } else {
+                        tv_hisdetails_cl.setText(bean.getData().getRejectCause() + "");
+                    }
                 } else {
                     if (bean.getData().getFeedCause().equals("null")) {
                         tv_hisdetails_cl.setText("");
@@ -154,6 +165,7 @@ public class HisDetailsActivity extends BaseTitlActivity {
                 if (bean.getData().getAlertOptionsArray().size() > 0) {
                     GirdAdapter adapter = new GirdAdapter();
                     gv_hisdetauls.setAdapter(adapter);
+                    HashMap<String, String> has;
                     for (int i = 0; i < bean.getData().getAlertOptionsArray().size(); i++) {
                         if (bean.getData().getAlertOptionsArray().get(i).getOptionType() == 0) {
                             imgList.add(bean.getData().getAlertOptionsArray().get(i).getContents());
@@ -162,56 +174,9 @@ public class HisDetailsActivity extends BaseTitlActivity {
                                 .getType() == 4) {
                             rl_hisdetails.setVisibility(View.VISIBLE);
                             contents = bean.getData().getAlertOptionsArray().get(i).getContents();
-                        }
-                    }
-                    player = MediaPlayer.create(getApplicationContext(), Uri.parse(contents));
-                    long f = player.getDuration() / 1000 / 60;
-                    long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
-                    if (f < 10) {
-                        if (m < 10) {
-                            tv_hisdetails_time.setText("0" + f + "'" + "0" + m + "\"");
-                        } else {
-                            tv_hisdetails_time.setText("0" + f + "'" + m + "\"");
-                        }
-                    } else {
-                        if (m < 10) {
-                            tv_hisdetails_time.setText(f + "'" + "0" + m + "\"");
-                        } else {
-                            tv_hisdetails_time.setText(f + "'" + m + "\"");
-                        }
-                    }
-                    rl_hisdetails.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (type == 0) {
-                                player.start();
-                                countDownTimer.start();
-                                img_hisdetails_yy.setImageResource(R.drawable.animation1);
-                                animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
-                                animationDrawable.start();
-                                type = 1;
-                            } else if (type == 1) {
-                                img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
-                                player.pause();
-                                countDownTimer.pause();
-                                type = 2;
-                                animationDrawable.stop();
-                            } else {
-                                player.start();
-                                countDownTimer.resume();
-                                img_hisdetails_yy.setImageResource(R.drawable.animation1);
-                                animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
-                                animationDrawable.start();
-                                type = 1;
-                            }
-                        }
-                    });
-
-                    countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
-                        @Override
-                        public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
-                            long f = millisUntilFinished / 1000 / 60;
-                            long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                            player = MediaPlayer.create(getApplicationContext(), Uri.parse(contents));
+                            long f = player.getDuration() / 1000 / 60;
+                            long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
                             if (f < 10) {
                                 if (m < 10) {
                                     tv_hisdetails_time.setText("0" + f + "'" + "0" + m + "\"");
@@ -225,45 +190,99 @@ public class HisDetailsActivity extends BaseTitlActivity {
                                     tv_hisdetails_time.setText(f + "'" + m + "\"");
                                 }
                             }
-                        }
-
-                        @Override
-                        public void onCancel(long millisUntilFinished) {
-                        }
-
-                        @Override
-                        public void onPause(long millisUntilFinished) {
-
-                        }
-
-                        @Override
-                        public void onResume(long millisUntilFinished) {
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            long a = player.getDuration() / 1000 / 60;
-                            long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
-                            if (a < 10) {
-                                if (b < 10) {
-                                    tv_hisdetails_time.setText("0" + a + "'" + "0" + b + "\"");
-                                } else {
-                                    tv_hisdetails_time.setText("0" + a + "'" + b + "\"");
+                            rl_hisdetails.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (type == 0) {
+                                        player.start();
+                                        countDownTimer.start();
+                                        img_hisdetails_yy.setImageResource(R.drawable.animation1);
+                                        animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
+                                        animationDrawable.start();
+                                        type = 1;
+                                    } else if (type == 1) {
+                                        img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
+                                        player.pause();
+                                        countDownTimer.pause();
+                                        type = 2;
+                                        animationDrawable.stop();
+                                    } else {
+                                        player.start();
+                                        countDownTimer.resume();
+                                        img_hisdetails_yy.setImageResource(R.drawable.animation1);
+                                        animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
+                                        animationDrawable.start();
+                                        type = 1;
+                                    }
                                 }
-                            } else {
-                                if (b < 10) {
-                                    tv_hisdetails_time.setText(a + "'" + "0" + b + "\"");
-                                } else {
-                                    tv_hisdetails_time.setText(a + "'" + b + "\"");
+                            });
+
+                            countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
+                                @Override
+                                public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
+                                    long f = millisUntilFinished / 1000 / 60;
+                                    long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                                    if (f < 10) {
+                                        if (m < 10) {
+                                            tv_hisdetails_time.setText("0" + f + "'" + "0" + m + "\"");
+                                        } else {
+                                            tv_hisdetails_time.setText("0" + f + "'" + m + "\"");
+                                        }
+                                    } else {
+                                        if (m < 10) {
+                                            tv_hisdetails_time.setText(f + "'" + "0" + m + "\"");
+                                        } else {
+                                            tv_hisdetails_time.setText(f + "'" + m + "\"");
+                                        }
+                                    }
                                 }
-                            }
-                            if (animationDrawable != null) {
-                                animationDrawable.stop();
-                            }
-                            img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
-                            type = 0;
+
+                                @Override
+                                public void onCancel(long millisUntilFinished) {
+                                }
+
+                                @Override
+                                public void onPause(long millisUntilFinished) {
+
+                                }
+
+                                @Override
+                                public void onResume(long millisUntilFinished) {
+                                }
+
+                                @Override
+                                public void onFinish() {
+                                    long a = player.getDuration() / 1000 / 60;
+                                    long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                                    if (a < 10) {
+                                        if (b < 10) {
+                                            tv_hisdetails_time.setText("0" + a + "'" + "0" + b + "\"");
+                                        } else {
+                                            tv_hisdetails_time.setText("0" + a + "'" + b + "\"");
+                                        }
+                                    } else {
+                                        if (b < 10) {
+                                            tv_hisdetails_time.setText(a + "'" + "0" + b + "\"");
+                                        } else {
+                                            tv_hisdetails_time.setText(a + "'" + b + "\"");
+                                        }
+                                    }
+                                    if (animationDrawable != null) {
+                                        animationDrawable.stop();
+                                    }
+                                    img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
+                                    type = 0;
+                                }
+                            };
+
                         }
-                    };
+                        if (bean.getData().getAlertOptionsArray().get(i).getType() == 5) {
+                            has = new HashMap<>();
+                            has.put("contents", bean.getData().getAlertOptionsArray().get(i).getContents());
+                            has.put("type", bean.getData().getAlertOptionsArray().get(i).getOptionType() + "");
+                            adjList.add(has);
+                        }
+                    }
                 }
             }
         });
@@ -276,12 +295,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
         @Override
         public int getCount() {
 
-            return bean.getData().getAlertOptionsArray().size();
+            return adjList.size();
         }
 
         @Override
         public Object getItem(int position) {
-            return bean.getData().getAlertOptionsArray().get(position);
+            return adjList.get(position);
         }
 
         @Override
@@ -292,10 +311,10 @@ public class HisDetailsActivity extends BaseTitlActivity {
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
 
-            if (bean.getData().getAlertOptionsArray().get(position).getOptionType() == 0) {
+            if (adjList.get(position).get("type").equals("0")) {
                 //图片
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_fjimg, null);
-                Glide.with(HisDetailsActivity.this).load(bean.getData().getAlertOptionsArray().get(position).getContents()).into(((ImageView) convertView.findViewById(R.id.img_fjimg_img)));
+                Glide.with(HisDetailsActivity.this).load(adjList.get(position).get("contents")).into(((ImageView) convertView.findViewById(R.id.img_fjimg_img)));
                 convertView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -305,13 +324,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
                         startActivity(intent);
                     }
                 });
-
             } else {
                 //音频
                 convertView = LayoutInflater.from(getApplicationContext()).inflate(R.layout.item_fjyp, null);
                 final TextView tv_fjyp_time = (TextView) convertView.findViewById(R.id.tv_fjyp_time);
                 final ImageView img_fjyp_yy = (ImageView) convertView.findViewById(R.id.img_fjyp_yy);
-                final MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(bean.getData().getAlertOptionsArray().get(position).getContents()));
+                final MediaPlayer player = MediaPlayer.create(getApplicationContext(), Uri.parse(adjList.get(position).get("contents")));
 
                 long f = player.getDuration() / 1000 / 60;
                 long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
@@ -414,5 +432,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
             }
             return convertView;
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Glide.get(this).clearMemory();
+        System.gc();
     }
 }

@@ -15,6 +15,7 @@
             android:layout_height="wrap_content"></com.scwang.smartrefresh.layout.header.ClassicsHeader>
 
         <ScrollView
+            android:id="@+id/sv_gdce"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
@@ -27,8 +28,17 @@
                     android:id="@+id/tv_tempchart_adress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="15dp"
                     android:layout_marginTop="15dp"
+                    android:gravity="center"
+                    android:text=""
+                    android:textColor="#FFF"
+                    android:textSize="@dimen/content_text_s14" />
+
+                <TextView
+                    android:id="@+id/tv_tempchart_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
                     android:gravity="center"
                     android:text=""
                     android:textColor="#FFF"
@@ -166,23 +176,32 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <View
-                        android:layout_width="15dp"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="20dp"
-                        android:background="#e84b06" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="A"
-                        android:textColor="#FFF" />
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="15dp"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="20dp"
+                            android:background="#e84b06" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="A"
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -190,7 +209,7 @@
                             android:layout_height="wrap_content"
                             android:text="平均电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxg_amean"
@@ -198,14 +217,14 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#04BFE7"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -213,7 +232,7 @@
                             android:layout_height="wrap_content"
                             android:text="最大电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxg_amax"
@@ -221,7 +240,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#e84b06"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -232,23 +251,32 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <View
-                        android:layout_width="15dp"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="20dp"
-                        android:background="#1179ce" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="B"
-                        android:textColor="#FFF" />
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="15dp"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="20dp"
+                            android:background="#1179ce" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="B"
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -256,7 +284,7 @@
                             android:layout_height="wrap_content"
                             android:text="平均电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxg_bmean"
@@ -264,14 +292,14 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#04BFE7"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -279,7 +307,7 @@
                             android:layout_height="wrap_content"
                             android:text="最大电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxg_bmax"
@@ -287,7 +315,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#e84b06"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -295,26 +323,35 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="5dp"
-                    android:gravity="center"
+                    android:gravity="center_vertical"
                     android:orientation="horizontal">
-
-                    <View
-                        android:layout_width="15dp"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="20dp"
-                        android:background="#3dc281" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="C"
-                        android:textColor="#FFF" />
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="15dp"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="20dp"
+                            android:background="#3dc281" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="C"
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -322,7 +359,7 @@
                             android:layout_height="wrap_content"
                             android:text="平均电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxg_cmean"
@@ -330,14 +367,14 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#04BFE7"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -345,7 +382,7 @@
                             android:layout_height="wrap_content"
                             android:text="最大电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxg_cmax"
@@ -353,7 +390,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#e84b06"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -434,23 +471,32 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <View
-                        android:layout_width="15dp"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="20dp"
-                        android:background="#e84b06" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="AB"
-                        android:textColor="#FFF" />
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="15dp"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="20dp"
+                            android:background="#e84b06" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="AB"
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -458,7 +504,7 @@
                             android:layout_height="wrap_content"
                             android:text="平均电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxn_abmean"
@@ -466,14 +512,14 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#04BFE7"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -481,7 +527,7 @@
                             android:layout_height="wrap_content"
                             android:text="最大电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxn_abmax"
@@ -489,7 +535,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#e84b06"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -500,23 +546,32 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <View
-                        android:layout_width="15dp"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="20dp"
-                        android:background="#1179ce" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="BC"
-                        android:textColor="#FFF" />
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="15dp"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="20dp"
+                            android:background="#1179ce" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="BC"
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -524,7 +579,7 @@
                             android:layout_height="wrap_content"
                             android:text="平均电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxn_bcmean"
@@ -532,14 +587,14 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#04BFE7"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -547,7 +602,7 @@
                             android:layout_height="wrap_content"
                             android:text="最大电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxn_bcmax"
@@ -555,7 +610,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#e84b06"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -566,23 +621,32 @@
                     android:gravity="center"
                     android:orientation="horizontal">
 
-                    <View
-                        android:layout_width="15dp"
-                        android:layout_height="1dp"
-                        android:layout_marginLeft="20dp"
-                        android:background="#3dc281" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="CA"
-                        android:textColor="#FFF" />
-
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:gravity="center"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="15dp"
+                            android:layout_height="1dp"
+                            android:layout_marginLeft="20dp"
+                            android:background="#3dc281" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="CA"
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -590,7 +654,7 @@
                             android:layout_height="wrap_content"
                             android:text="平均电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxn_acmean"
@@ -598,14 +662,14 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#04BFE7"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <TextView
@@ -613,7 +677,7 @@
                             android:layout_height="wrap_content"
                             android:text="最大电压："
                             android:textColor="#FFF"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
 
                         <TextView
                             android:id="@+id/tv_gdxn_acmax"
@@ -621,7 +685,7 @@
                             android:layout_height="wrap_content"
                             android:text=""
                             android:textColor="#e84b06"
-                            android:textSize="@dimen/content_text_s14" />
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -691,11 +755,19 @@
                     android:paddingLeft="10dp"
                     android:paddingRight="20dp"
                     android:paddingTop="10dp" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <View
@@ -708,60 +780,69 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="A"
-                            android:textColor="#FFF" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="平均电流："
-                                android:textColor="#FFF"
-                                android:textSize="@dimen/content_text_s14" />
-
-                            <TextView
-                                android:id="@+id/tv_gdil_amean"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:textColor="#04BFE7"
-                                android:textSize="@dimen/content_text_s14" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="最大电流："
-                                android:textColor="#FFF"
-                                android:textSize="@dimen/content_text_s14" />
-
-                            <TextView
-                                android:id="@+id/tv_gdil_amax"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:textColor="#e84b06"
-                                android:textSize="@dimen/content_text_s14" />
-                        </LinearLayout>
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="平均电流："
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+
+                        <TextView
+                            android:id="@+id/tv_gdil_amean"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textColor="#04BFE7"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="最大电流："
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+
+                        <TextView
+                            android:id="@+id/tv_gdil_amax"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textColor="#e84b06"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <View
@@ -774,60 +855,69 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="B"
-                            android:textColor="#FFF" />
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="平均电流："
-                                android:textColor="#FFF"
-                                android:textSize="@dimen/content_text_s14" />
-
-                            <TextView
-                                android:id="@+id/tv_gdil_bmean"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:textColor="#04BFE7"
-                                android:textSize="@dimen/content_text_s14" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="最大电流："
-                                android:textColor="#FFF"
-                                android:textSize="@dimen/content_text_s14" />
-
-                            <TextView
-                                android:id="@+id/tv_gdil_bmax"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:textColor="#e84b06"
-                                android:textSize="@dimen/content_text_s14" />
-                        </LinearLayout>
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
                     </LinearLayout>
 
                     <LinearLayout
-                        android:layout_width="match_parent"
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="5dp"
-                        android:gravity="center"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="平均电流："
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+
+                        <TextView
+                            android:id="@+id/tv_gdil_bmean"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textColor="#04BFE7"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="最大电流："
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+
+                        <TextView
+                            android:id="@+id/tv_gdil_bmax"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textColor="#e84b06"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
                         android:orientation="horizontal">
 
                         <View
@@ -840,53 +930,55 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="C"
-                            android:textColor="#FFF" />
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="0dp"
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="horizontal">
+                            android:text="平均电流："
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="平均电流："
-                                android:textColor="#FFF"
-                                android:textSize="@dimen/content_text_s14" />
-
-                            <TextView
-                                android:id="@+id/tv_gdil_cmean"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:textColor="#04BFE7"
-                                android:textSize="@dimen/content_text_s14" />
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="0dp"
+                        <TextView
+                            android:id="@+id/tv_gdil_cmean"
+                            android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:gravity="center"
-                            android:orientation="horizontal">
+                            android:text=""
+                            android:textColor="#04BFE7"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="最大电流："
-                                android:textColor="#FFF"
-                                android:textSize="@dimen/content_text_s14" />
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                            <TextView
-                                android:id="@+id/tv_gdil_cmax"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=""
-                                android:textColor="#e84b06"
-                                android:textSize="@dimen/content_text_s14" />
-                        </LinearLayout>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="最大电流："
+                            android:textColor="#FFF"
+                            android:textSize="@dimen/content_text_s12" />
+
+                        <TextView
+                            android:id="@+id/tv_gdil_cmax"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textColor="#e84b06"
+                            android:textSize="@dimen/content_text_s12" />
+                    </LinearLayout>
                 </LinearLayout>
             </LinearLayout>
         </ScrollView>

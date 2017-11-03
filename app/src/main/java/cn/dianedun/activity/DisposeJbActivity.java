@@ -268,7 +268,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
         myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.FINDALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override
@@ -332,6 +332,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
             myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.UPDATEALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                 @Override
                 public void onError(String result) {
+                    showToast(result);
                 }
 
                 @Override
@@ -348,6 +349,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                 myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.UPDATEALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                     @Override
                     public void onError(String result) {
+                        showToast(result);
                     }
 
                     @Override

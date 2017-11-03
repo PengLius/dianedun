@@ -4,6 +4,7 @@
     android:layout_height="match_parent"
     android:background="@mipmap/backall"
     android:orientation="vertical">
+
     <com.scwang.smartrefresh.layout.SmartRefreshLayout
         android:id="@+id/srl_waterout"
         android:layout_width="match_parent"
@@ -12,101 +13,110 @@
         <com.scwang.smartrefresh.layout.header.ClassicsHeader
             android:layout_width="match_parent"
             android:layout_height="wrap_content"></com.scwang.smartrefresh.layout.header.ClassicsHeader>
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
 
-        <LinearLayout
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical">
-
-            <TextView
-                android:id="@+id/tv_waterout_adress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:layout_marginTop="15dp"
-                android:gravity="center"
-                android:text=""
-                android:textColor="#FFF"
-                android:textSize="@dimen/content_text_s14" />
+            android:layout_height="wrap_content">
 
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:orientation="horizontal">
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_waterout_1"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab1"
+                    android:id="@+id/tv_waterout_adress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="15dp"
                     android:gravity="center"
-                    android:text="近一天"
+                    android:text=""
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
                 <TextView
-                    android:id="@+id/tv_waterout_2"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
                     android:gravity="center"
-                    android:text="近一周"
+                    android:text="水浸"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/tv_waterout_1"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:background="@mipmap/jc_tab1"
+                        android:gravity="center"
+                        android:text="近一天"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+
+                    <TextView
+                        android:id="@+id/tv_waterout_2"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:background="@mipmap/jc_tab"
+                        android:gravity="center"
+                        android:text="近一周"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+
+                    <TextView
+                        android:id="@+id/tv_waterout_3"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_weight="1"
+                        android:background="@mipmap/jc_tab"
+                        android:gravity="center"
+                        android:text="近一月"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+
+                    <TextView
+                        android:id="@+id/tv_waterout_4"
+                        android:layout_width="0dp"
+                        android:layout_height="30dp"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:background="@mipmap/jc_tab"
+                        android:gravity="center"
+                        android:text="近半年"
+                        android:textColor="#FFF"
+                        android:textSize="@dimen/content_text_s14" />
+                </LinearLayout>
+
                 <TextView
-                    android:id="@+id/tv_waterout_3"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
-                    android:gravity="center"
-                    android:text="近一月"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginTop="20dp"
+                    android:text="水浸"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
 
-                <TextView
-                    android:id="@+id/tv_waterout_4"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
-                    android:gravity="center"
-                    android:text="近半年"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
+                <lecho.lib.hellocharts.view.LineChartView
+                    android:id="@+id/lcv_sj"
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:layout_marginTop="10dp"
+                    android:paddingLeft="10dp"
+                    android:paddingRight="20dp"
+                    android:paddingTop="10dp" />
             </LinearLayout>
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="5dp"
-                android:layout_marginTop="20dp"
-                android:text="水浸"
-                android:textColor="#FFF"
-                android:textSize="@dimen/content_text_s14" />
-
-            <lecho.lib.hellocharts.view.LineChartView
-                android:id="@+id/lcv_sj"
-                android:layout_width="match_parent"
-                android:layout_height="200dp"
-                android:layout_marginTop="10dp"
-                android:paddingLeft="10dp"
-                android:paddingRight="20dp"
-                android:paddingTop="10dp" />
-        </LinearLayout>
-    </ScrollView>
-</com.scwang.smartrefresh.layout.SmartRefreshLayout>
+        </ScrollView>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 </LinearLayout>

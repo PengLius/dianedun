@@ -47,7 +47,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="20dp"
                 android:layout_weight="1"
-                android:text="12345678944566"
+                android:text=""
                 android:textColor="#00B168"
                 android:textSize="@dimen/content_text_s14" />
 
@@ -55,7 +55,7 @@
                 android:id="@+id/item_hometv_sta"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="待反馈"
+                android:text=""
                 android:textColor="#E83A17"
                 android:textSize="@dimen/content_text_s14" />
         </LinearLayout>
@@ -94,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_weight="1"
-                        android:text="2017-3-22 14:24:18"
+                        android:text=""
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
@@ -122,7 +122,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
                         android:layout_weight="1"
-                        android:text="2017-3-22 14:24:18"
+                        android:text=""
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
@@ -153,7 +153,7 @@
                         android:layout_marginLeft="20dp"
                         android:layout_marginTop="5dp"
                         android:layout_weight="1"
-                        android:text="保定市炫彩soho大厦B座1号配电室"
+                        android:text=""
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
@@ -191,7 +191,7 @@
                 android:layout_marginRight="20dp"
                 android:background="@mipmap/home_yuan_red"
                 android:gravity="center"
-                android:text="已延误    10天"
+                android:text=""
                 android:textColor="#E83A17"
                 android:textSize="@dimen/content_text_s14" />
 

@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
+import lecho.lib.hellocharts.model.Line;
 
 /**
  * Created by Administrator on 2017/8/7.
@@ -39,6 +41,9 @@ public class HisJbActivity extends BaseTitlActivity {
 
     @Bind(R.id.srl_hisjb)
     SmartRefreshLayout srl_hisjb;
+
+    @Bind(R.id.ll_hisjb_null)
+    LinearLayout ll_hisjb_null;
 
     private IndentCusAdapter adapter;
     private MyAsyncTast myAsyncTast;
@@ -77,6 +82,7 @@ public class HisJbActivity extends BaseTitlActivity {
                     @Override
                     public void onError(String result) {
                         srl_hisjb.finishLoadmore();
+                        showToast(result);
                     }
 
                     @Override
@@ -88,7 +94,7 @@ public class HisJbActivity extends BaseTitlActivity {
                             allList.add(bean.getData().getList().get(i));
                         }
                         adapter.notifyDataSetChanged();
-                        if(bean.getData().getList().size()<10){
+                        if (bean.getData().getList().size() < 10) {
                             srl_hisjb.setLoadmoreFinished(true);
                         }
                     }
@@ -107,6 +113,12 @@ public class HisJbActivity extends BaseTitlActivity {
             @Override
             public void onError(String result) {
                 srl_hisjb.finishRefresh();
+                if (result.equals("无记录")) {
+                    ll_hisjb_null.setVisibility(View.VISIBLE);
+                    srl_hisjb.setVisibility(View.GONE);
+                } else {
+                    showToast(result);
+                }
             }
 
             @Override
@@ -114,12 +126,17 @@ public class HisJbActivity extends BaseTitlActivity {
                 srl_hisjb.finishRefresh();
                 bean = GsonUtil.parseJsonWithGson(result, HisJbBean.class);
                 allList = new ArrayList<>();
-                for (int i = 0; i < bean.getData().getList().size(); i++) {
-                    allList.add(bean.getData().getList().get(i));
+                if (bean.getData().getList().size() > 0) {
+                    for (int i = 0; i < bean.getData().getList().size(); i++) {
+                        allList.add(bean.getData().getList().get(i));
+                    }
+                    adapter = new IndentCusAdapter();
+                    lv_hisjb.setAdapter(adapter);
+                    page++;
+                } else {
+                    ll_hisjb_null.setVisibility(View.VISIBLE);
+                    srl_hisjb.setVisibility(View.GONE);
                 }
-                adapter = new IndentCusAdapter();
-                lv_hisjb.setAdapter(adapter);
-                page++;
             }
         });
         myAsyncTast.execute();

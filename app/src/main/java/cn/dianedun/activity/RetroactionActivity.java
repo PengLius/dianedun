@@ -333,7 +333,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
             myAsyncTast = new MyAsyncTast(RetroactionActivity.this, hashMap, AppConfig.FEEDBACKHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                 @Override
                 public void onError(String result) {
-
+                    showToast(result);
                 }
 
                 @Override
@@ -351,7 +351,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                 myAsyncTast = new MyAsyncTast(RetroactionActivity.this, hashMap, AppConfig.FEEDBACKHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                     @Override
                     public void onError(String result) {
-
+                        showToast(result);
                     }
 
                     @Override
@@ -373,7 +373,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
         myAsyncTast = new MyAsyncTast(RetroactionActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override

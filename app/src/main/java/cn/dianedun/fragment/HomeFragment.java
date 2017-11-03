@@ -97,6 +97,9 @@ public class HomeFragment extends BaseTitlFragment {
         setImgRightVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.home_green_add);
         setImgRight(R.mipmap.home_look);
+        itemList =new ArrayList<>();
+        adapter = new IndentCusAdapter();
+        lv_home.setAdapter(adapter);
         initRefreshLayout();
         setImgLeftOnClick(new View.OnClickListener() {
             @Override
@@ -231,8 +234,7 @@ public class HomeFragment extends BaseTitlFragment {
                             gdNum++;
                         }
                     }
-                    adapter = new IndentCusAdapter();
-                    lv_home.setAdapter(adapter);
+                    adapter.notifyDataSetChanged();
                 } else {
                     ll_home_null.setVisibility(View.VISIBLE);
                     lv_home.setVisibility(View.GONE);
@@ -294,8 +296,6 @@ public class HomeFragment extends BaseTitlFragment {
                 } else {
                     ((ImageView) convertView.findViewById(R.id.item_homeimg_jbsta)).setImageResource(R.mipmap.home_jg_red);
                 }
-
-
             } else {
                 convertView = LayoutInflater.from(getActivity()).inflate(R.layout.item_home_gd, null);
                 if (position == jg) {

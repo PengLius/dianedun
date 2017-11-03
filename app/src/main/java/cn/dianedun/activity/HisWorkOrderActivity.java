@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -41,6 +42,9 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
 
     @Bind(R.id.srl_hisworkorder)
     SmartRefreshLayout srl_hisworkorder;
+
+    @Bind(R.id.ll_hisgd_null)
+    LinearLayout ll_hisgd_null;
 
     private IndentCusAdapter adapter;
     private MyAsyncTast myAsyncTast;
@@ -80,6 +84,7 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
                     @Override
                     public void onError(String result) {
                         srl_hisworkorder.finishLoadmore();
+                        showToast(result);
                     }
 
                     @Override
@@ -114,6 +119,12 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
             @Override
             public void onError(String result) {
                 srl_hisworkorder.finishRefresh();
+                if (result.equals("无记录")) {
+                    ll_hisgd_null.setVisibility(View.VISIBLE);
+                    srl_hisworkorder.setVisibility(View.GONE);
+                } else {
+                    showToast(result);
+                }
             }
 
             @Override
@@ -122,12 +133,17 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
                 srl_hisworkorder.setLoadmoreFinished(false);
                 bean = GsonUtil.parseJsonWithGson(result, HisOrderListBean.class);
                 allList = new ArrayList<>();
-                for (int i = 0; i < bean.getData().getResult().size(); i++) {
-                    allList.add(bean.getData().getResult().get(i));
+                if (bean.getData().getResult().size() > 0) {
+                    for (int i = 0; i < bean.getData().getResult().size(); i++) {
+                        allList.add(bean.getData().getResult().get(i));
+                    }
+                    page++;
+                    adapter = new IndentCusAdapter();
+                    lv_hisworkorder.setAdapter(adapter);
+                } else {
+                    ll_hisgd_null.setVisibility(View.VISIBLE);
+                    srl_hisworkorder.setVisibility(View.GONE);
                 }
-                page++;
-                adapter = new IndentCusAdapter();
-                lv_hisworkorder.setAdapter(adapter);
             }
         });
         myAsyncTast.execute();
@@ -168,6 +184,12 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
             cache.item_hometv_code.setText(allList.get(position).getOrderNum() + "");
             if (allList.get(position).getStatus() == 0) {
                 cache.item_homeitv_sta.setText("已撤销");
+            } else if (allList.get(position).getStatus() == 1) {
+                cache.item_homeitv_sta.setText("待审批");
+            } else if (allList.get(position).getStatus() == 2) {
+                cache.item_homeitv_sta.setText("待反馈");
+            } else if (allList.get(position).getStatus() == 3) {
+                cache.item_homeitv_sta.setText("被驳回");
             } else if (allList.get(position).getStatus() == 4) {
                 cache.item_homeitv_sta.setText("已完成");
             }

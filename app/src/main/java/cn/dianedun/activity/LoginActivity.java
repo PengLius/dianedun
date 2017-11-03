@@ -140,7 +140,7 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
                     @Override
                     public void onError(Throwable ex, boolean isOnCallback) {
-                        Toast.makeText(getApplicationContext(), "网络不可用", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "网络异常，请检查网络是否畅通", Toast.LENGTH_SHORT).show();
                         ed_login_yzm.setClickable(true);
                     }
 

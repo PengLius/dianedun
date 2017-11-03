@@ -125,7 +125,7 @@ public class DetailsingActivity extends BaseTitlActivity {
         myAsyncTast = new MyAsyncTast(DetailsingActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override
