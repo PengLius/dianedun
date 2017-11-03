@@ -147,6 +147,9 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                 LogUtil.d("EZUIPlayer", "MSG_VIDEO_SIZE_CHANGED");
                 EZUIPlayer.this.dismissomLoading();
 
+                if (bPlayBackUse)
+                    return;
+
                 try {
                     e = (String)msg.obj;
                     String[] strings = e.split(":");
@@ -176,6 +179,16 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
         }
     };
+
+    public void sendMessage(Message message){
+        mHandler.sendMessage(message);
+    }
+
+    private boolean bPlayBackUse = false;
+
+    public void setbPlayBackUse(boolean bPlayBackUse) {
+        this.bPlayBackUse = bPlayBackUse;
+    }
 
     public void setOpenSound(boolean openSound) {
         this.isOpenSound = openSound;
@@ -842,7 +855,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
     private int getCurrentIndex(Calendar calendar) {
         if(this.mPlayRecordList != null && this.mPlayRecordList.size() > 0) {
             for(int i = 0; i < this.mPlayRecordList.size(); ++i) {
-                EZRecordFile recordFile = (EZRecordFile)this.mPlayRecordList.get(i);
+                EZRecordFile recordFile = this.mPlayRecordList.get(i);
                 boolean var10000 = calendar.getTimeInMillis() > recordFile.getEndTime()?true:true;
                 if(calendar.getTimeInMillis() < recordFile.getEndTime()) {
                     return i;

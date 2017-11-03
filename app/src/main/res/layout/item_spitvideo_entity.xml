@@ -8,6 +8,7 @@
 
 
     <ImageView
+        android:id="@+id/imageView2"
         android:layout_width="60dp"
         android:layout_height="60dp"
         android:src="@mipmap/home_video1" />

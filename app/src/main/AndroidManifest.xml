@@ -121,9 +121,8 @@
 
         <activity
             android:name=".activity.PlayerBackActiviaty"
-            android:launchMode="singleTask"
-            android:screenOrientation="portrait"
-            android:windowSoftInputMode="adjustPan|stateHidden" />
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:exported="false" />
 
         <activity
             android:name=".activity.ForgetPSWActivity"

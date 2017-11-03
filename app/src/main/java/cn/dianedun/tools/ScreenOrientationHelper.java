@@ -12,7 +12,7 @@ import android.view.View.OnClickListener;
 
 import com.videogo.widget.CheckTextButton;
 
-public class ScreenOrientationHelper {
+public class ScreenOrientationHelper implements SensorEventListener {
 
     private final static String TAG = ScreenOrientationHelper.class.getSimpleName();
 
@@ -82,16 +82,16 @@ public class ScreenOrientationHelper {
             mSensors[0] = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
             mSensors[1] = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 
-//            mSensorManager.registerListener(this, mSensors[0], SensorManager.SENSOR_DELAY_NORMAL);
-//            mSensorManager.registerListener(this, mSensors[1], SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(this, mSensors[0], SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(this, mSensors[1], SensorManager.SENSOR_DELAY_NORMAL);
         }
         mButton1.setEnabled(true);
     }
 
     public void disableSensorOrientation(boolean reset) {
         if (mSensors != null) {
-//            mSensorManager.unregisterListener(this, mSensors[0]);
-//            mSensorManager.unregisterListener(this, mSensors[1]);
+            mSensorManager.unregisterListener(this, mSensors[0]);
+            mSensorManager.unregisterListener(this, mSensors[1]);
             mSensors = null;
 
             if (reset == true) {
@@ -127,15 +127,15 @@ public class ScreenOrientationHelper {
 
     public void postOnStart() {
         if (mSensors != null) {
-//            mSensorManager.registerListener(this, mSensors[0], SensorManager.SENSOR_DELAY_NORMAL);
-//            mSensorManager.registerListener(this, mSensors[1], SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(this, mSensors[0], SensorManager.SENSOR_DELAY_NORMAL);
+            mSensorManager.registerListener(this, mSensors[1], SensorManager.SENSOR_DELAY_NORMAL);
         }
     }
 
     public void postOnStop() {
         if (mSensors != null) {
-//            mSensorManager.unregisterListener(this, mSensors[0]);
-//            mSensorManager.unregisterListener(this, mSensors[1]);
+            mSensorManager.unregisterListener(this, mSensors[0]);
+            mSensorManager.unregisterListener(this, mSensors[1]);
         }
     }
 
@@ -248,25 +248,25 @@ public class ScreenOrientationHelper {
         }
     }
 
-//    @Override
-//    public void onSensorChanged(SensorEvent event) {
-//        switch (event.sensor.getType()) {
-//            case Sensor.TYPE_MAGNETIC_FIELD:
-//                mMagneticFieldValues = event.values;
-//                break;
-//
-//            case Sensor.TYPE_ACCELEROMETER:
-//                mAccelerometerValues = event.values;
-//                break;
-//
-//            default:
-//                break;
-//        }
-//
-//        calculateOrientation();
-//    }
-//
-//    @Override
-//    public void onAccuracyChanged(Sensor sensor, int accuracy) {
-//    }
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        switch (event.sensor.getType()) {
+            case Sensor.TYPE_MAGNETIC_FIELD:
+                mMagneticFieldValues = event.values;
+                break;
+
+            case Sensor.TYPE_ACCELEROMETER:
+                mAccelerometerValues = event.values;
+                break;
+
+            default:
+                break;
+        }
+
+        calculateOrientation();
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+    }
 }

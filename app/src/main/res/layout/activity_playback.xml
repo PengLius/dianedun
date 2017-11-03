@@ -20,20 +20,33 @@
             android:layout_height="wrap_content"
             android:src="@mipmap/bt_back" />
 
-        <TextView
-            android:id="@+id/ap_tv_date"
+        <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:textColor="@color/blackfont"
-            android:textSize="@dimen/content_text_s16" />
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/ap_tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/blackfont"
+                android:textSize="@dimen/content_text_s16" />
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_marginLeft="3dp"
+                android:src="@mipmap/ic_nor_blackarrbottom"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
 
         <ImageView
             android:id="@+id/av_img_selectdate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:src="@mipmap/jc_topright" />
+            android:src="@mipmap/jc_topright"
+            android:visibility="gone" />
 
     </RelativeLayout>
 
@@ -238,6 +251,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="0dp"
+                android:visibility="gone"
                 app:layout_heightPercent="25%"
                 app:layout_widthPercent="100%">
 
@@ -267,19 +281,19 @@
                         android:src="@mipmap/ic_nor_back_2" />
                 </RelativeLayout>
 
-                <RelativeLayout
-                    android:id="@+id/av_rl_playback_go"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1">
+                <!--<RelativeLayout-->
+                    <!--android:id="@+id/av_rl_playback_go"-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_weight="1">-->
 
-                    <ImageView
-                        android:id="@+id/ap_img_play"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerInParent="true"
-                        android:src="@mipmap/ic_nor_greenplay" />
-                </RelativeLayout>
+                    <!--<ImageView-->
+                        <!--android:id="@+id/ap_img_play"-->
+                        <!--android:layout_width="wrap_content"-->
+                        <!--android:layout_height="wrap_content"-->
+                        <!--android:layout_centerInParent="true"-->
+                        <!--android:src="@mipmap/ic_nor_greenplay" />-->
+                <!--</RelativeLayout>-->
 
                 <RelativeLayout
                     android:id="@+id/av_rl_playback_2"
@@ -328,7 +342,19 @@
                         android:layout_centerInParent="true"
                         android:src="@mipmap/ic_nor_nohorn" />
                 </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/av_rl_playback_go"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1">
 
+                    <ImageView
+                        android:id="@+id/ap_img_play"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:src="@mipmap/ic_nor_greenplay" />
+                </RelativeLayout>
                 <RelativeLayout
                     android:id="@+id/av_rl_playback_takephoto"
                     android:layout_width="0dp"
@@ -342,10 +368,10 @@
                         android:src="@mipmap/ic_nor_vidicon" />
                 </RelativeLayout>
 
-                <View
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"></View>
+                <!--<View-->
+                    <!--android:layout_width="0dp"-->
+                    <!--android:layout_height="match_parent"-->
+                    <!--android:layout_weight="1"></View>-->
 
                 <RelativeLayout
                     android:id="@+id/av_rl_playback_video"
@@ -380,7 +406,8 @@
                     android:id="@+id/av_rl_playback_stream"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_weight="1">
+                    android:layout_weight="1"
+                    android:visibility="gone">
 
                     <ImageView
                         android:layout_width="wrap_content"
