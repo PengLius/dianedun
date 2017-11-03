@@ -94,7 +94,7 @@ public class HisDetailsActivity extends BaseTitlActivity {
     private DetailsBean bean;
     private List<String> imgList;
     private int type = 0;
-    private String contents;
+    private String contents = "";
     private AnimationDrawable animationDrawable;
     private MediaPlayer player;
     private CountDownTimer countDownTimer;
@@ -146,6 +146,8 @@ public class HisDetailsActivity extends BaseTitlActivity {
                     } else {
                         tv_hisdetails_cl.setText(bean.getData().getRemark() + "");
                     }
+                } else if (bean.getData().getStatus() == 2) {
+                    tv_hisdetails_cl.setText("");
                 } else if (bean.getData().getStatus() == 3) {
                     tv_hisdetails_tit.setText("驳回原因：");
                     if (bean.getData().getRejectCause().equals("null")) {
@@ -172,62 +174,9 @@ public class HisDetailsActivity extends BaseTitlActivity {
                                 .getType() == 4) {
                             rl_hisdetails.setVisibility(View.VISIBLE);
                             contents = bean.getData().getAlertOptionsArray().get(i).getContents();
-                        }
-                        if (bean.getData().getAlertOptionsArray().get(i).getType() == 5) {
-                            has = new HashMap<>();
-                            has.put("contents", bean.getData().getAlertOptionsArray().get(i).getContents());
-                            has.put("type", bean.getData().getAlertOptionsArray().get(i).getOptionType() + "");
-                            adjList.add(has);
-                        }
-                    }
-                    player = MediaPlayer.create(getApplicationContext(), Uri.parse(contents));
-                    long f = player.getDuration() / 1000 / 60;
-                    long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
-                    if (f < 10) {
-                        if (m < 10) {
-                            tv_hisdetails_time.setText("0" + f + "'" + "0" + m + "\"");
-                        } else {
-                            tv_hisdetails_time.setText("0" + f + "'" + m + "\"");
-                        }
-                    } else {
-                        if (m < 10) {
-                            tv_hisdetails_time.setText(f + "'" + "0" + m + "\"");
-                        } else {
-                            tv_hisdetails_time.setText(f + "'" + m + "\"");
-                        }
-                    }
-                    rl_hisdetails.setOnClickListener(new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            if (type == 0) {
-                                player.start();
-                                countDownTimer.start();
-                                img_hisdetails_yy.setImageResource(R.drawable.animation1);
-                                animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
-                                animationDrawable.start();
-                                type = 1;
-                            } else if (type == 1) {
-                                img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
-                                player.pause();
-                                countDownTimer.pause();
-                                type = 2;
-                                animationDrawable.stop();
-                            } else {
-                                player.start();
-                                countDownTimer.resume();
-                                img_hisdetails_yy.setImageResource(R.drawable.animation1);
-                                animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
-                                animationDrawable.start();
-                                type = 1;
-                            }
-                        }
-                    });
-
-                    countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
-                        @Override
-                        public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
-                            long f = millisUntilFinished / 1000 / 60;
-                            long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                            player = MediaPlayer.create(getApplicationContext(), Uri.parse(contents));
+                            long f = player.getDuration() / 1000 / 60;
+                            long m = (player.getDuration() - (f * 1000 * 60)) / 1000;
                             if (f < 10) {
                                 if (m < 10) {
                                     tv_hisdetails_time.setText("0" + f + "'" + "0" + m + "\"");
@@ -241,45 +190,99 @@ public class HisDetailsActivity extends BaseTitlActivity {
                                     tv_hisdetails_time.setText(f + "'" + m + "\"");
                                 }
                             }
-                        }
-
-                        @Override
-                        public void onCancel(long millisUntilFinished) {
-                        }
-
-                        @Override
-                        public void onPause(long millisUntilFinished) {
-
-                        }
-
-                        @Override
-                        public void onResume(long millisUntilFinished) {
-                        }
-
-                        @Override
-                        public void onFinish() {
-                            long a = player.getDuration() / 1000 / 60;
-                            long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
-                            if (a < 10) {
-                                if (b < 10) {
-                                    tv_hisdetails_time.setText("0" + a + "'" + "0" + b + "\"");
-                                } else {
-                                    tv_hisdetails_time.setText("0" + a + "'" + b + "\"");
+                            rl_hisdetails.setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View v) {
+                                    if (type == 0) {
+                                        player.start();
+                                        countDownTimer.start();
+                                        img_hisdetails_yy.setImageResource(R.drawable.animation1);
+                                        animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
+                                        animationDrawable.start();
+                                        type = 1;
+                                    } else if (type == 1) {
+                                        img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
+                                        player.pause();
+                                        countDownTimer.pause();
+                                        type = 2;
+                                        animationDrawable.stop();
+                                    } else {
+                                        player.start();
+                                        countDownTimer.resume();
+                                        img_hisdetails_yy.setImageResource(R.drawable.animation1);
+                                        animationDrawable = (AnimationDrawable) img_hisdetails_yy.getDrawable();
+                                        animationDrawable.start();
+                                        type = 1;
+                                    }
                                 }
-                            } else {
-                                if (b < 10) {
-                                    tv_hisdetails_time.setText(a + "'" + "0" + b + "\"");
-                                } else {
-                                    tv_hisdetails_time.setText(a + "'" + b + "\"");
+                            });
+
+                            countDownTimer = new CountDownTimer(player.getDuration(), 1000) {
+                                @Override
+                                public void onTick(long millisUntilFinished) { // millisUntilFinished is the left time at *Running State*
+                                    long f = millisUntilFinished / 1000 / 60;
+                                    long m = (millisUntilFinished - (f * 1000 * 60)) / 1000;
+                                    if (f < 10) {
+                                        if (m < 10) {
+                                            tv_hisdetails_time.setText("0" + f + "'" + "0" + m + "\"");
+                                        } else {
+                                            tv_hisdetails_time.setText("0" + f + "'" + m + "\"");
+                                        }
+                                    } else {
+                                        if (m < 10) {
+                                            tv_hisdetails_time.setText(f + "'" + "0" + m + "\"");
+                                        } else {
+                                            tv_hisdetails_time.setText(f + "'" + m + "\"");
+                                        }
+                                    }
                                 }
-                            }
-                            if (animationDrawable != null) {
-                                animationDrawable.stop();
-                            }
-                            img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
-                            type = 0;
+
+                                @Override
+                                public void onCancel(long millisUntilFinished) {
+                                }
+
+                                @Override
+                                public void onPause(long millisUntilFinished) {
+
+                                }
+
+                                @Override
+                                public void onResume(long millisUntilFinished) {
+                                }
+
+                                @Override
+                                public void onFinish() {
+                                    long a = player.getDuration() / 1000 / 60;
+                                    long b = (player.getDuration() - (a * 1000 * 60)) / 1000;
+                                    if (a < 10) {
+                                        if (b < 10) {
+                                            tv_hisdetails_time.setText("0" + a + "'" + "0" + b + "\"");
+                                        } else {
+                                            tv_hisdetails_time.setText("0" + a + "'" + b + "\"");
+                                        }
+                                    } else {
+                                        if (b < 10) {
+                                            tv_hisdetails_time.setText(a + "'" + "0" + b + "\"");
+                                        } else {
+                                            tv_hisdetails_time.setText(a + "'" + b + "\"");
+                                        }
+                                    }
+                                    if (animationDrawable != null) {
+                                        animationDrawable.stop();
+                                    }
+                                    img_hisdetails_yy.setImageResource(R.mipmap.yp_bf);
+                                    type = 0;
+                                }
+                            };
+
                         }
-                    };
+                        if (bean.getData().getAlertOptionsArray().get(i).getType() == 5) {
+                            has = new HashMap<>();
+                            has.put("contents", bean.getData().getAlertOptionsArray().get(i).getContents());
+                            has.put("type", bean.getData().getAlertOptionsArray().get(i).getOptionType() + "");
+                            adjList.add(has);
+                        }
+                    }
                 }
             }
         });

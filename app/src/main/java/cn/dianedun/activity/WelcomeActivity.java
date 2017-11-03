@@ -1,5 +1,6 @@
 package cn.dianedun.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -8,12 +9,15 @@ import android.util.Log;
 import android.view.animation.AlphaAnimation;
 import android.widget.RelativeLayout;
 
+import com.yanzhenjie.permission.AndPermission;
+
 import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.tools.App;
+import cn.dianedun.tools.OtherService;
 
 
 /**
@@ -25,7 +29,7 @@ public class WelcomeActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        if((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0){
+        if ((getIntent().getFlags() & Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT) != 0) {
             finish();
             return;
         }
@@ -62,7 +66,6 @@ public class WelcomeActivity extends Activity {
         };
         //使用timer.schedule（）方法调用timerTask，定时3秒后执行run
         timer.schedule(timerTask, 3000);
-
 
     }
 }

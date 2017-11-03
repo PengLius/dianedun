@@ -6,7 +6,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.telecom.Call;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -38,7 +40,7 @@ import lecho.lib.hellocharts.view.LineChartView;
  * Created by Administrator on 2017/10/20.
  */
 
-public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickListener {
+public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickListener, View.OnTouchListener {
 
     @Bind(R.id.lcv_xgtension)
     LineChartView lcv_xgtension;
@@ -130,6 +132,8 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
     @Bind(R.id.tv_tempchart_name)
     TextView tv_tempchart_name;
 
+    @Bind(R.id.sv_gdce)
+    ScrollView sv_gdce;
 
     private RealTimeConBean bean;
     private String RoomId;
@@ -146,37 +150,41 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
             maxIl = getMaxNumb(bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList());
             if (getIntent().getStringExtra("types").equals("0")) {
                 tv_gdxg_amax.setText(getmMax1Numb(bean.getData().getVaList()) + "KV");
-                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "KV");
                 tv_gdxg_bmax.setText(getmMax1Numb(bean.getData().getVbList()) + "KV");
-                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "KV");
                 tv_gdxg_cmax.setText(getmMax1Numb(bean.getData().getVcList()) + "KV");
-                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "KV");
                 tv_gdxn_abmax.setText(getmMax1Numb(bean.getData().getVabList()) + "KV");
-                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "KV");
                 tv_gdxn_bcmax.setText(getmMax1Numb(bean.getData().getVbcList()) + "KV");
-                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "KV");
                 tv_gdxn_acmax.setText(getmMax1Numb(bean.getData().getVcaList()) + "KV");
+
+                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "KV");
+                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "KV");
+                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "KV");
+                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "KV");
+                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "KV");
                 tv_gdxn_acmean.setText(getmMeanNumb(bean.getData().getVcaList()) + "KV");
             } else {
                 tv_gdxg_amax.setText(getmMax1Numb(bean.getData().getVaList()) + "V");
-                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "V");
                 tv_gdxg_bmax.setText(getmMax1Numb(bean.getData().getVbList()) + "V");
-                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "V");
                 tv_gdxg_cmax.setText(getmMax1Numb(bean.getData().getVcList()) + "V");
-                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "V");
                 tv_gdxn_abmax.setText(getmMax1Numb(bean.getData().getVabList()) + "V");
-                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "V");
                 tv_gdxn_bcmax.setText(getmMax1Numb(bean.getData().getVbcList()) + "V");
-                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "V");
                 tv_gdxn_acmax.setText(getmMax1Numb(bean.getData().getVcaList()) + "V");
+
+                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "V");
+                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "V");
+                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "V");
+                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "V");
+                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "V");
                 tv_gdxn_acmean.setText(getmMeanNumb(bean.getData().getVcaList()) + "V");
 
             }
+
             tv_gdil_amax.setText(getmMax1Numb(bean.getData().getIaList()) + "A");
-            tv_gdil_amean.setText(getmMeanNumb(bean.getData().getIaList()) + "A");
             tv_gdil_bmax.setText(getmMax1Numb(bean.getData().getIbList()) + "A");
-            tv_gdil_bmean.setText(getmMeanNumb(bean.getData().getIbList()) + "A");
             tv_gdil_cmax.setText(getmMax1Numb(bean.getData().getIcList()) + "A");
+
+            tv_gdil_amean.setText(getmMeanNumb(bean.getData().getIaList()) + "A");
+            tv_gdil_bmean.setText(getmMeanNumb(bean.getData().getIbList()) + "A");
             tv_gdil_cmean.setText(getmMeanNumb(bean.getData().getIcList()) + "A");
 
             List<String> xList = new ArrayList<>();
@@ -227,6 +235,9 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         }
         initRefreshLayout();
         srl_gdce.autoRefresh();
+        lcv_xgtension.setOnTouchListener(this);
+        lcv_xntension.setOnTouchListener(this);
+        lcv_electricity.setOnTouchListener(this);
     }
 
     private void initRefreshLayout() {
@@ -297,7 +308,13 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         chart.setZoomType(ZoomType.HORIZONTAL);
         chart.setLineChartData(datas);
         Viewport v = new Viewport(chart.getMaximumViewport());
-        v.top = max + 10;
+        if(max<5){
+            v.top = max + 5;
+        }else if(max<50){
+            v.top = max + 10;
+        }else{
+            v.top = max + 20;
+        }
         v.bottom = 0;
         chart.setMaximumViewport(v);
         v.left = 0;
@@ -426,13 +443,17 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
     }
 
     public String getmMeanNumb(List<String> numbList) {
-        Float a = Float.valueOf(0);
-        for (int i = 0; i < numbList.size(); i++) {
-            Float numb = Float.parseFloat(numbList.get(i));
-            a = numb + a;
+        if (numbList.size() > 0) {
+            Float a = Float.valueOf(0);
+            for (int i = 0; i < numbList.size(); i++) {
+                Float numb = Float.parseFloat(numbList.get(i));
+                a = numb + a;
+            }
+            String b = new DecimalFormat("0.00").format(a / numbList.size());
+            return b;
+        } else {
+            return "0";
         }
-        String b = new DecimalFormat("0.00").format(a / numbList.size());
-        return b;
     }
 
     public String getmMax1Numb(List<String> numbList) {
@@ -451,5 +472,25 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
     protected void onDestroy() {
         treadoff = false;
         super.onDestroy();
+    }
+
+    public boolean onTouch(View v, MotionEvent event) {
+        int action = event.getAction();
+        float mLastX = 0;
+        if (action == MotionEvent.ACTION_DOWN) {
+            // 记录点击到ViewPager时候，手指的X坐标
+            mLastX = event.getX();
+        }
+        if (action == MotionEvent.ACTION_MOVE) {
+            // 超过阈值
+            if (Math.abs(event.getX() - mLastX) > 600f) {
+                sv_gdce.requestDisallowInterceptTouchEvent(true);
+            }
+        }
+        if (action == MotionEvent.ACTION_UP) {
+            // 用户抬起手指，恢复父布局状态
+            sv_gdce.requestDisallowInterceptTouchEvent(false);
+        }
+        return false;
     }
 }

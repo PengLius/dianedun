@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
@@ -71,6 +73,9 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
 
     @Bind(R.id.tv_tempchart_max)
     TextView tv_tempchart_max;
+
+    @Bind(R.id.sv_tempchart)
+    ScrollView sv_tempchart;
 
     private String RoomId;
     private String deviceNum;
@@ -288,13 +293,17 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
     }
 
     public String getmMeanNumb(List<String> numbList) {
-        Float a = Float.valueOf(0);
-        for (int i = 0; i < numbList.size(); i++) {
-            Float numb = Float.parseFloat(numbList.get(i));
-            a = numb + a;
+        if (numbList.size() > 0) {
+            Float a = Float.valueOf(0);
+            for (int i = 0; i < numbList.size(); i++) {
+                Float numb = Float.parseFloat(numbList.get(i));
+                a = numb + a;
+            }
+            String b = new DecimalFormat("0.00").format(a / numbList.size());
+            return b;
+        } else {
+            return "0";
         }
-        String b = new DecimalFormat("0.00").format(a / numbList.size());
-        return b;
     }
 
     @Override

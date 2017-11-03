@@ -113,7 +113,12 @@ public class HisJbActivity extends BaseTitlActivity {
             @Override
             public void onError(String result) {
                 srl_hisjb.finishRefresh();
-                showToast(result);
+                if (result.equals("无记录")) {
+                    ll_hisjb_null.setVisibility(View.VISIBLE);
+                    srl_hisjb.setVisibility(View.GONE);
+                } else {
+                    showToast(result);
+                }
             }
 
             @Override

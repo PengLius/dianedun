@@ -119,7 +119,12 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
             @Override
             public void onError(String result) {
                 srl_hisworkorder.finishRefresh();
-                showToast(result);
+                if (result.equals("无记录")) {
+                    ll_hisgd_null.setVisibility(View.VISIBLE);
+                    srl_hisworkorder.setVisibility(View.GONE);
+                } else {
+                    showToast(result);
+                }
             }
 
             @Override

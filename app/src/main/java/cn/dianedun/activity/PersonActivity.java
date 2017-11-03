@@ -186,7 +186,6 @@ public class PersonActivity extends BaseTitlActivity {
 
                     } else {
                         // 申请权限。
-                        Log.e("aaa", "没权限");
                         AndPermission.with(PersonActivity.this)
                                 .requestCode(100)
                                 .permission(android.Manifest.permission.CAMERA)

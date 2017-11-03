@@ -1,8 +1,11 @@
 package cn.dianedun.activity;
 
+import android.Manifest;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.vise.xsnow.event.EventSubscribe;
+import com.yanzhenjie.permission.AndPermission;
 
 import java.util.HashMap;
 
@@ -17,6 +20,7 @@ import cn.dianedun.fragment.VideoFragment;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppManager;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.dianedun.tools.OtherService;
 import cn.dianedun.view.BottomBarView.BottomBar;
 import cn.dianedun.view.BottomBarView.BottomBarTab;
 import me.yokeyword.fragmentation.SupportFragment;
@@ -36,8 +40,6 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppManager.getInstance().addActivity(MainActivity.this);
-
-
     }
 
     @Override
@@ -72,7 +74,7 @@ public class MainActivity extends BaseActivity {
         mBottomBar.setOnTabSelectedListener(new BottomBar.OnTabSelectedListener() {
             @Override
             public void onTabSelected(int position, int prePosition) {
-                    showHideFragment(mFragments[position], mFragments[prePosition]);
+                showHideFragment(mFragments[position], mFragments[prePosition]);
             }
 
             @Override

@@ -193,6 +193,8 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
             @Override
             public void onClick(View v) {
                 pop.dismiss();
+                nameList.clear();
+                tv_amendgd_name.setText("");
             }
         });
         lv_itemadress = (ListView) view2.findViewById(R.id.lv_itemadress);
