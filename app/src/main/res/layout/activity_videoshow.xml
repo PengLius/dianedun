@@ -517,7 +517,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/av_ll_set"
+                    android:id="@+id/av_ll_light"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginBottom="1dp"
@@ -529,15 +529,16 @@
                     android:orientation="vertical">
 
                     <ImageView
+                        android:id="@+id/av_img_light"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:src="@mipmap/ic_nor_set" />
+                        android:src="@mipmap/ic_nor_openlight" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="设置"
+                        android:text="灯控"
                         android:textColor="@color/white"
                         android:textSize="@dimen/content_text_s14" />
 

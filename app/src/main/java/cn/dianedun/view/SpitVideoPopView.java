@@ -227,13 +227,13 @@ public class SpitVideoPopView extends PopupWindow {
         mRecycleView.setAdapter(new CommonAdapter<CarmerListBean.DataBean.ResultBean>(mContentView.getContext(),R.layout.item_spitvideo_entity,mDeviceListInfo) {
             @Override
             protected void convert(ViewHolder holder, CarmerListBean.DataBean.ResultBean ezDeviceInfo, final int position) {
-                int pos  = position + 1;
+                final int pos  = position + 1;
                 holder.setText(R.id.ise_tv_videoname, pos + "号机");
                 holder.setOnClickListener(R.id.ise_ll_container, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         if (mOnVideoSelect!=null)
-                            mOnVideoSelect.onVideoSelect(position);
+                            mOnVideoSelect.onVideoSelect(position,pos);
                         dismiss();
                     }
                 });
@@ -243,14 +243,14 @@ public class SpitVideoPopView extends PopupWindow {
             @Override
             public void onClick(View v) {
                 if (mOnVideoSelect!=null)
-                    mOnVideoSelect.onVideoSelect(-1);
+                    mOnVideoSelect.onVideoSelect(-1,0);
             }
         });
         mTv9box.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (mOnVideoSelect!=null)
-                    mOnVideoSelect.onVideoSelect(-2);
+                    mOnVideoSelect.onVideoSelect(-2,0);
             }
         });
 
@@ -264,7 +264,7 @@ public class SpitVideoPopView extends PopupWindow {
 
     public interface OnVideoSelect {
         //-2 9分屏/-1 4分屏/大于0选中
-        void onVideoSelect(int tag);
+        void onVideoSelect(int tag,int pos);
     }
 
     private void autoAdjustArrowPos() {

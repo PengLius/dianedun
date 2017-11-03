@@ -209,11 +209,11 @@ public class SpitVideoFragment extends SupportFragment {
     }
 
     public interface OnSpitVideoSelect {
-        void onVideoSelect(EZDeviceInfo deviceInfo);
+        void onVideoSelect(EZDeviceInfo deviceInfo,int pos);
     }
 
     private SparseArray<VideoBrother> mSpitPlayerArr = new SparseArray<>();
-    private void buildChildPlayer(int key, int parentId, View contentView, final EZDeviceInfo deviceInfo){
+    private void buildChildPlayer(final int key, int parentId, View contentView, final EZDeviceInfo deviceInfo){
         RelativeLayout rlVideoContainer = (RelativeLayout)contentView.findViewById(parentId);
 
         if (deviceInfo.getStatus() != 1){
@@ -230,7 +230,7 @@ public class SpitVideoFragment extends SupportFragment {
             @Override
             public void onClick(View v) {
                 if (mOnSpitVideoSelect!=null){
-                    mOnSpitVideoSelect.onVideoSelect(deviceInfo);
+                    mOnSpitVideoSelect.onVideoSelect(deviceInfo,key + 1);
                 }
             }
         });

@@ -61,7 +61,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="30dp"
                         android:drawablePadding="5dp"
-                        android:drawableTop="@mipmap/ic_nor_deepblue4box"
+                        android:drawableTop="@mipmap/ic_nor_deepblue9box"
                         android:gravity="center"
                         android:text="九分屏"
                         android:textColor="#303F9F" />

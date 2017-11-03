@@ -99,6 +99,7 @@ import cn.dianedun.adapter.SpitFragmentAdapter;
 import cn.dianedun.base.BaseActivity;
 import cn.dianedun.bean.AccesstokenBean;
 import cn.dianedun.bean.CarmerListBean;
+import cn.dianedun.bean.CommonBean;
 import cn.dianedun.fragment.SpitVideoFragment;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
@@ -149,8 +150,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Bind(R.id.av_ll_playback)
     LinearLayout mLLPlayBack;
 
-    @Bind(R.id.av_ll_set)
-    LinearLayout mLLSet;
+    @Bind(R.id.av_ll_light)
+    LinearLayout mLLlight;
 
     @Bind(R.id.realplay_sv)
     SurfaceView mRealPlaySv;
@@ -200,42 +201,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     /**
      * //回放相关---------------
      */
-//
-//    @Bind(R.id.av_ezuiplayerback)
-//    EZUIPlayer mEzPlayerBack;
-//
-//    @Bind(R.id.av_ll_playbackcontainer)
-//    LinearLayout mLlPlayBackContainer;
-//
-//    @Bind(R.id.av_rl_playback_1_)
-//    RelativeLayout mRlPlayback_1_;
-//
-//    @Bind(R.id.av_rl_playback_2_)
-//    RelativeLayout mRlPlayback_2_;
-//
-//    @Bind(R.id.av_rl_playback_1)
-//    RelativeLayout mRlPlayback_1;
-//
-//    @Bind(R.id.av_rl_playback_2)
-//    RelativeLayout mRlPlayback_2;
-//
-//    @Bind(R.id.av_rl_playback_go)
-//    RelativeLayout mRlPlayback_go;
-//
-//    @Bind(R.id.av_rl_playback_voice)
-//    RelativeLayout mRlPlayBackVoice;
-//
-//    @Bind(R.id.av_rl_playback_takephoto)
-//    RelativeLayout mRlPlayBackTakePhoto;
-//
-//    @Bind(R.id.av_rl_playback_video)
-//    RelativeLayout mRlPlayBackVideo;
-//
-//    @Bind(R.id.av_rl_playback_stream)
-//    RelativeLayout mRlPlayBackStream;
-//
-//    @Bind(R.id.av_timershaftbar)
-//    TimerShaftBar mTimerShaftBar;
 
     private static final String TAG = "RealPlayerActivity";
     /**
@@ -288,8 +253,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     private int mOrientation = Configuration.ORIENTATION_PORTRAIT;
     private int mForceOrientation = 0;
     private Rect mRealPlayRect = null;
-
-
 
     /**
      * 演示点预览控制对象
@@ -374,6 +337,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     private SurfaceHolder mRealPlaySh = null;
     private CustomTouchListener mRealPlayTouchListener = null;
+    private String mDepartName;
     @Override
     protected void initView() {
         super.initView();
@@ -444,6 +408,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     public void onDateSet(Date date, int type) {
         Log.e("d","d");
         String url = "ezopen://open.ys7.com/";
+
         if (mDeviceInfo.getIsEncrypt() == 1){
             //加密
             url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
@@ -452,9 +417,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        url += "?begin=" + calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
-
-        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url);
+        url += "?begin=";
+        String prefixStr = url;
+        url += calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
+        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url,prefixStr,date);
     }
 
     private String getMonth(Calendar calendar){
@@ -773,7 +741,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             }
             setRealPlayFailUI("设备不在线");
         } else {
-            if (mStatus == RealPlayStatus.STATUS_INIT || mStatus == RealPlayStatus.STATUS_PAUSE
+            if (mStatus == RealPlayStatus.STATUS_INIT || mStatus == RealPlayStatus.STATUS_PAUSE || mStatus == RealPlayStatus.STATUS_STOP
                     || mStatus == RealPlayStatus.STATUS_DECRYPT) {
                 // 开始播放
                 startRealPlay();
@@ -800,13 +768,15 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
     }
 
+    private String mDepartId;
     private AccesstokenBean.DataBean mAccessTokenBean;
     @Override
     protected void onActivityLoadFinish() {
         super.onActivityLoadFinish();
+        mDepartId = getIntent().getStringExtra("id");
         ViseApi api = new ViseApi.Builder(this).build();
         HashMap hashMap = new HashMap();
-        hashMap.put("departId",getIntent().getStringExtra("id"));
+        hashMap.put("departId",mDepartId);
         api.apiPost(AppConfig.GETACCESSTOKEN,App.getInstance().getToken(),hashMap,false,new ApiCallback<AccesstokenBean.DataBean>(){
             @Override
             public void onNext(AccesstokenBean.DataBean dataBean) {
@@ -1024,6 +994,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mLLStream.setEnabled(false);
             mLLTalkBack.setEnabled(false);
             mLLControl.setEnabled(false);
+            mLLPlayBack.setEnabled(false);
             if (mDeviceInfo.getStatus() == 1) {
 //                mRealPlayQualityBtn.setEnabled(true);
             } else {
@@ -1084,34 +1055,16 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
         hideControlRlAndFullOperateBar(true);
 
+        mRealPlayCaptureBtn.setEnabled(false);
+        mRealPlayRecordBtn.setEnabled(false);
+        mLLVoice.setEnabled(false);
+        mLLStream.setEnabled(false);
+        mLLTalkBack.setEnabled(false);
+        mLLControl.setEnabled(false);
+        mLLPlayBack.setEnabled(true);
         if (mCameraInfo != null && mDeviceInfo != null) {
             closePtzPopupWindow();
             setFullPtzStopUI(false);
-
-            mRealPlayCaptureBtn.setEnabled(false);
-            mRealPlayRecordBtn.setEnabled(false);
-            mLLVoice.setEnabled(false);
-            mLLStream.setEnabled(false);
-            mLLTalkBack.setEnabled(false);
-            mLLControl.setEnabled(false);
-            if (mDeviceInfo.getStatus() == 1 && (mEZPlayer == null)) {
-//                mRealPlayQualityBtn.setEnabled(true);
-            } else {
-//                mRealPlayQualityBtn.setEnabled(false);
-            }
-//            mRealPlayPtzBtn.setEnabled(false);
-            if (mDeviceInfo.getStatus() == 1) {
-//                mRealPlayPrivacyBtn.setEnabled(true);
-//                mRealPlaySslBtn.setEnabled(true);
-            } else {
-//                mRealPlayPrivacyBtn.setEnabled(false);
-//                mRealPlaySslBtn.setEnabled(false);
-            }
-
-//            mRealPlayFullPlayBtn.setBackgroundResource(R.drawable.play_full_play_selector);
-//            mRealPlayFullCaptureBtn.setEnabled(false);
-//            mRealPlayFullRecordBtn.setEnabled(false);
-//            mRealPlayFullPtzBtn.setEnabled(false);
         }
     }
 
@@ -1133,7 +1086,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
      */
     private void showType() {
         if (Config.LOGGING && mEZPlayer != null) {
-            Utils.showLog(VideoShowActivity.this, "getType " + ",取流耗时：" + (mStopTime - mStartTime));
+//            Utils.showLog(VideoShowActivity.this, "getType " + ",取流耗时：" + (mStopTime - mStartTime));
         }
     }
 
@@ -1162,33 +1115,18 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         setStopLoading();
         hideControlRlAndFullOperateBar(true);
 //        mRealPlayBtn.setBackgroundResource(R.drawable.play_play_selector);
+        mRealPlayCaptureBtn.setEnabled(false);
+        mRealPlayRecordBtn.setEnabled(false);
+        mLLVoice.setEnabled(false);
+        mLLStream.setEnabled(false);
+        mLLTalkBack.setEnabled(false);
+        mLLControl.setEnabled(false);
+        mLLPlayBack.setEnabled(true);
+
         if (mCameraInfo != null && mDeviceInfo != null) {
             closePtzPopupWindow();
             setFullPtzStopUI(false);
-            mRealPlayCaptureBtn.setEnabled(false);
-            mRealPlayRecordBtn.setEnabled(false);
-            mLLVoice.setEnabled(false);
-            mLLStream.setEnabled(false);
-            mLLTalkBack.setEnabled(false);
-            mLLControl.setEnabled(false);
-            if (mDeviceInfo.getStatus() == 1) {
-//                mRealPlayQualityBtn.setEnabled(true);
-            } else {
-//                mRealPlayQualityBtn.setEnabled(false);
-            }
-//            mRealPlayFullPtzBtn.setEnabled(false);
-            if (mDeviceInfo.getStatus() == 1) {
-//                mRealPlayPrivacyBtn.setEnabled(true);
-//                mRealPlaySslBtn.setEnabled(true);
-            } else {
-//                mRealPlayPrivacyBtn.setEnabled(false);
-//                mRealPlaySslBtn.setEnabled(false);
-            }
 
-//            mRealPlayFullPlayBtn.setBackgroundResource(R.drawable.play_full_play_selector);
-//            mRealPlayFullCaptureBtn.setEnabled(false);
-//            mRealPlayFullRecordBtn.setEnabled(false);
-//            mRealPlayPtzBtn.setEnabled(false);
         }
     }
 
@@ -1264,7 +1202,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     }
 
     @Override
-    public void onVideoSelect(EZDeviceInfo deviceInfo) {
+    public void onVideoSelect(EZDeviceInfo deviceInfo,int pos) {
         m4BoxOr9Box = null;
         removeSpitPlayer();
         closeSpitPopupWindow();
@@ -1273,6 +1211,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mDeviceInfo = deviceInfo;
         mCameraInfo = EZUtils.getCameraInfoFromDevice(mDeviceInfo, 0);
         mEZPlayer = getOpenSDK().createPlayer(mCameraInfo.getDeviceSerial(), mCameraInfo.getCameraNo());
+        mTvPlaces.setText(mDepartName + pos  + "号机");
         startRealPlay();
     }
 
@@ -1328,6 +1267,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     protected void initData() {
         super.initData();
         // 保持屏幕常亮
+        mDepartName = getIntent().getStringExtra("place");
+        mTvPlaces.setText(mDepartName + getIntent().getStringExtra("pos")  + "号机");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 //        initTitleBar();
 //        initRealPlayPageLy();
@@ -2278,11 +2219,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     private void onOrientationChanged() {
         updateOperatorUI();
-        setRealPlaySvLayout();
+//        setRealPlaySvLayout();
         updateCaptureUI();
         updateTalkUI();
         updatePtzUI();
     }
+
     private void updatePtzUI() {
         if (!mIsOnPtz) {
             return;
@@ -2678,6 +2620,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mLLStream.setEnabled(true);
             mLLTalkBack.setEnabled(true);
             mLLControl.setEnabled(true);
+            mLLPlayBack.setEnabled(true);
         }
 
 
@@ -2759,16 +2702,71 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mStatus != RealPlayStatus.STATUS_STOP) {
             mIsOnStop = true;
             stopRealPlay();
-            mStatus = RealPlayStatus.STATUS_PAUSE;
+            mStatus = RealPlayStatus.STATUS_STOP;
             setRealPlayStopUI();
         } else {
             setStopLoading();
         }
         mRealPlaySv.setVisibility(View.INVISIBLE);
     }
+    private int mLightCmd = 0; // 0-关 1-开
+
+    @Bind(R.id.av_img_light)
+    ImageView mImgLight;
+
+    private boolean mStatusLight = false;
     @Override
     protected void bindEvent() {
         super.bindEvent();
+        mLLlight.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mStatusLight){
+                    return;
+                }
+                mStatusLight = true;
+                Toast.makeText(VideoShowActivity.this, "正在灯控操作中", Toast.LENGTH_LONG).show();
+                ViseApi api = new ViseApi.Builder(VideoShowActivity.this).build();
+                HashMap hashMap = new HashMap();
+                hashMap.put("departId",mDepartId);
+                hashMap.put("cmd",mLightCmd);
+                api.post(AppConfig.CONTROLLIGHT,App.getInstance().getToken(),hashMap,false,new ApiCallback<CommonBean>(){
+                    @Override
+                    public void onNext(CommonBean dataBean) {
+                        if (dataBean.getCode() == 0){
+                            showToast("操作成功");
+                            if (mLightCmd == 0){
+                                mLightCmd = 1;
+                                mImgLight.setImageResource(R.mipmap.ic_nor_closelight);
+                            }else{
+                                mLightCmd = 0;
+                                mImgLight.setImageResource(R.mipmap.ic_nor_openlight);
+                            }
+                        }else{
+                            showToast(dataBean.getMsg());
+                        }
+                        mStatusLight = false;
+                    }
+
+                    @Override
+                    public void onError(ApiException e) {
+                        showToast(e.getMessage());
+                        mStatusLight = false;
+//                        setRealPlayFailUI("暂无设备在线");
+                    }
+
+                    @Override
+                    public void onStart() {
+
+                    }
+
+                    @Override
+                    public void onCompleted() {
+
+                    }
+                });
+            }
+        });
         mLLPlayBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -2967,6 +2965,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mCameraInfo == null) {
             return;
         }
+
+        EZUtils.updateVideo(this,recordFilePath);
 
         // 设置录像按钮为check状态
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -3184,7 +3184,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
                             // 可以采用deviceSerial+时间作为文件命名，demo中简化，只用时间命名
                             java.util.Date date = new java.util.Date();
-                            final String path = Environment.getExternalStorageDirectory().getPath() + "/EZOpenSDK/CapturePicture/" + String.format("%tY", date)
+                            final String path = Environment.getExternalStorageDirectory().getPath() + "/DianeDun/CapturePicture/" + String.format("%tY", date)
                                     + String.format("%tm", date) + String.format("%td", date) + "/"
                                     + String.format("%tH", date) + String.format("%tM", date) + String.format("%tS", date) + String.format("%tL", date) +".jpg";
 
@@ -3251,7 +3251,15 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     }
 
 
-
+    @Override
+    protected void onPause() {
+        super.onPause();
+        if (mStatus != RealPlayStatus.STATUS_PAUSE) {
+            stopRealPlay();
+            mStatus = RealPlayStatus.STATUS_PAUSE;
+            setRealPlayStopUI();
+        }
+    }
 
     /**
      * 获取摄像头列表

@@ -159,7 +159,7 @@ public class VideoFragment extends BaseTitlFragment {
     boolean mInitLoad = false;
 
     private void initRefreshLayout(){
-        mRefreshLayout.setLoadmoreFinished(true);
+        mRefreshLayout.setEnableLoadmore(false);
         mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
             @Override
             public void onRefresh(RefreshLayout refreshlayout) {
@@ -184,22 +184,26 @@ public class VideoFragment extends BaseTitlFragment {
                                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true,bean.getId());
                             spitVideoPopView.setOnVideoSelect(new SpitVideoPopView.OnVideoSelect() {
                                 @Override
-                                public void onVideoSelect(int tag) {
+                                public void onVideoSelect(int tag,int pos) {
                                     Intent intent = new Intent(_mActivity, VideoShowActivity.class);
                                     intent.putExtra("id", bean.getId());
+                                    intent.putExtra("place",bean.getDepartname());
                                     intent.putExtra("spit", tag);
+                                    intent.putExtra("pos", String.valueOf(pos));
                                     startActivity(intent);
                                 }
                             });
                             spitVideoPopView.showPopupWindow(v);
                         }
                     });
-                    holder.setText(R.id.ic_tv_places,bean.getAddress() + bean.getDepartname());
+                    holder.setText(R.id.ic_tv_places,bean.getDepartname());
                     holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             Intent intent = new Intent(_mActivity, VideoShowActivity.class);
                             intent.putExtra("id", bean.getId());
+                            intent.putExtra("place",bean.getDepartname());
+                            intent.putExtra("pos", "1");
                             startActivity(intent);
                         }
                     });

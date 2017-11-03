@@ -1,10 +1,13 @@
 package cn.dianedun.tools;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.widget.ImageView;
 
@@ -57,8 +60,6 @@ public class EZUtils {
                 out.close();
                 out = null;
             }
-
-
         } catch (FileNotFoundException e) {
 //            throw new InnerException(e.getLocalizedMessage());
             e.printStackTrace();
@@ -77,6 +78,33 @@ public class EZUtils {
         }
     }
 
+    /**
+     * 将视频插入图库
+     * @param url 视频路径地址
+     */
+    public static void updateVideo(Context context,String url){
+        File file=new File(url);
+        //获取ContentResolve对象，来操作插入视频
+        ContentResolver localContentResolver = context.getContentResolver();
+        //ContentValues：用于储存一些基本类型的键值对
+        ContentValues localContentValues = getVideoContentValues(context, file, System.currentTimeMillis());
+        //insert语句负责插入一条新的纪录，如果插入成功则会返回这条记录的id，如果插入失败会返回-1。
+        Uri localUri = localContentResolver.insert(MediaStore.Video.Media.EXTERNAL_CONTENT_URI,localContentValues);
+    }
+
+    //再往数据库中插入数据的时候将，将要插入的值都放到一个ContentValues的实例当中
+    public static ContentValues getVideoContentValues(Context paramContext, File paramFile, long paramLong){
+        ContentValues localContentValues = new ContentValues();
+        localContentValues.put("title", paramFile.getName());
+        localContentValues.put("_display_name", paramFile.getName());
+        localContentValues.put("mime_type", "video/3gp");
+        localContentValues.put("datetaken", Long.valueOf(paramLong));
+        localContentValues.put("date_modified", Long.valueOf(paramLong));
+        localContentValues.put("date_added", Long.valueOf(paramLong));
+        localContentValues.put("_data", paramFile.getAbsolutePath());
+        localContentValues.put("_size", Long.valueOf(paramFile.length()));
+        return localContentValues;
+    }
 
     public static Object getPrivateMethodInvoke(Object instance, /*Class destClass,*/ String methodName,
                                                 Class<?>[] parameterClass, Object... args) throws Exception {
