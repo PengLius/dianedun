@@ -408,6 +408,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     public void onDateSet(Date date, int type) {
         Log.e("d","d");
         String url = "ezopen://open.ys7.com/";
+
         if (mDeviceInfo.getIsEncrypt() == 1){
             //加密
             url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
@@ -416,10 +417,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
-        url += "?begin=" + calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
+        url += "?begin=";
+        String prefixStr = url;
+        url += calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
         int month = calendar.get(Calendar.MONTH) + 1;
         String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
-        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url,dateStr);
+        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url,prefixStr,date);
     }
 
     private String getMonth(Calendar calendar){
@@ -2711,12 +2714,17 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Bind(R.id.av_img_light)
     ImageView mImgLight;
 
+    private boolean mStatusLight = false;
     @Override
     protected void bindEvent() {
         super.bindEvent();
         mLLlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mStatusLight){
+                    return;
+                }
+                mStatusLight = true;
                 Toast.makeText(VideoShowActivity.this, "正在灯控操作中", Toast.LENGTH_LONG).show();
                 ViseApi api = new ViseApi.Builder(VideoShowActivity.this).build();
                 HashMap hashMap = new HashMap();
@@ -2737,11 +2745,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                         }else{
                             showToast(dataBean.getMsg());
                         }
+                        mStatusLight = false;
                     }
 
                     @Override
                     public void onError(ApiException e) {
                         showToast(e.getMessage());
+                        mStatusLight = false;
 //                        setRealPlayFailUI("暂无设备在线");
                     }
 

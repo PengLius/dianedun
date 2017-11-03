@@ -20,7 +20,6 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -29,15 +28,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.bigkoo.alertview.AlertView;
-import com.bigkoo.alertview.OnItemClickListener;
 import com.ezvizuikit.open.EZUIError;
 import com.ezvizuikit.open.EZUIKit;
-import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.exception.InnerException;
-import com.videogo.openapi.EZConstants;
 import com.videogo.openapi.bean.EZRecordFile;
-import com.videogo.realplay.RealPlayStatus;
 import com.videogo.util.LocalInfo;
 import com.videogo.util.LogUtil;
 import com.videogo.util.MediaScanner;
@@ -46,8 +40,10 @@ import com.videogo.util.SDCardUtil;
 import com.videogo.util.Utils;
 import com.videogo.widget.CheckTextButton;
 import com.videogo.widget.TitleBar;
+
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -59,6 +55,9 @@ import cn.dianedun.tools.AudioPlayUtil;
 import cn.dianedun.tools.EZUtils;
 import cn.dianedun.tools.ScreenOrientationHelper;
 import cn.dianedun.tools.WindowSizeChangeNotifier;
+import cn.dianedun.view.DateTimeDialog;
+import cn.dianedun.view.DateTimeDialogOnlyTime;
+import cn.dianedun.view.DateTimeDialogOnlyYMD;
 import cn.dianedun.view.EZUIPlayer.EZUIPlayer;
 import cn.dianedun.view.timeshaftbar.TimerShaftBar;
 import cn.dianedun.view.timeshaftbar.TimerShaftRegionItem;
@@ -70,7 +69,9 @@ import static cn.dianedun.activity.VideoShowActivity.MSG_PLAY_UI_UPDATE;
  * Created by Administrator on 2017/10/14.
  */
 
-public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUIPlayerCallBack ,WindowSizeChangeNotifier.OnWindowSizeChangedListener {
+public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUIPlayerCallBack ,
+        DateTimeDialogOnlyYMD.MyOnDateSetListener, DateTimeDialogOnlyTime.MyOnDateSetListener, DateTimeDialog.MyOnDateSetListener,
+        WindowSizeChangeNotifier.OnWindowSizeChangedListener {
 
     @Bind(R.id.av_img_back)
     ImageView mImgBack;
@@ -182,6 +183,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     public static final String APPKEY = "AppKey";
     public static final String AccessToekn = "AccessToekn";
     public static final String PLAY_URL = "play_url";
+    public static final String PLAY_PRE_URL = "PLAY_PRE_URL";
     public static final String PLAY_DATE = "play_date";
     /**
      * onresume时是否恢复播放
@@ -189,17 +191,13 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     private boolean isResumePlay = false;
 
     /**
-     * 开发者申请的Appkey
-     */
-    private String mAppkey;
-    /**
      * 授权accesstoken
      */
     private String mAccesstoken;
     /**
      * 播放url：ezopen协议
      */
-    private String mPlayUrl;
+    private String mPlayUrl,mPlayPreUrl;
 
     /**
      * 开启回放
@@ -208,11 +206,12 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
      * @param accesstoken 开发者登录授权的accesstoken
      * @param url         预览url
      */
-    public static void startPlayBackActivity(Context context,String accesstoken, String url,String dateStr) {
+    public static void startPlayBackActivity(Context context,String accesstoken, String url,String prefixStr,Date date) {
         Intent intent = new Intent(context, PlayerBackActiviaty.class);
         intent.putExtra(AccessToekn, accesstoken);
         intent.putExtra(PLAY_URL, url);
-        intent.putExtra(PLAY_DATE, dateStr);
+        intent.putExtra(PLAY_PRE_URL, prefixStr);
+        intent.putExtra(PLAY_DATE, date);
         context.startActivity(intent);
     }
 
@@ -225,12 +224,39 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     LocalInfo mLocalInfo = null;
 
     @Override
+    public void onDateSet(Date date, int type) {
+        mCurDate = date;
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        String url = mPlayPreUrl + calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        mTvTitleDate.setText(calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日");
+        mEZUiPlayBack.setUrl(url);
+    }
+    private String getMonth(Calendar calendar){
+        int month = calendar.get(Calendar.MONTH) + 1;
+        if (month < 10){
+            return "0" + month;
+        }
+        return String.valueOf(month);
+    }
+    @Override
+    public void onDateSet(Date date) {
+
+    }
+
+    private Date mCurDate;
+    @Override
     protected void initView() {
         super.initView();
-        mAppkey = getIntent().getStringExtra(APPKEY);
         mAccesstoken = getIntent().getStringExtra(AccessToekn);
         mPlayUrl = getIntent().getStringExtra(PLAY_URL);
-        mTvTitleDate.setText(getIntent().getStringExtra(PLAY_DATE));
+        mPlayPreUrl = getIntent().getStringExtra(PLAY_PRE_URL);
+        mCurDate = (Date) getIntent().getSerializableExtra(PLAY_DATE);
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(mCurDate);
+        int month = calendar.get(Calendar.MONTH) + 1;
+        mTvTitleDate.setText(calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日");
         mLocalInfo = LocalInfo.getInstance();
         mEZUiPlayBack.setbPlayBackUse(true);
         DisplayMetrics metric = new DisplayMetrics();
@@ -357,6 +383,12 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     @Override
     protected void bindEvent() {
         super.bindEvent();
+//        mRlPlayback_1.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//            }
+//        });
         mCtbFullscreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -444,6 +476,8 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             @Override
             public void onClick(View v) {
                 //选择日期
+                DateTimeDialog dateTimeDialog = new DateTimeDialog(PlayerBackActiviaty.this, mCurDate, PlayerBackActiviaty.this, 0);
+                dateTimeDialog.show();
             }
         });
         mImgBack.setOnClickListener(new View.OnClickListener() {
