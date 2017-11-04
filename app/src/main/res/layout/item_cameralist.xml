@@ -3,7 +3,7 @@
     android:orientation="horizontal"
     android:id="@+id/ia_ll_container"
     android:layout_width="match_parent"
-    android:background="#27408B"
+    android:background="#6019246B"
     android:layout_margin="10dp"
     android:layout_height="100dp">
 
@@ -20,9 +20,8 @@
             android:layout_centerHorizontal="true"
             android:background="@mipmap/ic_nor_greentop"
             android:gravity="center"
-            android:text="在线"
             android:textSize="@dimen/content_text_s12"
-            android:visibility="gone" />
+            android:visibility="visible" />
 
         <ImageView
             android:id="@+id/ic_img_spitVideo"
@@ -32,10 +31,11 @@
             android:src="@mipmap/ic_nor_carmera" />
 
     </RelativeLayout>
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="0dp"
         android:padding="10dp"
         android:layout_weight="4"
+        android:orientation="vertical"
         android:layout_height="match_parent">
 
         <TextView
@@ -50,19 +50,19 @@
         <View
             android:layout_width="match_parent"
             android:layout_weight="1"
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_height="0dp"/>
 
         <TextView
-            android:layout_width="wrap_content"
-            android:textColor="@color/grayfont_1"
             android:id="@+id/ic_tv_recenttime"
-            android:textSize="@dimen/content_text_s12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:maxLines="2"
-            android:visibility="gone"
-            android:layout_height="wrap_content" />
+            android:textColor="@color/white"
+            android:textSize="@dimen/content_text_s12"
+            android:visibility="visible" />
 
-    </RelativeLayout>
+    </LinearLayout>
     <RelativeLayout
         android:layout_width="0dp"
         android:orientation="vertical"

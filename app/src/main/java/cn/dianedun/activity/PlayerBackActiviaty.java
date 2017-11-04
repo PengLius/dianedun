@@ -761,6 +761,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     protected RotateViewUtil mRecordRotateViewUtil;
     private boolean mIsOnStop = false;
     private void handleRecordSuccess(String recordFilePath) {
+        EZUtils.updateVideo(this,recordFilePath);
         // 设置录像按钮为check状态
         if (!mIsOnStop) {
             mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
@@ -769,6 +770,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             mImgVideoStart.setVisibility(GONE);
             mImgVideoStop.setVisibility(View.VISIBLE);
         }
+        Toast.makeText(PlayerBackActiviaty.this, "已将录像保存至目录：" + recordFilePath, Toast.LENGTH_SHORT).show();
         mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
                 mImgVideoStop, 0, 90);
         mIsRecording = true;

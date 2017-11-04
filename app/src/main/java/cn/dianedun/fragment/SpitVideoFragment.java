@@ -239,7 +239,7 @@ public class SpitVideoFragment extends SupportFragment {
         rlVideoContainer.addView(laodingView);
 
         final EZUIPlayer ezuiPlayer = new EZUIPlayer(_mActivity);
-        ezuiPlayer.setSurfaceSize(rlVideoContainer.getWidth(),0);
+        ezuiPlayer.setSurfaceSize(rlVideoContainer.getWidth(),rlVideoContainer.getHeight());
         ezuiPlayer.setOpenSound(false);
         ezuiPlayer.setAutoPlay(mAutoPlay);
         ezuiPlayer.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {

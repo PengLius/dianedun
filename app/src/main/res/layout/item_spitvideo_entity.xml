@@ -8,10 +8,9 @@
 
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/ise_img_tag"
         android:layout_width="60dp"
-        android:layout_height="60dp"
-        android:src="@mipmap/home_video1" />
+        android:layout_height="60dp" />
 
     <TextView
         android:id="@+id/ise_tv_videoname"
