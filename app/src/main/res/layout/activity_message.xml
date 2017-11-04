@@ -26,7 +26,8 @@
             android:id="@+id/cf_message"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:srlClassicsSpinnerStyle="FixedBehind" />
+
+            />
     </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
     <TextView

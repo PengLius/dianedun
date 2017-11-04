@@ -111,9 +111,8 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                         context.startActivity(intent);
                         AppManager.getInstance().finishAllActivity();
                     } else {
-                        Toast.makeText(context, jsonObject.getString("msg"), Toast.LENGTH_SHORT).show();
                         if (callback != null) {
-                            callback.send(result);
+                            callback.onError(jsonObject.getString("msg"));
                         }
                     }
                 } catch (JSONException e) {

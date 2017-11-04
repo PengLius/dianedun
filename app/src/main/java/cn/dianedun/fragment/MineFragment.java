@@ -114,9 +114,10 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
     private MineBean bean;
     private String imagUrl, phone, username, time, realname, downUrl;
     private VersionBean versionBean;
-    private PopupWindow popupWindow;
+    private PopupWindow popupWindow, pops;
     private TextView pop_tv_qx, pop_tv_qr, textView2;
-    private View vies;
+    private TextView pop_tv_close, pop_tv_ok;
+    private View vies, vies2;
     private Dialog diaglog;
 
     public static MineFragment getInstance() {
@@ -136,6 +137,9 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
         setTvTitleText("我的");
         setTitleBack(R.mipmap.home_backg_null);
         vies = LayoutInflater.from(getActivity()).inflate(R.layout.pop_my_tc, null);
+        vies2 = LayoutInflater.from(getActivity()).inflate(R.layout.pop_my_tc1, null);
+        pop_tv_close = (TextView) vies2.findViewById(R.id.pop_tv_close);
+        pop_tv_ok = (TextView) vies2.findViewById(R.id.pop_tv_ok);
         pop_tv_qx = (TextView) vies.findViewById(R.id.pop_tv_qx);
         pop_tv_qr = (TextView) vies.findViewById(R.id.pop_tv_qr);
         textView2 = (TextView) vies.findViewById(R.id.textView2);
@@ -149,9 +153,12 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
         rl_mine_out.setOnClickListener(this);
         pop_tv_qx.setOnClickListener(this);
         pop_tv_qr.setOnClickListener(this);
+        pop_tv_close.setOnClickListener(this);
+        pop_tv_ok.setOnClickListener(this);
         String bbh = getVersionName(getActivity());
         tv_mine_bbh.setText("当前版本：" + bbh);
         initRefreshLayout();
+
     }
 
     @Override
@@ -213,12 +220,10 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
 
                     @Override
                     public void onError(String result) {
-
+                        showToast(result);
                     }
                 });
                 myAsyncTast.execute();
-
-
                 break;
             case R.id.ll_mine_person:
                 intent = new Intent(getActivity(), PersonActivity.class);
@@ -230,12 +235,26 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
                 break;
             case R.id.rl_mine_out:
                 //退出登录
+                showPopupWindows(headView);
+                break;
+            case R.id.pop_tv_qx:
+                popupWindow.dismiss();
+                break;
+            case R.id.pop_tv_qr:
+                downloadApk();
+                popupWindow.dismiss();
+                break;
+            case R.id.pop_tv_close:
+                pops.dismiss();
+                break;
+            case R.id.pop_tv_ok:
+                pops.dismiss();
                 hashMap = new HashMap<>();
                 hashMap.put("username", username);
                 myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.LOGINOUT, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
                     @Override
                     public void onError(String result) {
-
+                        showToast(result);
                     }
 
                     @Override
@@ -252,14 +271,6 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
                     }
                 });
                 myAsyncTast.execute();
-                break;
-
-            case R.id.pop_tv_qx:
-                popupWindow.dismiss();
-                break;
-            case R.id.pop_tv_qr:
-                downloadApk();
-                popupWindow.dismiss();
                 break;
             default:
                 break;
@@ -353,8 +364,14 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
         popupWindow = new PopupWindow(vies, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT, false);
         popupWindow.setTouchable(true);
-        // 设置好参数之后再show
         popupWindow.showAsDropDown(views);
+    }
+
+    private void showPopupWindows(View views) {
+        pops = new PopupWindow(vies2, ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT, false);
+        pops.setTouchable(true);
+        pops.showAsDropDown(views);
     }
 
     protected void downloadApk() {

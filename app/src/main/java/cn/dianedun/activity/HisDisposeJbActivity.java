@@ -86,7 +86,7 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
         myAsyncTast = new MyAsyncTast(HisDisposeJbActivity.this, hashMap, AppConfig.FINDALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override
@@ -264,5 +264,10 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
         }
     }
 
-
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Glide.get(this).clearMemory();
+        System.gc();
+    }
 }

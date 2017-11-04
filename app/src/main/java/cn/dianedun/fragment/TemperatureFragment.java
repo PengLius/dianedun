@@ -47,7 +47,7 @@ public class TemperatureFragment extends Fragment {
         view = inflater.inflate(R.layout.fragment_temperature, null);
         ButterKnife.bind(this, view);
         allList = new ArrayList<>();
-        adapter= new IndentCusAdapter();
+        adapter = new IndentCusAdapter();
         lv_temperature.setAdapter(adapter);
         return view;
     }
@@ -132,6 +132,11 @@ public class TemperatureFragment extends Fragment {
                     intent.putExtra("RoomId", RoomId);
                     intent.putExtra("depart", depart);
                     intent.putExtra("deviceNum", allList.get(position).get("number") + "");
+                    if (position < bean.getData().getTemp().getTransformer().size()) {
+                        intent.putExtra("type", "0");
+                    } else {
+                        intent.putExtra("type", "1");
+                    }
                     startActivity(intent);
                 }
             });

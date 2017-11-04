@@ -151,7 +151,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
         myAsyncTast = new MyAsyncTast(ExamineActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override
@@ -291,7 +291,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                         myAsyncTast = new MyAsyncTast(ExamineActivity.this, hashMap, AppConfig.APPROVALHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                             @Override
                             public void onError(String result) {
-
+                                showToast(result);
                             }
 
                             @Override
@@ -309,6 +309,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                     myAsyncTast = new MyAsyncTast(ExamineActivity.this, hashMap, AppConfig.APPROVALHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
                         public void onError(String result) {
+                            showToast(result);
                         }
 
                         @Override

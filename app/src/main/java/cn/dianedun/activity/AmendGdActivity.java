@@ -203,6 +203,8 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
             @Override
             public void onClick(View v) {
                 pop.dismiss();
+                nameList.clear();
+                tv_amendgd_name.setText("");
             }
         });
         lv_itemadress = (ListView) view2.findViewById(R.id.lv_itemadress);
@@ -301,7 +303,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
         myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.GETHANDLEORDERBYNUM, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override
@@ -562,6 +564,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.MODIFYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                         @Override
                         public void onError(String result) {
+                            showToast(result);
                         }
 
                         @Override

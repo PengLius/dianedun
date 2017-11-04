@@ -43,7 +43,7 @@ public class WeActivity extends BaseTitlActivity {
         myAsyncTast = new MyAsyncTast(WeActivity.this, new HashMap<String, String>(), AppConfig.FINDABOUTUS, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-
+                showToast(result);
             }
 
             @Override

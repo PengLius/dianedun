@@ -6,13 +6,16 @@ import android.os.Handler;
 import android.os.Message;
 import android.telecom.Call;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
+import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,7 +40,7 @@ import lecho.lib.hellocharts.view.LineChartView;
  * Created by Administrator on 2017/10/20.
  */
 
-public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickListener {
+public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickListener, View.OnTouchListener {
 
     @Bind(R.id.lcv_xgtension)
     LineChartView lcv_xgtension;
@@ -126,13 +129,18 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
     @Bind(R.id.tv_gdil_cmean)
     TextView tv_gdil_cmean;
 
+    @Bind(R.id.tv_tempchart_name)
+    TextView tv_tempchart_name;
+
+    @Bind(R.id.sv_gdce)
+    ScrollView sv_gdce;
 
     private RealTimeConBean bean;
     private String RoomId;
     private String url;
     private String deviceNum;
     private int type = 1;
-    private int maxXg, maxXn, maxIl;
+    private Float maxXg, maxXn, maxIl;
     private MyAsyncTast.Callback callback = new MyAsyncTast.Callback() {
         @Override
         public void send(String result) {
@@ -142,37 +150,41 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
             maxIl = getMaxNumb(bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList());
             if (getIntent().getStringExtra("types").equals("0")) {
                 tv_gdxg_amax.setText(getmMax1Numb(bean.getData().getVaList()) + "KV");
-                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "KV");
                 tv_gdxg_bmax.setText(getmMax1Numb(bean.getData().getVbList()) + "KV");
-                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "KV");
                 tv_gdxg_cmax.setText(getmMax1Numb(bean.getData().getVcList()) + "KV");
-                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "KV");
                 tv_gdxn_abmax.setText(getmMax1Numb(bean.getData().getVabList()) + "KV");
-                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "KV");
                 tv_gdxn_bcmax.setText(getmMax1Numb(bean.getData().getVbcList()) + "KV");
-                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "KV");
                 tv_gdxn_acmax.setText(getmMax1Numb(bean.getData().getVcaList()) + "KV");
+
+                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "KV");
+                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "KV");
+                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "KV");
+                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "KV");
+                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "KV");
                 tv_gdxn_acmean.setText(getmMeanNumb(bean.getData().getVcaList()) + "KV");
             } else {
                 tv_gdxg_amax.setText(getmMax1Numb(bean.getData().getVaList()) + "V");
-                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "V");
                 tv_gdxg_bmax.setText(getmMax1Numb(bean.getData().getVbList()) + "V");
-                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "V");
                 tv_gdxg_cmax.setText(getmMax1Numb(bean.getData().getVcList()) + "V");
-                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "V");
                 tv_gdxn_abmax.setText(getmMax1Numb(bean.getData().getVabList()) + "V");
-                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "V");
                 tv_gdxn_bcmax.setText(getmMax1Numb(bean.getData().getVbcList()) + "V");
-                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "V");
                 tv_gdxn_acmax.setText(getmMax1Numb(bean.getData().getVcaList()) + "V");
+
+                tv_gdxg_amean.setText(getmMeanNumb(bean.getData().getVaList()) + "V");
+                tv_gdxg_bmean.setText(getmMeanNumb(bean.getData().getVbList()) + "V");
+                tv_gdxg_cmean.setText(getmMeanNumb(bean.getData().getVcList()) + "V");
+                tv_gdxn_abmean.setText(getmMeanNumb(bean.getData().getVabList()) + "V");
+                tv_gdxn_bcmean.setText(getmMeanNumb(bean.getData().getVbcList()) + "V");
                 tv_gdxn_acmean.setText(getmMeanNumb(bean.getData().getVcaList()) + "V");
 
             }
+
             tv_gdil_amax.setText(getmMax1Numb(bean.getData().getIaList()) + "A");
-            tv_gdil_amean.setText(getmMeanNumb(bean.getData().getIaList()) + "A");
             tv_gdil_bmax.setText(getmMax1Numb(bean.getData().getIbList()) + "A");
-            tv_gdil_bmean.setText(getmMeanNumb(bean.getData().getIbList()) + "A");
             tv_gdil_cmax.setText(getmMax1Numb(bean.getData().getIcList()) + "A");
+
+            tv_gdil_amean.setText(getmMeanNumb(bean.getData().getIaList()) + "A");
+            tv_gdil_bmean.setText(getmMeanNumb(bean.getData().getIbList()) + "A");
             tv_gdil_cmean.setText(getmMeanNumb(bean.getData().getIcList()) + "A");
 
             List<String> xList = new ArrayList<>();
@@ -182,13 +194,13 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
             initLineChart(lcv_xgtension, bean.getData().getVaList(), bean.getData().getVbList(), bean.getData().getVcList(), xList, maxXg);
             initLineChart(lcv_xntension, bean.getData().getVabList(), bean.getData().getVbcList(), bean.getData().getVcaList(), xList, maxXn);
             initLineChart(lcv_electricity, bean.getData().getIaList(), bean.getData().getIbList(), bean.getData().getIcList(), xList, maxIl);
-//            new Thread(sendable).start();
             srl_gdce.finishRefresh();
         }
 
         @Override
         public void onError(String result) {
             srl_gdce.finishRefresh();
+            showToast(result);
         }
     };
     private Boolean treadoff = true;
@@ -215,12 +227,17 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         if (getIntent().getStringExtra("types").equals("0")) {
             tv_gdchar_xg.setText("相电压（KV）");
             tv_gdchar_xn.setText("线电压（KV）");
+            tv_tempchart_name.setText("高压侧" + deviceNum);
         } else {
             tv_gdchar_xg.setText("相电压（V）");
             tv_gdchar_xn.setText("线电压（V）");
+            tv_tempchart_name.setText("低压侧" + deviceNum);
         }
         initRefreshLayout();
         srl_gdce.autoRefresh();
+        lcv_xgtension.setOnTouchListener(this);
+        lcv_xntension.setOnTouchListener(this);
+        lcv_electricity.setOnTouchListener(this);
     }
 
     private void initRefreshLayout() {
@@ -237,7 +254,7 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
     /**
      * 初始化图表
      */
-    private void initLineChart(LineChartView chart, List<String> data, List<String> data1, List<String> data2, List<String> Ybz, int max) {
+    private void initLineChart(LineChartView chart, List<String> data, List<String> data1, List<String> data2, List<String> Ybz, Float max) {
         List<Line> lines = new ArrayList<Line>();//折线的集合
         Line line = new Line(getAxisPoints(data)).setColor(Color.parseColor("#e84b06"));  //折线的颜色
         line.setCubic(true);//曲线是否平滑，即是曲线还是折线
@@ -247,6 +264,7 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         line.setHasPoints(false);//是否显示圆点 如果为false 则没有原点只有点显示（每个数据点都是个大的圆点）
         line.setStrokeWidth(1);
         lines.add(line);
+
         Line line1 = new Line(getAxisPoints(data1)).setColor(Color.parseColor("#1179ce"));  //折线的颜色
         line1.setCubic(true);//曲线是否平滑，即是曲线还是折线
         line1.setFilled(false);//是否填充曲线的面积
@@ -255,6 +273,7 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         line1.setHasPoints(false);//是否显示圆点 如果为false 则没有原点只有点显示（每个数据点都是个大的圆点）
         line1.setStrokeWidth(1);
         lines.add(line1);
+
         Line line2 = new Line(getAxisPoints(data2)).setColor(Color.parseColor("#3dc281"));  //折线的颜色
         line2.setCubic(true);//曲线是否平滑，即是曲线还是折线
         line2.setFilled(false);//是否填充曲线的面积
@@ -263,6 +282,7 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         line2.setHasPoints(false);//是否显示圆点 如果为false 则没有原点只有点显示（每个数据点都是个大的圆点）
         line2.setStrokeWidth(1);
         lines.add(line2);
+
         LineChartData datas = new LineChartData();
         datas.setLines(lines);//加入图表中
         Axis axisX = new Axis(); //X轴
@@ -288,7 +308,13 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         chart.setZoomType(ZoomType.HORIZONTAL);
         chart.setLineChartData(datas);
         Viewport v = new Viewport(chart.getMaximumViewport());
-        v.top = max + 10;
+        if(max<5){
+            v.top = max + 5;
+        }else if(max<50){
+            v.top = max + 10;
+        }else{
+            v.top = max + 20;
+        }
         v.bottom = 0;
         chart.setMaximumViewport(v);
         v.left = 0;
@@ -305,7 +331,7 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
     private List<PointValue> getAxisPoints(List<String> data) {
         List<PointValue> mPointValues = new ArrayList<PointValue>();
         for (int i = 0; i < data.size(); i++) {
-            mPointValues.add(new PointValue(i, Integer.parseInt(data.get(i))));
+            mPointValues.add(new PointValue(i, Float.parseFloat(data.get(i))));
         }
         return mPointValues;
     }
@@ -393,22 +419,22 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         myAsyncTast.execute();
     }
 
-    public int getMaxNumb(List<String> numbList, List<String> numbList1, List<String> numbList2) {
-        int a = 0;
+    public Float getMaxNumb(List<String> numbList, List<String> numbList1, List<String> numbList2) {
+        Float a = Float.valueOf(0);
         for (int i = 0; i < numbList.size(); i++) {
-            int numb = Integer.parseInt(numbList.get(i));
+            Float numb = Float.parseFloat(numbList.get(i));
             if (a < numb) {
                 a = numb;
             }
         }
         for (int i = 0; i < numbList1.size(); i++) {
-            int numb = Integer.parseInt(numbList1.get(i));
+            Float numb = Float.parseFloat(numbList1.get(i));
             if (a < numb) {
                 a = numb;
             }
         }
         for (int i = 0; i < numbList2.size(); i++) {
-            int numb = Integer.parseInt(numbList2.get(i));
+            Float numb = Float.parseFloat(numbList2.get(i));
             if (a < numb) {
                 a = numb;
             }
@@ -416,29 +442,55 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         return a;
     }
 
-    public int getmMeanNumb(List<String> numbList) {
-        int a = 0;
-        for (int i = 0; i < numbList.size(); i++) {
-            int numb = Integer.parseInt(numbList.get(i));
-            a = numb + a;
+    public String getmMeanNumb(List<String> numbList) {
+        if (numbList.size() > 0) {
+            Float a = Float.valueOf(0);
+            for (int i = 0; i < numbList.size(); i++) {
+                Float numb = Float.parseFloat(numbList.get(i));
+                a = numb + a;
+            }
+            String b = new DecimalFormat("0.00").format(a / numbList.size());
+            return b;
+        } else {
+            return "0";
         }
-        return a / numbList.size();
     }
 
-    public int getmMax1Numb(List<String> numbList) {
-        int a = 0;
+    public String getmMax1Numb(List<String> numbList) {
+        Float a = Float.valueOf(0);
         for (int i = 0; i < numbList.size(); i++) {
-            int numb = Integer.parseInt(numbList.get(i));
+            Float numb = Float.parseFloat(numbList.get(i));
             if (a < numb) {
                 a = numb;
             }
         }
-        return a;
+        String b = new DecimalFormat("0.00").format(a);
+        return b;
     }
 
     @Override
     protected void onDestroy() {
         treadoff = false;
         super.onDestroy();
+    }
+
+    public boolean onTouch(View v, MotionEvent event) {
+        int action = event.getAction();
+        float mLastX = 0;
+        if (action == MotionEvent.ACTION_DOWN) {
+            // 记录点击到ViewPager时候，手指的X坐标
+            mLastX = event.getX();
+        }
+        if (action == MotionEvent.ACTION_MOVE) {
+            // 超过阈值
+            if (Math.abs(event.getX() - mLastX) > 600f) {
+                sv_gdce.requestDisallowInterceptTouchEvent(true);
+            }
+        }
+        if (action == MotionEvent.ACTION_UP) {
+            // 用户抬起手指，恢复父布局状态
+            sv_gdce.requestDisallowInterceptTouchEvent(false);
+        }
+        return false;
     }
 }

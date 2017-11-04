@@ -75,15 +75,6 @@ public class HumidityCharActivity extends BaseTitlActivity implements View.OnCli
     private Boolean treadoff = true;
     private String flag = "day";
     private String num = "1";
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.arg1 == 0) {
-                getData(flag, num);
-            }
-        }
-    };
     private MyAsyncTast.Callback callback = new MyAsyncTast.Callback() {
         @Override
         public void send(String result) {
@@ -95,13 +86,13 @@ public class HumidityCharActivity extends BaseTitlActivity implements View.OnCli
             tv_sd_max.setText(getMaxNumb(bean.getData().getHumidityList()) + "%");
             tv_sd_mean.setText(getmMeanNumb(bean.getData().getHumidityList()) + "%");
             initLineChart(lcv_sd, bean.getData().getHumidityList(), xList);
-//            new Thread(sendable).start();
             srl_humidity.finishRefresh();
         }
 
         @Override
         public void onError(String result) {
             srl_humidity.finishRefresh();
+            showToast(result);
         }
     };
 
@@ -293,35 +284,18 @@ public class HumidityCharActivity extends BaseTitlActivity implements View.OnCli
     }
 
     public int getmMeanNumb(List<String> numbList) {
-        int a = 0;
-        for (int i = 0; i < numbList.size(); i++) {
-            int numb = Integer.parseInt(numbList.get(i));
-            a = numb + a;
+        if(numbList.size()>0){
+            int a = 0;
+            for (int i = 0; i < numbList.size(); i++) {
+                int numb = Integer.parseInt(numbList.get(i));
+                a = numb + a;
+            }
+            return a / (numbList.size());
+        }else{
+            return 0;
         }
-        return a / (numbList.size());
     }
 
-    /**
-     * 定时刷新
-     */
-//    Runnable sendable = new Runnable() {
-//        @Override
-//        public void run() {
-//            int a = 10;
-//            while (-1 < a && treadoff) {
-//                try {
-//                    Thread.sleep(1000);
-//                    Message message = new Message();
-//                    message.arg1 = a;
-//                    handler.sendMessage(message);
-//                    a--;
-//                } catch (InterruptedException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//
-//        }
-//    };
     @Override
     protected void onDestroy() {
         treadoff = false;
