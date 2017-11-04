@@ -346,6 +346,9 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
             if (ed_disposejb_cause.getText() == null || ed_disposejb_cause.getText().toString().equals("")) {
                 showToast("请填写反馈详情");
             } else {
+                if (ed_disposejb_cause.getText() != null) {
+                    hashMap.put("result", ed_disposejb_cause.getText().toString());
+                }
                 myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.UPDATEALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                     @Override
                     public void onError(String result) {
