@@ -699,6 +699,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
      */
     private boolean mIsRecording = false;
     private String mRecordTime = null;
+    private String mCurRecordName;
     private void onRecordBtnClick() {
         if (mIsRecording) {
             stopRealPlayRecord();
@@ -770,7 +771,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             mImgVideoStart.setVisibility(GONE);
             mImgVideoStop.setVisibility(View.VISIBLE);
         }
-        Toast.makeText(PlayerBackActiviaty.this, "已将录像保存至目录：" + recordFilePath, Toast.LENGTH_SHORT).show();
+        mCurRecordName = "已将录像保存至目录：" + recordFilePath;
         mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
                 mImgVideoStop, 0, 90);
         mIsRecording = true;
@@ -791,8 +792,9 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         if (mEZUiPlayBack.getEzPlayer() == null || !mIsRecording) {
             return;
         }
-        Toast.makeText(PlayerBackActiviaty.this, getResources().getString(R.string.already_saved_to_volume), Toast.LENGTH_SHORT).show();
-
+//        Toast.makeText(PlayerBackActiviaty.this, getResources().getString(R.string.already_saved_to_volume), Toast.LENGTH_SHORT).show();
+        Toast.makeText(PlayerBackActiviaty.this, mCurRecordName, Toast.LENGTH_SHORT).show();
+        mCurRecordName = "";
         // 设置录像按钮为check状态
         if (!mIsOnStop) {
             mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStop,

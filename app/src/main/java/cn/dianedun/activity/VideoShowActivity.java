@@ -792,8 +792,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             @Override
             public void onError(ApiException e) {
-                showToast(e.getMessage());
-                setRealPlayFailUI("暂无设备在线");
+                showToast("暂无设备");
+                setRealPlayFailUI("暂无设备");
             }
 
             @Override
@@ -2773,6 +2773,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mLLPlayBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mDeviceInfo == null)
+                    return;
                 //回放
                 DateTimeDialog dateTimeDialog = new DateTimeDialog(VideoShowActivity.this, null, VideoShowActivity.this, 0);
                 dateTimeDialog.show();
@@ -2912,6 +2914,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
      */
     private boolean mIsRecording = false;
     private String mRecordTime = null;
+    private String mCurRecordName;
     private void onRecordBtnClick() {
         mControlDisplaySec = 0;
         if (mIsRecording) {
@@ -2970,7 +2973,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
 
         EZUtils.updateVideo(this,recordFilePath);
-        Toast.makeText(VideoShowActivity.this, "已将录像保存至目录：" + recordFilePath, Toast.LENGTH_SHORT).show();
+        mCurRecordName = "已将录像保存至目录：" + recordFilePath;
+//        Toast.makeText(VideoShowActivity.this, "已将录像保存至目录：" + recordFilePath, Toast.LENGTH_SHORT).show();
         // 设置录像按钮为check状态
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
             if (!mIsOnStop) {
@@ -3087,6 +3091,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
         mAudioPlayUtil.playAudioFile(AudioPlayUtil.RECORD_SOUND);
         mEZPlayer.stopLocalRecord();
+
+        Toast.makeText(VideoShowActivity.this, mCurRecordName, Toast.LENGTH_SHORT).show();
+        mCurRecordName = "";
 
         // 计时按钮不可见
         mRlPrompt.setVisibility(GONE);

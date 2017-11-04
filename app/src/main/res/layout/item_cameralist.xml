@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:background="#6019246B"
     android:layout_margin="10dp"
-    android:layout_height="100dp">
+    android:layout_height="110dp">
 
     <RelativeLayout
         android:layout_width="0dp"
