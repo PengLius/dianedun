@@ -214,12 +214,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:paddingTop="7dp"
-                    android:paddingBottom="7dp"
                     android:background="@drawable/ed_5_gray"
                     android:gravity="center_vertical"
+                    android:paddingBottom="7dp"
                     android:paddingLeft="5dp"
                     android:paddingRight="5dp"
+                    android:paddingTop="7dp"
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s14" />
             </LinearLayout>
@@ -276,7 +276,7 @@
 
                 <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="80dp"
+                    android:layout_height="120dp"
                     android:layout_marginLeft="10dp"
                     android:background="@drawable/ed_5_gray">
 
@@ -308,14 +308,14 @@
 
                     </LinearLayout>
 
-                    <EditText
+                    <cn.dianedun.view.MyEditText
                         android:id="@+id/ed_amendgd_sqyy"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_above="@+id/ll_amendgd_tvimg"
                         android:layout_marginLeft="10dp"
                         android:layout_marginRight="10dp"
-                        android:layout_marginTop="10dp"
+                        android:layout_marginTop="5dp"
                         android:background="@null"
                         android:gravity="left|top"
                         android:maxLength="500"

@@ -65,6 +65,7 @@ import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.dianedun.view.MyEditText;
 import cn.dianedun.view.NoScrollGridview;
 import dev.xesam.android.toolbox.timer.CountDownTimer;
 import dev.xesam.android.toolbox.timer.CountTimer;
@@ -94,7 +95,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
     TextView tv_disposejb_time;
 
     @Bind(R.id.ed_disposejb_cause)
-    EditText ed_disposejb_cause;
+    MyEditText ed_disposejb_cause;
 
     @Bind(R.id.img_disposejb_add)
     ImageView img_disposejb_add;

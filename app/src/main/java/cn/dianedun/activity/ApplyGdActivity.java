@@ -61,6 +61,7 @@ import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.DateTimeDialog;
 import cn.dianedun.view.DateTimeDialogOnlyTime;
 import cn.dianedun.view.DateTimeDialogOnlyYMD;
+import cn.dianedun.view.MyEditText;
 import dev.xesam.android.toolbox.timer.CountDownTimer;
 import dev.xesam.android.toolbox.timer.CountTimer;
 
@@ -108,7 +109,7 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     TextView tv_amendgd_xxadress;
 
     @Bind(R.id.ed_amendgd_sqyy)
-    EditText ed_amendgd_sqyy;
+    MyEditText ed_amendgd_sqyy;
 
     @Bind(R.id.rl_amendgd_ly)
     RelativeLayout rl_amendgd_ly;

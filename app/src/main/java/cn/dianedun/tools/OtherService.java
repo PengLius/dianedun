@@ -10,6 +10,9 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 
+import cn.dianedun.activity.LoginActivity;
+import cn.dianedun.activity.WeActivity;
+
 /**
  * Created by Administrator on 2017/11/2.
  */
@@ -21,7 +24,8 @@ public class OtherService extends Service {
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             if (msg.arg1 == 0) {
-                
+                Intent intent = new Intent(getApplicationContext(), WeActivity.class);
+                startActivity(intent);
             }
         }
     };

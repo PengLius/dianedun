@@ -68,6 +68,7 @@ import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.DataUtil;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.dianedun.view.MyEditText;
 import cn.dianedun.view.NoScrollGridview;
 import dev.xesam.android.toolbox.timer.CountDownTimer;
 import dev.xesam.android.toolbox.timer.CountTimer;
@@ -100,7 +101,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
     TextView tv_annul_xxadr;
 
     @Bind(R.id.ed_retroaction_cause)
-    EditText ed_retroaction_cause;
+    MyEditText ed_retroaction_cause;
 
     @Bind(R.id.img_retroaction_add)
     ImageView img_retroaction_add;

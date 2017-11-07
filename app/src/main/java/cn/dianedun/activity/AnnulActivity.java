@@ -48,6 +48,7 @@ import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.DataUtil;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.dianedun.view.MyEditText;
 import dev.xesam.android.toolbox.timer.CountDownTimer;
 import dev.xesam.android.toolbox.timer.CountTimer;
 
@@ -61,7 +62,7 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
     RelativeLayout rl_annul_sub;
 
     @Bind(R.id.ed_annul_cause)
-    EditText ed_annul_cause;
+    MyEditText ed_annul_cause;
 
     @Bind(R.id.img_annul_ly)
     ImageView img_annul_ly;

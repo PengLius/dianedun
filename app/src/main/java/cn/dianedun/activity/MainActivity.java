@@ -1,13 +1,8 @@
 package cn.dianedun.activity;
 
-import android.Manifest;
-import android.content.Intent;
 import android.os.Bundle;
 
 import com.vise.xsnow.event.EventSubscribe;
-import com.yanzhenjie.permission.AndPermission;
-
-import java.util.HashMap;
 
 import butterknife.Bind;
 import cn.dianedun.R;
@@ -17,10 +12,7 @@ import cn.dianedun.fragment.DetectionFragment;
 import cn.dianedun.fragment.HomeFragment;
 import cn.dianedun.fragment.MineFragment;
 import cn.dianedun.fragment.VideoFragment;
-import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppManager;
-import cn.dianedun.tools.MyAsyncTast;
-import cn.dianedun.tools.OtherService;
 import cn.dianedun.view.BottomBarView.BottomBar;
 import cn.dianedun.view.BottomBarView.BottomBarTab;
 import me.yokeyword.fragmentation.SupportFragment;

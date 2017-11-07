@@ -317,7 +317,7 @@
                     android:textColor="#FFF"
                     android:textSize="@dimen/content_text_s12" />
 
-                <EditText
+                <cn.dianedun.view.MyEditText
                     android:id="@+id/ed_examine_cause"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
