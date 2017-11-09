@@ -1,6 +1,7 @@
 package cn.dianedun.view;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,6 +22,7 @@ import com.videogo.exception.ErrorCode;
 import com.videogo.openapi.bean.EZDeviceInfo;
 import com.videogo.util.ConnectionDetector;
 
+import com.videogo.util.LogUtil;
 import com.vise.xsnow.net.api.ViseApi;
 import com.vise.xsnow.net.callback.ApiCallback;
 import com.vise.xsnow.net.exception.ApiException;
@@ -30,6 +32,8 @@ import com.vise.xsnow.ui.adapter.recycleview.base.ViewHolder;
 import java.util.HashMap;
 import java.util.List;
 import cn.dianedun.R;
+import cn.dianedun.activity.LoginActivity;
+import cn.dianedun.activity.VideoShowActivity;
 import cn.dianedun.bean.AccesstokenBean;
 import cn.dianedun.bean.CarmerListBean;
 import cn.dianedun.tools.App;
@@ -37,6 +41,8 @@ import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.CommonUtil;
 import cn.dianedun.tools.PopupWindowUtil;
 import cn.dianedun.tools.ScreenUtils;
+
+import static cn.dianedun.tools.App.AppKey;
 import static cn.dianedun.tools.App.getOpenSDK;
 
 
@@ -56,7 +62,7 @@ public class SpitVideoPopView extends PopupWindow {
     ImageView mImgArrow;
 
     private Context mContext;
-    private List<CarmerListBean.DataBean.ResultBean> mDeviceListInfo;
+    private List<EZDeviceInfo> mDeviceListInfo;
     private String mPlacesId;
 
     public SpitVideoPopView(View contentView, int width, int height, boolean focusable,String placesId){
@@ -95,7 +101,7 @@ public class SpitVideoPopView extends PopupWindow {
 
             @Override
             public void onError(ApiException e) {
-                Toast.makeText(mContext,e.getMessage(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext,"暂无设备信息",Toast.LENGTH_SHORT).show();
                 mTvErr.setText("暂无设备信息");
                 mRlLoadingLayout.setVisibility(View.GONE);
                 mRlErrLayout.setVisibility(View.VISIBLE);
@@ -114,43 +120,47 @@ public class SpitVideoPopView extends PopupWindow {
     }
 
     private void getCarmerList(String token){
-        ViseApi api = new ViseApi.Builder(mContext).build();
-        HashMap hashMap = new HashMap();
-        hashMap.put("accessToken",token);
-        hashMap.put("pageStart",0);
-        hashMap.put("pageSize",20);
-        api.apiPost(AppConfig.GET_CARMERLIST,App.getInstance().getToken(),hashMap,false,new ApiCallback<CarmerListBean.DataBean>(){
-            @Override
-            public void onError(ApiException e) {
-                Toast.makeText(mContext,e.getMessage(),Toast.LENGTH_SHORT).show();
-            }
-
-            @Override
-            public void onCompleted() {
-
-            }
-
-            @Override
-            public void onNext(CarmerListBean.DataBean dataBean) {
-                mRlLoadingLayout.setVisibility(View.GONE);
-                if (!SpitVideoPopView.this.isShowing()) {
-                    return;
-                }
-
-                if (dataBean.getResult() != null && dataBean.getResult().size() > 0){
-                    onGetDeviceInfoSucess(dataBean.getResult());
-                }else{
-                    mTvErr.setText("暂无设备信息");
-                    mRlErrLayout.setVisibility(View.VISIBLE);
-                }
-            }
-
-            @Override
-            public void onStart() {
-
-            }
-        });
-
+//        ViseApi api = new ViseApi.Builder(mContext).build();
+//        HashMap hashMap = new HashMap();
+//        hashMap.put("accessToken",token);
+//        hashMap.put("pageStart",0);
+//        hashMap.put("pageSize",20);
+//        api.apiPost(AppConfig.GET_CARMERLIST,App.getInstance().getToken(),hashMap,false,new ApiCallback<CarmerListBean.DataBean>(){
+//            @Override
+//            public void onError(ApiException e) {
+//                Toast.makeText(mContext,"暂无设备信息",Toast.LENGTH_SHORT).show();
+//            }
+//
+//            @Override
+//            public void onCompleted() {
+//
+//            }
+//
+//            @Override
+//            public void onNext(CarmerListBean.DataBean dataBean) {
+//                mRlLoadingLayout.setVisibility(View.GONE);
+//                if (!SpitVideoPopView.this.isShowing()) {
+//                    return;
+//                }
+//
+//                if (dataBean.getResult() != null && dataBean.getResult().size() > 0){
+//                    onGetDeviceInfoSucess(dataBean.getResult());
+//                }else{
+//                    mTvErr.setText("暂无设备信息");
+//                    mRlErrLayout.setVisibility(View.VISIBLE);
+//                }
+//            }
+//
+//            @Override
+//            public void onStart() {
+//
+//            }
+//        });
+        EZUIKit.initWithAppKey(App.getInstance(),AppKey);
+        //设置授权accesstoken
+        EZUIKit.setAccessToken(token);
+        App.getOpenSDK().setAccessToken(token);
+        new GetCamersInfoListTask().execute();
     }
 
 //    private class GetCamersInfoListTask extends AsyncTask<Void, Void, List<EZDeviceInfo>> {
@@ -216,19 +226,107 @@ public class SpitVideoPopView extends PopupWindow {
 //        }
 //    }
 
-    private void onGetDeviceInfoSucess(List<CarmerListBean.DataBean.ResultBean> ezDeviceInfoList) {
-        mDeviceListInfo = ezDeviceInfoList;
+    /**
+     * 获取摄像头列表
+     */
+    List<EZDeviceInfo> mEzDeviceInfo = null;
+    private class GetCamersInfoListTask extends AsyncTask<Void, Void, List<EZDeviceInfo>> {
+        private int mErrorCode = 0;
+
+        public GetCamersInfoListTask() {
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected List<EZDeviceInfo> doInBackground(Void... params) {
+            if (!isShowing()) {
+                return null;
+            }
+
+            if (!ConnectionDetector.isNetworkAvailable(mContext)) {
+                mErrorCode = ErrorCode.ERROR_WEB_NET_EXCEPTION;
+                return null;
+            }
+
+            try {
+                List<EZDeviceInfo> result = null;
+                result = getOpenSDK().getDeviceList(0, 20);
+                return result;
+
+            } catch (BaseException e) {
+                ErrorInfo errorInfo = (ErrorInfo) e.getObject();
+                mErrorCode = errorInfo.errorCode;
+                LogUtil.debugLog("spitvideopopview", errorInfo.toString());
+                return null;
+            }
+        }
+
+        @Override
+        protected void onPostExecute(List<EZDeviceInfo> result) {
+            super.onPostExecute(result);
+            if (!isShowing()) {
+                return ;
+            }
+
+            mEzDeviceInfo = result;
+
+            if (mEzDeviceInfo != null && mEzDeviceInfo.size() > 0){
+                mRlLoadingLayout.setVisibility(View.GONE);
+                if (!SpitVideoPopView.this.isShowing()) {
+                    return;
+                }
+
+                if (result.size() > 0){
+                    onGetDeviceInfoSucess(result);
+                }else{
+                    mTvErr.setText("暂无设备信息");
+                    mRlErrLayout.setVisibility(View.VISIBLE);
+                }
+            }else{
+                Toast.makeText(mContext,"暂无设备信息",Toast.LENGTH_SHORT).show();
+            }
+
+            if (mErrorCode != 0) {
+                onError(mErrorCode);
+            }
+        }
+
+        protected void onError(int errorCode) {
+            switch (errorCode) {
+                case ErrorCode.ERROR_WEB_SESSION_ERROR:
+                case ErrorCode.ERROR_WEB_SESSION_EXPIRE:
+                    Toast.makeText(mContext,"已过期，请重新登录",Toast.LENGTH_SHORT).show();
+//                    showToast("已过期，请重新登录");
+//                    startActivity(new Intent(VideoShowActivity.this,LoginActivity.class));
+                    break;
+                default:
+                    Toast.makeText(mContext,"获取摄像头设备列表失败",Toast.LENGTH_SHORT).show();
+                    break;
+            }
+        }
+    }
+    private void onGetDeviceInfoSucess(List<EZDeviceInfo> result) {
+        mDeviceListInfo = result;
         initView();
     }
 
     private void initView() {
         mLlVideo.setVisibility(View.VISIBLE);
         mRecycleView.setLayoutManager(new GridLayoutManager(mContext,4));
-        mRecycleView.setAdapter(new CommonAdapter<CarmerListBean.DataBean.ResultBean>(mContentView.getContext(),R.layout.item_spitvideo_entity,mDeviceListInfo) {
+        mRecycleView.setAdapter(new CommonAdapter<EZDeviceInfo>(mContentView.getContext(),R.layout.item_spitvideo_entity,mDeviceListInfo) {
             @Override
-            protected void convert(ViewHolder holder, CarmerListBean.DataBean.ResultBean ezDeviceInfo, final int position) {
+            protected void convert(ViewHolder holder, EZDeviceInfo ezDeviceInfo, final int position) {
                 final int pos  = position + 1;
                 holder.setText(R.id.ise_tv_videoname, pos + "号机");
+                if (ezDeviceInfo.getStatus() == 1){
+                    holder.setImageResource(R.id.ise_img_tag,R.mipmap.ic_nor_jiwei);
+                }else{
+                    holder.setImageResource(R.id.ise_img_tag,R.color.black);
+                }
                 holder.setOnClickListener(R.id.ise_ll_container, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {

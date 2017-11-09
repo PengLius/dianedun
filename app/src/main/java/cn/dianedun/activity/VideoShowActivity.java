@@ -781,7 +781,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onNext(AccesstokenBean.DataBean dataBean) {
                 mAccessTokenBean = dataBean;
-                EZUIKit.setDebug(true);
+//                EZUIKit.setDebug(true);
                 //appkey初始化
                 EZUIKit.initWithAppKey(App.getInstance(),AppKey);
                 //设置授权accesstoken
@@ -792,8 +792,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             @Override
             public void onError(ApiException e) {
-                showToast(e.getMessage());
-                setRealPlayFailUI("暂无设备在线");
+                showToast("暂无设备");
+                setRealPlayFailUI("暂无设备");
             }
 
             @Override
@@ -995,6 +995,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mLLTalkBack.setEnabled(false);
             mLLControl.setEnabled(false);
             mLLPlayBack.setEnabled(false);
+            mLLlight.setEnabled(false);
             if (mDeviceInfo.getStatus() == 1) {
 //                mRealPlayQualityBtn.setEnabled(true);
             } else {
@@ -1062,6 +1063,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mLLTalkBack.setEnabled(false);
         mLLControl.setEnabled(false);
         mLLPlayBack.setEnabled(true);
+        mLLlight.setEnabled(false);
         if (mCameraInfo != null && mDeviceInfo != null) {
             closePtzPopupWindow();
             setFullPtzStopUI(false);
@@ -1122,7 +1124,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mLLTalkBack.setEnabled(false);
         mLLControl.setEnabled(false);
         mLLPlayBack.setEnabled(true);
-
+        mLLlight.setEnabled(true);
         if (mCameraInfo != null && mDeviceInfo != null) {
             closePtzPopupWindow();
             setFullPtzStopUI(false);
@@ -2151,7 +2153,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                             break;
                         case R.id.rpw_ib_multiple_add:
                             //变大
-
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandZoomIn, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             break;
                         default:
@@ -2621,6 +2622,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mLLTalkBack.setEnabled(true);
             mLLControl.setEnabled(true);
             mLLPlayBack.setEnabled(true);
+            mLLlight.setEnabled(true);
         }
 
 
@@ -2709,7 +2711,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
         mRealPlaySv.setVisibility(View.INVISIBLE);
     }
-    private int mLightCmd = 0; // 0-关 1-开
+    private int mLightCmd = 1; // 0-关 1-开
 
     @Bind(R.id.av_img_light)
     ImageView mImgLight;
@@ -2734,12 +2736,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                     @Override
                     public void onNext(CommonBean dataBean) {
                         if (dataBean.getCode() == 0){
-                            showToast("操作成功");
-                            if (mLightCmd == 0){
-                                mLightCmd = 1;
+                            if (mLightCmd == 1){
+                                showToast("开灯操作成功");
+                                mLightCmd = 0;
                                 mImgLight.setImageResource(R.mipmap.ic_nor_closelight);
                             }else{
-                                mLightCmd = 0;
+                                showToast("关灯操作成功");
+                                mLightCmd = 1;
                                 mImgLight.setImageResource(R.mipmap.ic_nor_openlight);
                             }
                         }else{
@@ -2770,6 +2773,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mLLPlayBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mDeviceInfo == null)
+                    return;
                 //回放
                 DateTimeDialog dateTimeDialog = new DateTimeDialog(VideoShowActivity.this, null, VideoShowActivity.this, 0);
                 dateTimeDialog.show();
@@ -2909,6 +2914,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
      */
     private boolean mIsRecording = false;
     private String mRecordTime = null;
+    private String mCurRecordName;
     private void onRecordBtnClick() {
         mControlDisplaySec = 0;
         if (mIsRecording) {
@@ -2936,7 +2942,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             // 可以采用deviceSerial+时间作为文件命名，demo中简化，只用时间命名
             java.util.Date date = new java.util.Date();
-            String strRecordFile = Environment.getExternalStorageDirectory().getPath() + "/EZOpenSDK/Records/" + String.format("%tY", date)
+            String strRecordFile = Environment.getExternalStorageDirectory().getPath() + "/DianEDun/Records/" + String.format("%tY", date)
                     + String.format("%tm", date) + String.format("%td", date) + "/"
                     + String.format("%tH", date) + String.format("%tM", date) + String.format("%tS", date) + String.format("%tL", date) + ".mp4";
 
@@ -2967,7 +2973,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
 
         EZUtils.updateVideo(this,recordFilePath);
-
+        mCurRecordName = "已将录像保存至目录：" + recordFilePath;
+//        Toast.makeText(VideoShowActivity.this, "已将录像保存至目录：" + recordFilePath, Toast.LENGTH_SHORT).show();
         // 设置录像按钮为check状态
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
             if (!mIsOnStop) {
@@ -3069,8 +3076,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         if (mEZPlayer == null || !mIsRecording) {
             return;
         }
-        Toast.makeText(VideoShowActivity.this, getResources().getString(R.string.already_saved_to_volume), Toast.LENGTH_SHORT).show();
-
         // 设置录像按钮为check状态
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
             if (!mIsOnStop) {
@@ -3086,6 +3091,9 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
         mAudioPlayUtil.playAudioFile(AudioPlayUtil.RECORD_SOUND);
         mEZPlayer.stopLocalRecord();
+
+        Toast.makeText(VideoShowActivity.this, mCurRecordName, Toast.LENGTH_SHORT).show();
+        mCurRecordName = "";
 
         // 计时按钮不可见
         mRlPrompt.setVisibility(GONE);
