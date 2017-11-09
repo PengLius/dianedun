@@ -196,6 +196,7 @@ public class VideoFragment extends BaseTitlFragment {
                             spitVideoPopView.showPopupWindow(v);
                         }
                     });
+                    holder.setText(R.id.ic_tv_recenttime,bean.getAddress());
                     holder.setText(R.id.ic_tv_places,bean.getDepartname());
                     holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
                         @Override
