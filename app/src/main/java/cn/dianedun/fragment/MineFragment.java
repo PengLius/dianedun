@@ -442,9 +442,9 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
      */
     protected void installApk(File file) {
         Intent intent = new Intent(Intent.ACTION_VIEW);
-        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.N || Build.VERSION.SDK_INT == Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            Uri apkUri = FileProvider.getUriForFile(getActivity(), "com.yhrjkf.minegou.provider", file);
+            Uri apkUri = FileProvider.getUriForFile(getActivity(), "cn.dianedun.provider", file);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
         } else {

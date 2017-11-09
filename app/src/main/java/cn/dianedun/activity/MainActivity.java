@@ -1,8 +1,20 @@
 package cn.dianedun.activity;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.koushikdutta.async.ByteBufferList;
+import com.koushikdutta.async.DataEmitter;
+import com.koushikdutta.async.callback.DataCallback;
+import com.koushikdutta.async.http.AsyncHttpClient;
+import com.koushikdutta.async.http.AsyncHttpResponse;
+import com.koushikdutta.async.http.WebSocket;
+import com.koushikdutta.async.http.server.AsyncHttpServer;
+import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
 import com.vise.xsnow.event.EventSubscribe;
+
+import org.json.JSONObject;
 
 import butterknife.Bind;
 import cn.dianedun.R;
@@ -32,6 +44,22 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppManager.getInstance().addActivity(MainActivity.this);
+//        AsyncHttpClient.getDefaultInstance().websocket(
+//                "ws://192.168.6.112:8080/webSocketServer",
+//                "8080", new AsyncHttpClient.WebSocketConnectCallback() {
+//                    @Override
+//                    public void onCompleted(Exception ex, WebSocket webSocket) {
+//                        if (ex != null) {
+//                            ex.printStackTrace();
+//                            return;
+//                        }
+//                        webSocket.setStringCallback(new WebSocket.StringCallback() {
+//                            public void onStringAvailable(String s) {
+//                                Log.e("tag", s);
+//                            }
+//                        });
+//                    }
+//                });
     }
 
     @Override
