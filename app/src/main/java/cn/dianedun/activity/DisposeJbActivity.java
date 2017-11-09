@@ -473,7 +473,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
-                    showToast(ex.getCause() + "");
+                    showToast("上传失败");
                     diaglog.dismiss();
                 }
 

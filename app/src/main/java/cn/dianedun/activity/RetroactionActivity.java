@@ -519,6 +519,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
             case R.id.img_yuyin_close:
                 //关闭录音弹窗
                 pop3.dismiss();
+                break;
             case R.id.rl_retroation:
                 if (types == 0) {
                     player.start();
@@ -607,7 +608,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
-                    showToast(ex.getCause() + "");
+                    showToast("上传失败");
                     diaglog.dismiss();
                 }
 

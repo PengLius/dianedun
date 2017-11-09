@@ -24,6 +24,7 @@ import cn.dianedun.fragment.DetectionFragment;
 import cn.dianedun.fragment.HomeFragment;
 import cn.dianedun.fragment.MineFragment;
 import cn.dianedun.fragment.VideoFragment;
+import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppManager;
 import cn.dianedun.view.BottomBarView.BottomBar;
 import cn.dianedun.view.BottomBarView.BottomBarTab;
@@ -44,22 +45,23 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         AppManager.getInstance().addActivity(MainActivity.this);
-//        AsyncHttpClient.getDefaultInstance().websocket(
-//                "ws://192.168.6.112:8080/webSocketServer",
-//                "8080", new AsyncHttpClient.WebSocketConnectCallback() {
-//                    @Override
-//                    public void onCompleted(Exception ex, WebSocket webSocket) {
-//                        if (ex != null) {
-//                            ex.printStackTrace();
-//                            return;
-//                        }
-//                        webSocket.setStringCallback(new WebSocket.StringCallback() {
-//                            public void onStringAvailable(String s) {
-//                                Log.e("tag", s);
-//                            }
-//                        });
-//                    }
-//                });
+        AsyncHttpClient.getDefaultInstance().websocket(
+                "ws://192.168.6.112:8080/webSocketServer",
+                "8080", new AsyncHttpClient.WebSocketConnectCallback() {
+                    @Override
+                    public void onCompleted(Exception ex, WebSocket webSocket) {
+                        if (ex != null) {
+                            ex.printStackTrace();
+                            return;
+                        }
+                        webSocket.send(App.getInstance().getToken());// 发送消息的方法
+                        webSocket.setStringCallback(new WebSocket.StringCallback() {
+                            public void onStringAvailable(String s) {
+                                Log.e("tag", s);
+                            }
+                        });
+                    }
+                });
     }
 
     @Override
