@@ -17,6 +17,7 @@ import cn.dianedun.fragment.DetectionFragment;
 import cn.dianedun.fragment.HomeFragment;
 import cn.dianedun.fragment.MineFragment;
 import cn.dianedun.fragment.VideoFragment;
+import cn.dianedun.fragment.VideoFragment_offline;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppManager;
 import cn.dianedun.tools.MyAsyncTast;
@@ -66,7 +67,7 @@ public class MainActivity extends BaseActivity {
         super.initData();
         mFragments[0] = HomeFragment.getInstance();
         mFragments[1] = DetectionFragment.getInstance();
-        mFragments[2] = VideoFragment.getInstance();
+        mFragments[2] = VideoFragment_offline.getInstance();
         mFragments[3] = MineFragment.getInstance();
 
         loadMultipleRootFragment(R.id.am_contanier, 0, mFragments);

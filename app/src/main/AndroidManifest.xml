@@ -107,6 +107,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
+        <activity android:name=".activity.VideoShowActivity_offline"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="adjustPan|stateHidden"></activity>
         <activity
             android:name=".activity.MainActivity"
             android:launchMode="singleTask"
