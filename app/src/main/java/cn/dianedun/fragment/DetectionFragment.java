@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -119,7 +120,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Override
     protected void initView(View contentView) {
         super.initView(contentView);
-        if (App.getInstance().getIsAdmin().equals("2")) {
+        if (!TextUtils.isEmpty(App.getInstance().getIsAdmin()) && App.getInstance().getIsAdmin().equals("2")) {
             setTvTitleText("概览");
             mapView.setVisibility(View.VISIBLE);
             ll_detection_all.setVisibility(View.GONE);

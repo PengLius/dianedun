@@ -1,8 +1,9 @@
 package cn.dianedun.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,7 +13,6 @@ import android.widget.RelativeLayout;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.vise.xsnow.net.api.ViseApi;
 import com.vise.xsnow.net.callback.ApiCallback;
@@ -26,11 +26,13 @@ import java.util.List;
 import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.activity.VideoShowActivity;
+import cn.dianedun.activity.VideoShowActivity_offline;
 import cn.dianedun.base.BaseTitlFragment;
 import cn.dianedun.bean.DepartPlacesListBean;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.view.SpitVideoPopView;
+import cn.dianedun.view.SpitVideoPopView_offline;
 
 import static android.view.View.GONE;
 
@@ -38,7 +40,7 @@ import static android.view.View.GONE;
  * Created by Administrator on 2017/8/3.
  */
 
-public class VideoFragment extends BaseTitlFragment {
+public class VideoFragment_offline extends BaseTitlFragment {
 
     protected static final String TAG = "VideoFragment";
 
@@ -54,8 +56,8 @@ public class VideoFragment extends BaseTitlFragment {
     @Bind(R.id.fv_rl_nodata)
     RelativeLayout mRlNodata;
 
-    public static VideoFragment getInstance() {
-        VideoFragment fragment = new VideoFragment();
+    public static VideoFragment_offline getInstance() {
+        VideoFragment_offline fragment = new VideoFragment_offline();
         fragment.setArguments(new Bundle());
         return fragment;
     }
@@ -159,7 +161,6 @@ public class VideoFragment extends BaseTitlFragment {
     }
 
     boolean mInitLoad = false;
-
     private void initRefreshLayout(){
         mRefreshLayout.setEnableLoadmore(false);
         mRefreshLayout.setOnRefreshListener(new OnRefreshListener() {
@@ -171,7 +172,6 @@ public class VideoFragment extends BaseTitlFragment {
         });
     }
 
-
     private CommonAdapter mCameraAdapter;
     private void addCameraList(List<DepartPlacesListBean.DataBean.ResultBean> result) {
         if (mCameraAdapter == null){
@@ -182,17 +182,22 @@ public class VideoFragment extends BaseTitlFragment {
                     holder.setOnClickListener(R.id.ic_img_spitVideo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            SpitVideoPopView spitVideoPopView = new SpitVideoPopView(LayoutInflater.from(_mActivity).inflate(R.layout.view_pop_spitvideo,null),
+                            SpitVideoPopView_offline spitVideoPopView = new SpitVideoPopView_offline(LayoutInflater.from(_mActivity).inflate(R.layout.view_pop_spitvideo,null),
                                     ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true,bean.getId());
-                            spitVideoPopView.setOnVideoSelect(new SpitVideoPopView.OnVideoSelect() {
+                            spitVideoPopView.setOnVideoSelect(new SpitVideoPopView_offline.OnVideoSelect() {
                                 @Override
                                 public void onVideoSelect(int tag,int pos) {
-                                    Intent intent = new Intent(_mActivity, VideoShowActivity.class);
+                                    Intent intent = new Intent(_mActivity, VideoShowActivity_offline.class);
                                     intent.putExtra("id", bean.getId());
                                     intent.putExtra("place",bean.getDepartname());
                                     intent.putExtra("spit", tag);
                                     intent.putExtra("pos", String.valueOf(pos));
                                     startActivity(intent);
+                                }
+
+                                @Override
+                                public void onVideoSelectFaild(int errorCode, String errorMsg) {
+                                    onLoaginFailed(errorCode,errorMsg);
                                 }
                             });
                             spitVideoPopView.showPopupWindow(v);
@@ -203,7 +208,7 @@ public class VideoFragment extends BaseTitlFragment {
                     holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Intent intent = new Intent(_mActivity, VideoShowActivity.class);
+                            Intent intent = new Intent(_mActivity, VideoShowActivity_offline.class);
                             intent.putExtra("id", bean.getId());
                             intent.putExtra("place",bean.getDepartname());
                             intent.putExtra("pos", "1");
@@ -217,6 +222,24 @@ public class VideoFragment extends BaseTitlFragment {
         }else{
             mCameraAdapter.addDatas(result);
             mCameraAdapter.notifyDataSetChanged();
+        }
+    }
+    public void onLoaginFailed(int errorCode, String errorMsg) {
+        int ERROR_NET_DVR_PASSWORD_ERROR =
+                1; //username or password is incorrect. The user name or password entered when registering is incorrect.
+        int ERROR_NET_DVR_PASSWORD_ERROR2 =
+                1100; //username or password is incorrect. The user name or password entered when registering is incorrect.
+        if (errorCode == ERROR_NET_DVR_PASSWORD_ERROR || errorCode == ERROR_NET_DVR_PASSWORD_ERROR2) {
+            showToast("局域网摄像头账号或密码错误");
+        } else {
+            new AlertDialog.Builder(_mActivity).setMessage("错误码" + errorCode)
+                    .setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    })
+                    .show();
         }
     }
 
