@@ -550,6 +550,20 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Override
     public void onSupportVisible() {
         super.onSupportVisible();
-        srl_detection.autoRefresh();
+        if (App.getInstance().getIsAdmin().equals("2")) {
+            setTvTitleText("概览");
+            mapView.setVisibility(View.VISIBLE);
+            ll_detection_all.setVisibility(View.GONE);
+//            mapView.onCreate(savedInstanceState);
+            if (aMap == null) {
+                aMap = mapView.getMap();
+            }
+            aMap.clear();
+            setImgRightVisibility(View.GONE);
+            setTitleBack(R.mipmap.home_backg_null);
+            initMap();
+        } else {
+            srl_detection.autoRefresh();
+        }
     }
 }

@@ -68,6 +68,7 @@ import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.DataUtil;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.dianedun.view.MyEditText;
 import cn.dianedun.view.NoScrollGridview;
 import dev.xesam.android.toolbox.timer.CountDownTimer;
 import dev.xesam.android.toolbox.timer.CountTimer;
@@ -100,7 +101,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
     TextView tv_annul_xxadr;
 
     @Bind(R.id.ed_retroaction_cause)
-    EditText ed_retroaction_cause;
+    MyEditText ed_retroaction_cause;
 
     @Bind(R.id.img_retroaction_add)
     ImageView img_retroaction_add;
@@ -518,6 +519,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
             case R.id.img_yuyin_close:
                 //关闭录音弹窗
                 pop3.dismiss();
+                break;
             case R.id.rl_retroation:
                 if (types == 0) {
                     player.start();
@@ -606,7 +608,7 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
-                    showToast(ex.getCause() + "");
+                    showToast("上传失败");
                     diaglog.dismiss();
                 }
 

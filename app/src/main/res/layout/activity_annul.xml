@@ -188,7 +188,7 @@
                 android:layout_marginTop="10dp"
                 android:background="#6019246B">
 
-                <EditText
+                <cn.dianedun.view.MyEditText
                     android:id="@+id/ed_annul_cause"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
@@ -199,6 +199,7 @@
                     android:background="@null"
                     android:gravity="left|top"
                     android:hint="请输入撤销原因"
+                    android:maxLength="500"
                     android:textColor="#FFF"
                     android:textColorHint="#70D9D9D9"
                     android:textSize="@dimen/content_text_s14" />

@@ -308,12 +308,17 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
         chart.setZoomType(ZoomType.HORIZONTAL);
         chart.setLineChartData(datas);
         Viewport v = new Viewport(chart.getMaximumViewport());
-        if(max<5){
+
+        if (max < 5.0f) {
             v.top = max + 5;
-        }else if(max<50){
+        } else if (max < 50) {
             v.top = max + 10;
-        }else{
+        } else if (max < 100) {
             v.top = max + 20;
+        } else if (max < 150) {
+            v.top = max + 30;
+        } else {
+            v.top = max / 5 + max;
         }
         v.bottom = 0;
         chart.setMaximumViewport(v);

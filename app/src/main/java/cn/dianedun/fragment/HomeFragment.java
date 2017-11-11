@@ -97,7 +97,7 @@ public class HomeFragment extends BaseTitlFragment {
         setImgRightVisibility(View.VISIBLE);
         setImgLeft(R.mipmap.home_green_add);
         setImgRight(R.mipmap.home_look);
-        itemList =new ArrayList<>();
+        itemList = new ArrayList<>();
         adapter = new IndentCusAdapter();
         lv_home.setAdapter(adapter);
         initRefreshLayout();
@@ -178,6 +178,7 @@ public class HomeFragment extends BaseTitlFragment {
             public void onError(String result) {
                 showToast(result);
                 ll_home_null.setVisibility(View.VISIBLE);
+                lv_home.setVisibility(View.GONE);
                 srl_home.finishRefresh();
             }
 
