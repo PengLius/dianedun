@@ -67,7 +67,7 @@ public class MainActivity extends BaseActivity {
         super.initData();
         mFragments[0] = HomeFragment.getInstance();
         mFragments[1] = DetectionFragment.getInstance();
-        mFragments[2] = VideoFragment_offline.getInstance();
+        mFragments[2] = VideoFragment.getInstance();
         mFragments[3] = MineFragment.getInstance();
 
         loadMultipleRootFragment(R.id.am_contanier, 0, mFragments);

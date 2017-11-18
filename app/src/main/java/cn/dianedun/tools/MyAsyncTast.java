@@ -83,7 +83,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
         if (hashMap.size() > 0) {
             for (Map.Entry<String, String> entry : hashMap.entrySet()) {
                 params1.addBodyParameter(entry.getKey(), entry.getValue());
-                Log.e(entry.getKey(), entry.getValue());
+//                Log.e(entry.getKey(), entry.getValue());
             }
         }
         if (token != null && !token.equals("")) {
