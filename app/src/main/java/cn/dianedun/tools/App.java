@@ -37,6 +37,8 @@ public class App extends MultiDexApplication {
         initSDK();
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
+        CrashHandler crashHandler = CrashHandler.getInstance();
+        crashHandler.init(mInstance);
 
     }
 

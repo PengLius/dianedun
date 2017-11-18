@@ -182,25 +182,25 @@ public class VideoFragment_offline extends BaseTitlFragment {
                     holder.setOnClickListener(R.id.ic_img_spitVideo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            SpitVideoPopView_offline spitVideoPopView = new SpitVideoPopView_offline(LayoutInflater.from(_mActivity).inflate(R.layout.view_pop_spitvideo,null),
-                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true,bean.getId());
-                            spitVideoPopView.setOnVideoSelect(new SpitVideoPopView_offline.OnVideoSelect() {
-                                @Override
-                                public void onVideoSelect(int tag,int pos) {
-                                    Intent intent = new Intent(_mActivity, VideoShowActivity_offline.class);
-                                    intent.putExtra("id", bean.getId());
-                                    intent.putExtra("place",bean.getDepartname());
-                                    intent.putExtra("spit", tag);
-                                    intent.putExtra("pos", String.valueOf(pos));
-                                    startActivity(intent);
-                                }
-
-                                @Override
-                                public void onVideoSelectFaild(int errorCode, String errorMsg) {
-                                    onLoaginFailed(errorCode,errorMsg);
-                                }
-                            });
-                            spitVideoPopView.showPopupWindow(v);
+//                            SpitVideoPopView_offline spitVideoPopView = new SpitVideoPopView_offline(LayoutInflater.from(_mActivity).inflate(R.layout.view_pop_spitvideo,null),
+//                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true,bean.getId());
+//                            spitVideoPopView.setOnVideoSelect(new SpitVideoPopView_offline.OnVideoSelect() {
+//                                @Override
+//                                public void onVideoSelect(int tag,int pos) {
+//                                    Intent intent = new Intent(_mActivity, VideoShowActivity_offline.class);
+//                                    intent.putExtra("id", bean.getId());
+//                                    intent.putExtra("place",bean.getDepartname());
+//                                    intent.putExtra("spit", tag);
+//                                    intent.putExtra("pos", String.valueOf(pos));
+//                                    startActivity(intent);
+//                                }
+//
+//                                @Override
+//                                public void onVideoSelectFaild(int errorCode, String errorMsg) {
+//                                    onLoaginFailed(errorCode,errorMsg);
+//                                }
+//                            });
+//                            spitVideoPopView.showPopupWindow(v);
                         }
                     });
                     holder.setText(R.id.ic_tv_recenttime,bean.getAddress());

@@ -7,9 +7,8 @@ package cn.dianedun.tools;
 public class AppConfig {
     //        public static final String PORTS = "http://192.168.0.11:8080";//线下
 //    public static final String PORTS = "http://192.168.0.13:8080";//线下2
-//    public static final String PORTS = "http://47.92.155.108:8081";//线上
-
-    public static final String PORTS = "http://192.168.1.2:8080/dyd-app";//局域网
+    public static final String PORTS = "http://47.92.155.108:8081";//线上
+//    public static final String PORTS = "http://192.168.1.2:8080/dyd-app";//局域网
 
 
     public static final String LOGIN = PORTS + "/user/login";//登陆接口
@@ -48,7 +47,7 @@ public class AppConfig {
     public static final String STATSWATER = PORTS + "/count/statsWater";//水浸数据统计
 
 
-//    public static final String WEB_CARMERA_PORTS = "http://47.92.155.108:8082";//线上WEB
+    //    public static final String WEB_CARMERA_PORTS = "http://47.92.155.108:8082";//线上WEB
 //    public static final String APP_CARMERA_PORTS = "http://47.92.155.108:8081";//线上APP
     public static final String WEB_CARMERA_PORTS = "http://192.168.1.2:8080/dyd-pc";//线上WEB
     public static final String APP_CARMERA_PORTS = "http://192.168.1.2:8080/dyd-app";//线上APP

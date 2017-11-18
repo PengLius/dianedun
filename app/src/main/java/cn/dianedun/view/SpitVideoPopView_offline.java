@@ -400,6 +400,7 @@ public class SpitVideoPopView_offline extends PopupWindow {
                                                 @Override
                                                 public void run() {
                                                     mOnVideoSelect.onVideoSelect(position,pos);
+                                                    dismiss();
                                                 }
                                             });
                                         } catch (final BaseException e) {
@@ -408,6 +409,7 @@ public class SpitVideoPopView_offline extends PopupWindow {
                                                 @Override
                                                 public void run() {
                                                     mOnVideoSelect.onVideoSelectFaild(e.getErrorCode(), e.getMessage());
+                                                    dismiss();
                                                 }
                                             });
                                         }

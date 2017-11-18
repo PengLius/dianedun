@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +21,8 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
+import java.io.File;
+import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,6 +157,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                 if (pdsId != null) {
                     getPDSAll(pdsId, false);
                 } else {
+                    initDatas("第一次刷新数据");
                     fristData();
                 }
             }
@@ -365,11 +369,18 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
 
             @Override
             public void send(String result) {
+                initDatas("已经拿到配电室id，准备获得配电室详细信息");
+                initDatas(result);
                 xBean = GsonUtil.parseJsonWithGson(result, DetactionXBean.class);
+                initDatas("解析成功");
                 gaoCeFragment.setData(xBean, RoomId, depart);
+                initDatas("高压侧成功");
                 diYaFragment.setData(xBean, RoomId, depart);
+                initDatas("低压侧成功");
                 temperatureFragment.setData(xBean, RoomId, depart);
+                initDatas("温度成功");
                 humidityFragment.setData(xBean, RoomId, depart);
+                initDatas("湿度成功");
                 srl_acdetection.finishRefresh();
             }
         });
@@ -388,6 +399,7 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
 
             @Override
             public void send(String result) {
+                initDatas("准备拿配电id");
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
                 pdsId = bean.getData().getSwitchRoomList().get(0).getId();
                 getPDSAll(pdsId, false);
@@ -396,5 +408,60 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
             }
         });
         myAsyncTast.execute();
+    }
+
+    private void initDatas(String result) {
+        String filePath = "/sdcard/Test/";
+        String fileName = "log.txt";
+        writeTxtToFile(result, filePath, fileName);
+    }
+
+    public void writeTxtToFile(String strcontent, String filePath, String fileName) {
+        //生成文件夹之后，再生成文件，不然会出错
+        makeFilePath(filePath, fileName);
+
+        String strFilePath = filePath + fileName;
+        // 每次写入时，都换行写
+        String strContent = strcontent + "\r\n";
+        try {
+            File file = new File(strFilePath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
+            RandomAccessFile raf = new RandomAccessFile(file, "rwd");
+            raf.seek(file.length());
+            raf.write(strContent.getBytes());
+            raf.close();
+        } catch (Exception e) {
+        }
+    }
+
+    // 生成文件
+    public File makeFilePath(String filePath, String fileName) {
+        File file = null;
+        makeRootDirectory(filePath);
+        try {
+            file = new File(filePath + fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return file;
+    }
+
+    // 生成文件夹
+    public static void makeRootDirectory(String filePath) {
+        File file = null;
+        try {
+            file = new File(filePath);
+            if (!file.exists()) {
+                file.mkdir();
+            }
+        } catch (Exception e) {
+            Log.i("error:", e + "");
+        }
     }
 }
