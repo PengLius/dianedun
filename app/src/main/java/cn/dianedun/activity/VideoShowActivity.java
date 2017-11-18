@@ -2096,18 +2096,22 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                             break;
                         case R.id.ptz_top_btn:
                             setPtzDirectionIv(RealPlayStatus.PTZ_UP);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandUp, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandUp, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
                         case R.id.ptz_bottom_btn:
                             setPtzDirectionIv(RealPlayStatus.PTZ_DOWN);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandDown, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandDown, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
                         case R.id.ptz_left_btn:
                             setPtzDirectionIv(RealPlayStatus.PTZ_LEFT);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandLeft, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandLeft, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
                         case R.id.ptz_right_btn:
                             setPtzDirectionIv(RealPlayStatus.PTZ_RIGHT);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandRight, EZConstants.EZPTZAction.EZPTZActionSTOP);
                             ptzOption(EZConstants.EZPTZCommand.EZPTZCommandRight, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
                         case R.id.rpw_ib_multiple_del:
