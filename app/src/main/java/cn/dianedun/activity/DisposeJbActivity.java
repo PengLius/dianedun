@@ -65,6 +65,7 @@ import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.dianedun.view.MyEditText;
 import cn.dianedun.view.NoScrollGridview;
 import dev.xesam.android.toolbox.timer.CountDownTimer;
 import dev.xesam.android.toolbox.timer.CountTimer;
@@ -94,7 +95,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
     TextView tv_disposejb_time;
 
     @Bind(R.id.ed_disposejb_cause)
-    EditText ed_disposejb_cause;
+    MyEditText ed_disposejb_cause;
 
     @Bind(R.id.img_disposejb_add)
     ImageView img_disposejb_add;
@@ -346,6 +347,9 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
             if (ed_disposejb_cause.getText() == null || ed_disposejb_cause.getText().toString().equals("")) {
                 showToast("请填写反馈详情");
             } else {
+                if (ed_disposejb_cause.getText() != null) {
+                    hashMap.put("result", ed_disposejb_cause.getText().toString());
+                }
                 myAsyncTast = new MyAsyncTast(DisposeJbActivity.this, hashMap, AppConfig.UPDATEALARMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
                     @Override
                     public void onError(String result) {
@@ -469,7 +473,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
 
                 @Override
                 public void onError(Throwable ex, boolean isOnCallback) {
-                    showToast(ex.getCause() + "");
+                    showToast("上传失败");
                     diaglog.dismiss();
                 }
 

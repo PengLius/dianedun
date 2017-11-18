@@ -62,6 +62,7 @@ import cn.dianedun.tools.MyAsyncTast;
 import cn.dianedun.view.DateTimeDialog;
 import cn.dianedun.view.DateTimeDialogOnlyTime;
 import cn.dianedun.view.DateTimeDialogOnlyYMD;
+import cn.dianedun.view.MyEditText;
 import dev.xesam.android.toolbox.timer.CountDownTimer;
 import dev.xesam.android.toolbox.timer.CountTimer;
 
@@ -123,7 +124,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
     TextView tv_amendgd_xxadress;
 
     @Bind(R.id.ed_amendgd_sqyy)
-    EditText ed_amendgd_sqyy;
+    MyEditText ed_amendgd_sqyy;
 
     @Bind(R.id.tv_amendgd_numb)
     TextView tv_amendgd_numb;
@@ -454,6 +455,12 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 tv_amendgd_jj.setCompoundDrawables(drawable1, null, null, null);
                 tv_amendgd_pt.setCompoundDrawables(drawable2, null, null, null);
                 break;
+            case R.id.ll_adress_close:
+                if (pop2.isShowing()) {
+                    pop2.dismiss();
+                }
+                break;
+
             case R.id.img_amendgd_add:
                 //申请人
                 if (departId != null && !departId.equals("")) {

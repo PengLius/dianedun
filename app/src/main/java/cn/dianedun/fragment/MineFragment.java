@@ -11,8 +11,10 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -439,13 +441,16 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
      * 安装对应的apk
      */
     protected void installApk(File file) {
-        //系统应用界面,源码,安装apk入口
-        Intent intent = new Intent("android.intent.action.VIEW");
-        intent.addCategory("android.intent.category.DEFAULT");
-        //文件作为数据源
-        //设置安装的类型
-        intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
-        startActivityForResult(intent, 0);
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Uri apkUri = FileProvider.getUriForFile(getActivity(), "cn.dianedun.provider", file);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+        } else {
+            intent.setDataAndType(Uri.fromFile(file), "application/vnd.android.package-archive");
+        }
+        startActivity(intent);
     }
 
     public static Dialog createLoadingDialog(Context context, String msg) {

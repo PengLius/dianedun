@@ -260,6 +260,7 @@ public class MessageActivity extends BaseTitlActivity {
                                 cache.img_itmemessage.setImageResource(R.mipmap.msg);
                                 cache.ll_itemmassge.setBackgroundColor(Color.parseColor("#60D9D9D9"));
                                 dialog = createLoadingDialog(MessageActivity.this, allList.get(position).getContents(), allList.get(position).getCreateTime());
+                                allList.get(position).setStatus(0);
                                 dialog.show();
                             }
 

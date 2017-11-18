@@ -141,9 +141,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
                 tv_hisdetails_nmb.setText(bean.getData().getOrderNum() + "");
                 if (bean.getData().getStatus() == 0) {
                     tv_hisdetails_tit.setText("撤销原因：");
-                    if (bean.getData().getRemark().equals("null")) {
+                    if (bean.getData().getRemark() == null) {
                         tv_hisdetails_cl.setText("");
                     } else {
+                        if (bean.getData().getRemark().equals("null")) {
+                            tv_hisdetails_cl.setText("");
+                        }
                         tv_hisdetails_cl.setText(bean.getData().getRemark() + "");
                     }
                 } else if (bean.getData().getStatus() == 2) {
@@ -277,6 +280,12 @@ public class HisDetailsActivity extends BaseTitlActivity {
 
                         }
                         if (bean.getData().getAlertOptionsArray().get(i).getType() == 5) {
+                            has = new HashMap<>();
+                            has.put("contents", bean.getData().getAlertOptionsArray().get(i).getContents());
+                            has.put("type", bean.getData().getAlertOptionsArray().get(i).getOptionType() + "");
+                            adjList.add(has);
+                        }
+                        if (bean.getData().getAlertOptionsArray().get(i).getType() == 6) {
                             has = new HashMap<>();
                             has.put("contents", bean.getData().getAlertOptionsArray().get(i).getContents());
                             has.put("type", bean.getData().getAlertOptionsArray().get(i).getOptionType() + "");

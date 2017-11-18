@@ -25,6 +25,7 @@ import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.DataUtil;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.dianedun.view.MyEditText;
 import dev.xesam.android.toolbox.timer.CountDownTimer;
 
 /**
@@ -40,7 +41,7 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
     TextView tv_examine_reject;
 
     @Bind(R.id.ed_examine_cause)
-    EditText ed_examine_cause;
+    MyEditText ed_examine_cause;
 
     @Bind(R.id.rl_examine_sub)
     RelativeLayout rl_examine_sub;
