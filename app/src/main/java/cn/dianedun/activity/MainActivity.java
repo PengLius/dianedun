@@ -1,24 +1,11 @@
 package cn.dianedun.activity;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 
-import com.koushikdutta.async.ByteBufferList;
-import com.koushikdutta.async.DataEmitter;
-import com.koushikdutta.async.callback.DataCallback;
-import com.koushikdutta.async.http.AsyncHttpClient;
-import com.koushikdutta.async.http.AsyncHttpResponse;
-import com.koushikdutta.async.http.WebSocket;
-import com.koushikdutta.async.http.server.AsyncHttpServer;
-import com.koushikdutta.async.http.server.AsyncHttpServerRequest;
+import com.umeng.analytics.MobclickAgent;
 import com.vise.xsnow.event.EventSubscribe;
 
-import org.json.JSONObject;
 
 import butterknife.Bind;
 import cn.dianedun.R;
@@ -28,9 +15,9 @@ import cn.dianedun.fragment.DetectionFragment;
 import cn.dianedun.fragment.HomeFragment;
 import cn.dianedun.fragment.MineFragment;
 import cn.dianedun.fragment.VideoFragment;
-import cn.dianedun.fragment.VideoFragment_offline;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppManager;
+import cn.dianedun.tools.OtherService;
 import cn.dianedun.view.BottomBarView.BottomBar;
 import cn.dianedun.view.BottomBarView.BottomBarTab;
 import me.yokeyword.fragmentation.SupportFragment;
@@ -49,24 +36,9 @@ public class MainActivity extends BaseActivity {
         setOnResumeRegisterBus(true);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        AppManager.getInstance().addActivity(MainActivity.this);
-        AsyncHttpClient.getDefaultInstance().websocket(
-                "ws://192.168.6.112:8080/webSocketServer",
-                "8080", new AsyncHttpClient.WebSocketConnectCallback() {
-                    @Override
-                    public void onCompleted(Exception ex, WebSocket webSocket) {
-                        if (ex != null) {
-                            ex.printStackTrace();
-                            return;
-                        }
-                        webSocket.send(App.getInstance().getToken());// 发送消息的方法
-                        webSocket.setStringCallback(new WebSocket.StringCallback() {
-                            public void onStringAvailable(String s) {
-                                Log.e("tag", s);
-                            }
-                        });
-                    }
-                });
+        com.vise.xsnow.manager.AppManager.getInstance().addActivity(this);
+        Intent intent = new Intent(getApplicationContext(), OtherService.class);
+        startService(intent);
     }
 
     @Override
@@ -113,5 +85,15 @@ public class MainActivity extends BaseActivity {
             public void onTabReselected(int position) {
             }
         });
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onResume(this);       //统计时长
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPause(this);
     }
 }

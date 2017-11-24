@@ -3,6 +3,7 @@ package cn.dianedun.base;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.ColorInt;
 import android.view.LayoutInflater;
@@ -21,6 +22,8 @@ import butterknife.ButterKnife;
 import cn.dianedun.R;
 import cn.dianedun.tools.AppManager;
 import cn.dianedun.tools.CommonUtil;
+
+import static android.view.View.GONE;
 
 /**
  * Created by Administrator on 2017/8/3.
@@ -43,7 +46,7 @@ public abstract class BaseTitlActivity extends Activity {
         super.onCreate(savedInstanceState);
         mContext = this;
         mClassThis = this.getClass();
-        AppManager.getInstance().addActivity(this);
+        com.vise.xsnow.manager.AppManager.getInstance().addActivity(this);
     }
 
     @Override
@@ -61,6 +64,9 @@ public abstract class BaseTitlActivity extends Activity {
 
     protected void initView() {
         mDeadStatusView = findViewById(R.id.ftr_dead_statusbg);
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            mDeadStatusView.setVisibility(GONE);
+        }
         vt_tv_title = (TextView) findViewById(R.id.vt_tv_title);
         mDeadStatusView.getLayoutParams().height = CommonUtil.getStatusBarHeight(this);
     }

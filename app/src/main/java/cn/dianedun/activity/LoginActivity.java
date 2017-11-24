@@ -20,6 +20,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
 import com.vise.xsnow.manager.AppManager;
 
 import org.json.JSONException;
@@ -346,6 +347,8 @@ public class LoginActivity extends Activity implements View.OnClickListener {
 
     public void onPause() {
         super.onPause();
+        MobclickAgent.onPageEnd("登录");
+        MobclickAgent.onPause(this);
         closeKeyboard();
     }
 
@@ -355,5 +358,10 @@ public class LoginActivity extends Activity implements View.OnClickListener {
             InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             inputMethodManager.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("登录");
+        MobclickAgent.onResume(this);
     }
 }

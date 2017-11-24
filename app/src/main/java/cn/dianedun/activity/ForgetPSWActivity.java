@@ -14,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.umeng.analytics.MobclickAgent;
 import com.vise.xsnow.manager.AppManager;
 
 import org.json.JSONException;
@@ -246,4 +247,15 @@ public class  ForgetPSWActivity extends BaseTitlActivity implements View.OnClick
 
         }
     };
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("忘记密码");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("忘记密码");
+        MobclickAgent.onPause(this);
+    }
 }

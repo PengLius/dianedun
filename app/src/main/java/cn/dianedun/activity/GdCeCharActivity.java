@@ -14,6 +14,7 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -497,5 +498,16 @@ public class GdCeCharActivity extends BaseTitlActivity implements View.OnClickLi
             sv_gdce.requestDisallowInterceptTouchEvent(false);
         }
         return false;
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("实时监测");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("实时监测");
+        MobclickAgent.onPause(this);
     }
 }

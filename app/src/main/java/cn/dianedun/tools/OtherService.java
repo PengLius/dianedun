@@ -1,65 +1,95 @@
 package cn.dianedun.tools;
 
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Service;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
+import android.util.Log;
+import android.widget.TextView;
 
-import cn.dianedun.activity.LoginActivity;
-import cn.dianedun.activity.WeActivity;
+import com.koushikdutta.async.ByteBufferList;
+import com.koushikdutta.async.DataEmitter;
+import com.koushikdutta.async.callback.CompletedCallback;
+import com.koushikdutta.async.callback.DataCallback;
+import com.koushikdutta.async.http.AsyncHttpClient;
+import com.koushikdutta.async.http.WebSocket;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import cn.dianedun.activity.DialogActivity;
+
 
 /**
  * Created by Administrator on 2017/11/2.
  */
 
 public class OtherService extends Service {
-    private Thread thread;
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.arg1 == 0) {
-                Intent intent = new Intent(getApplicationContext(), WeActivity.class);
-                startActivity(intent);
-            }
-        }
-    };
+
 
     @Override
     public void onCreate() {
         super.onCreate();
-        thread = new Thread(runnable);
-        thread.start();
+        startWebSocket();
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        return super.onStartCommand(intent, flags, startId);
+        return START_STICKY;
+    }
+
+    private AsyncHttpClient.WebSocketConnectCallback callback = new AsyncHttpClient.WebSocketConnectCallback() {
+        @Override
+        public void onCompleted(Exception ex, final WebSocket webSocket) {
+            if (ex != null) {
+                ex.printStackTrace();
+                startWebSocket();
+                return;
+            }
+            webSocket.setClosedCallback(new CompletedCallback() {
+                @Override
+                public void onCompleted(Exception ex) {
+                    startWebSocket();
+                }
+            });
+
+            final JSONObject jsonObject = new JSONObject();
+            try {
+                jsonObject.put("token", App.getInstance().getToken() + "");
+                webSocket.send(jsonObject + "");// 发送消息的方法
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            webSocket.setStringCallback(new WebSocket.StringCallback() {
+                public void onStringAvailable(String s) {
+                    try {
+                        JSONObject jsonObject1 = new JSONObject(s);
+                        if (jsonObject1.getString("code").equals("0")) {
+                            if (jsonObject1.getString("data").equals("JB")) {
+                                Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+                                startActivity(intent);
+                            }
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        }
+    };
+
+    public void startWebSocket() {
+        AsyncHttpClient.getDefaultInstance().websocket(
+//                "ws://47.92.155.108:8081/webSocketServer",
+//                "8081",
+                "ws://dyd-app.dianedun.cn/webSocketServer",
+                "443",
+                callback);
     }
 
     @Override
     public IBinder onBind(Intent intent) {
         return null;
     }
-
-    Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            try {
-                while (true) {
-                    Thread.sleep(10000);
-                    Message message = new Message();
-                    message.arg1 = 0;
-                    handler.sendMessage(message);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    };
 }

@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.umeng.analytics.MobclickAgent;
 
 import org.w3c.dom.Text;
 
@@ -448,5 +449,16 @@ public class HisDetailsActivity extends BaseTitlActivity {
         super.onDestroy();
         Glide.get(this).clearMemory();
         System.gc();
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("历史工单详情");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("历史工单详情");
+        MobclickAgent.onPause(this);
     }
 }

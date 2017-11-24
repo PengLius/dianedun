@@ -36,6 +36,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.thinkcool.circletextimageview.CircleTextImageView;
+import com.umeng.analytics.MobclickAgent;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -472,5 +473,15 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
         loadingDialog.setCancelable(false);// 不可以用“返回键”取消
         loadingDialog.setContentView(layout);// 设置布局
         return loadingDialog;
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("我的");
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("我的");
     }
 }

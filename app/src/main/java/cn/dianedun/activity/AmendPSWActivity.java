@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 
 import com.bumptech.glide.Glide;
+import com.umeng.analytics.MobclickAgent;
 import com.vise.xsnow.manager.AppManager;
 
 import org.json.JSONException;
@@ -248,7 +249,16 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
                     e.printStackTrace();
                 }
             }
-
         }
     };
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("修改密码");
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("修改密码");
+        MobclickAgent.onPause(this);
+    }
 }

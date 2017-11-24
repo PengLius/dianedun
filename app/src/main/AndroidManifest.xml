@@ -25,7 +25,6 @@
     <uses-permission android:name="android.permission.READSMS" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -59,7 +58,6 @@
     <uses-permission android:name="android.permission.RECEIVE_USER_PRESENT" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.VIBRATE" />
@@ -67,6 +65,8 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
     <!-- Optional. Required for location feature -->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- 用于开启 debug 版本的应用在6.0 系统上 层叠窗口权限 -->
@@ -84,6 +84,9 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="598bf5bc310c93481f0012c3"></meta-data>
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
@@ -108,9 +111,10 @@
                 android:resource="@xml/file_paths" />
         </provider>
 
-        <activity android:name=".activity.VideoShowActivity_offline"
+        <activity
+            android:name=".activity.VideoShowActivity_offline"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait" />
 
         <activity
             android:name=".activity.MainActivity"
@@ -264,8 +268,20 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden"></activity>
+        <activity
+            android:name=".activity.DialogActivity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/CustomActivityDialogStyle"
+            android:windowSoftInputMode="adjustPan|stateHidden"></activity>
 
-        <service android:name=".tools.OtherService"></service>
+        <service
+            android:name=".tools.OtherService"
+            android:enabled="true">
+            <intent-filter android:priority="1000">
+                <action android:name="com.tools.myservice" />
+            </intent-filter>
+        </service>
 
         <!-- Required SDK 核心功能-->
         <!-- 可配置android:process参数将PushService放在其他进程中 -->

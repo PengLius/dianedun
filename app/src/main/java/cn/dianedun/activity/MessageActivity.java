@@ -21,6 +21,7 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -303,6 +304,18 @@ public class MessageActivity extends BaseTitlActivity {
         loadingDialog.setCancelable(true);// 不可以用“返回键”取消
         loadingDialog.setContentView(layout);// 设置布局
         return loadingDialog;
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("我的消息");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("我的消息");
+        MobclickAgent.onPause(this);
     }
 
 }

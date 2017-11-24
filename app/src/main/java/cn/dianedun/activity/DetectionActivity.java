@@ -20,6 +20,7 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -463,5 +464,17 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
         } catch (Exception e) {
             Log.i("error:", e + "");
         }
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("监测Activity");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("监测Activity");
+        MobclickAgent.onPause(this);
     }
 }

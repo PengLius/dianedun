@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.animation.AlphaAnimation;
 import android.widget.RelativeLayout;
 
+import com.umeng.analytics.MobclickAgent;
 import com.yanzhenjie.permission.AndPermission;
 
 import java.util.Timer;
@@ -67,5 +68,17 @@ public class WelcomeActivity extends Activity {
         //使用timer.schedule（）方法调用timerTask，定时3秒后执行run
         timer.schedule(timerTask, 3000);
 
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("启动页");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("启动页");
+        MobclickAgent.onPause(this);
     }
 }

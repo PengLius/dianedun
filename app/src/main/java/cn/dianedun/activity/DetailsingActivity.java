@@ -11,6 +11,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.umeng.analytics.MobclickAgent;
+
 import java.util.HashMap;
 
 import butterknife.Bind;
@@ -140,8 +142,8 @@ public class DetailsingActivity extends BaseTitlActivity {
                 tv_detailsing_name.setText(bean.getData().getHandlePersion() + "");
                 String beginTime = bean.getData().getBeginTime() / 1000 + "";
                 String endTime = bean.getData().getEndTime() / 1000 + "";
-                tv_detailsing_startime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm") + ":00");
-                tv_detailsing_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm") + ":00");
+                tv_detailsing_startime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm:ss"));
+                tv_detailsing_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm:ss"));
                 tv_detailsing_cause.setText(bean.getData().getCause() + "");
                 tv_detailsing_xxadress.setText(bean.getData().getAddress() + "");
                 tv_detailsing_adress.setText(bean.getData().getDepartName() + "");
@@ -255,5 +257,15 @@ public class DetailsingActivity extends BaseTitlActivity {
             }
         });
         myAsyncTast.execute();
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("工单详情");
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("工单详情");
+        MobclickAgent.onPause(this);
     }
 }

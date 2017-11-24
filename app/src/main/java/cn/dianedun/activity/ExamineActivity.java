@@ -13,6 +13,8 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.umeng.analytics.MobclickAgent;
+
 import java.util.HashMap;
 
 import butterknife.Bind;
@@ -162,8 +164,8 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                 tv_examine_sqr.setText(bean.getData().getHandlePersion() + "");
                 String beginTime = bean.getData().getBeginTime() / 1000 + "";
                 String endTime = bean.getData().getEndTime() / 1000 + "";
-                tv_examine_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm") + ":00");
-                tv_examine_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm") + ":00");
+                tv_examine_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm:ss"));
+                tv_examine_endtime.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm:ss"));
                 tv_examine_cause.setText(bean.getData().getCause() + "");
                 tv_annul_xxadr.setText(bean.getData().getAddress() + "");
                 tv_annul_adr.setText(bean.getData().getDepartName() + "");
@@ -352,5 +354,16 @@ public class ExamineActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
 
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("工单审批");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("工单审批");
+        MobclickAgent.onPause(this);
     }
 }

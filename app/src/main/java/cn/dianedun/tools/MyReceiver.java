@@ -10,6 +10,7 @@ import android.os.Message;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import cn.dianedun.activity.DisposeJbActivity;
 import cn.dianedun.activity.MessageActivity;
 import cn.jpush.android.api.JPushInterface;
 
@@ -26,9 +27,16 @@ public class MyReceiver extends BroadcastReceiver {
                 String jsonStr = bundle.getString(JPushInterface.EXTRA_EXTRA);
                 JSONObject jsonObject = new JSONObject(jsonStr);
                 String type = jsonObject.getString("type");
-                Intent i = new Intent(context, MessageActivity.class);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                context.startActivity(i);
+                if (type.equals("jb")) {
+                    Intent i = new Intent(context, DisposeJbActivity.class);
+                    i.putExtra("id", jsonObject.getString("id"));
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    context.startActivity(i);
+                } else if (type.equals("msg")) {
+                    Intent i = new Intent(context, MessageActivity.class);
+                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    context.startActivity(i);
+                }
             } catch (JSONException e) {
                 e.printStackTrace();
             }
