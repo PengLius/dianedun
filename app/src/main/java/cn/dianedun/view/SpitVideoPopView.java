@@ -342,6 +342,7 @@ public class SpitVideoPopView extends PopupWindow {
             public void onClick(View v) {
                 if (mOnVideoSelect!=null)
                     mOnVideoSelect.onVideoSelect(-1,0);
+                dismiss();
             }
         });
         mTv9box.setOnClickListener(new View.OnClickListener() {
@@ -349,6 +350,7 @@ public class SpitVideoPopView extends PopupWindow {
             public void onClick(View v) {
                 if (mOnVideoSelect!=null)
                     mOnVideoSelect.onVideoSelect(-2,0);
+                dismiss();
             }
         });
 

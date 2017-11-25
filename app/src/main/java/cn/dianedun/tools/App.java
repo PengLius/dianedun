@@ -6,6 +6,7 @@ import android.support.multidex.MultiDexApplication;
 import android.util.Log;
 
 
+import com.ezvizuikit.open.EZUIKit;
 import com.videogo.openapi.EZOpenSDK;
 
 import org.xutils.BuildConfig;
@@ -49,6 +50,8 @@ public class App extends MultiDexApplication {
             EZOpenSDK.showSDKLog(true);
 
             EZOpenSDK.enableP2P(false);
+
+            EZUIKit.setDebug(true);
 
             EZOpenSDK.initLib(this, AppKey, "");
         }

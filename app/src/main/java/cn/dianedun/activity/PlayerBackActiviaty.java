@@ -1,5 +1,6 @@
 package cn.dianedun.activity;
 
+import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -20,6 +21,7 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -70,7 +72,6 @@ import static cn.dianedun.activity.VideoShowActivity.MSG_PLAY_UI_UPDATE;
  */
 
 public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUIPlayerCallBack ,
-        DateTimeDialogOnlyYMD.MyOnDateSetListener, DateTimeDialogOnlyTime.MyOnDateSetListener, DateTimeDialog.MyOnDateSetListener,
         WindowSizeChangeNotifier.OnWindowSizeChangedListener {
 
     @Bind(R.id.av_img_back)
@@ -185,6 +186,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     public static final String PLAY_URL = "play_url";
     public static final String PLAY_PRE_URL = "PLAY_PRE_URL";
     public static final String PLAY_DATE = "play_date";
+    public static final String PLACENAME = "playname";
     /**
      * onresume时是否恢复播放
      */
@@ -206,12 +208,13 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
      * @param accesstoken 开发者登录授权的accesstoken
      * @param url         预览url
      */
-    public static void startPlayBackActivity(Context context,String accesstoken, String url,String prefixStr,Date date) {
+    public static void startPlayBackActivity(Context context,String accesstoken, String url,String prefixStr,Calendar date,String placesName) {
         Intent intent = new Intent(context, PlayerBackActiviaty.class);
         intent.putExtra(AccessToekn, accesstoken);
         intent.putExtra(PLAY_URL, url);
         intent.putExtra(PLAY_PRE_URL, prefixStr);
         intent.putExtra(PLAY_DATE, date);
+        intent.putExtra(PLACENAME, placesName);
         context.startActivity(intent);
     }
 
@@ -223,16 +226,6 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
 
     LocalInfo mLocalInfo = null;
 
-    @Override
-    public void onDateSet(Date date, int type) {
-        mCurDate = date;
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        String url = mPlayPreUrl + calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        mTvTitleDate.setText(calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日");
-        mEZUiPlayBack.setUrl(url);
-    }
     private String getMonth(Calendar calendar){
         int month = calendar.get(Calendar.MONTH) + 1;
         if (month < 10){
@@ -240,23 +233,21 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         }
         return String.valueOf(month);
     }
-    @Override
-    public void onDateSet(Date date) {
 
-    }
-
-    private Date mCurDate;
+//    private Date mCurDate;
+    private Calendar mCurCalendar;
     @Override
     protected void initView() {
         super.initView();
         mAccesstoken = getIntent().getStringExtra(AccessToekn);
         mPlayUrl = getIntent().getStringExtra(PLAY_URL);
         mPlayPreUrl = getIntent().getStringExtra(PLAY_PRE_URL);
-        mCurDate = (Date) getIntent().getSerializableExtra(PLAY_DATE);
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(mCurDate);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        mTvTitleDate.setText(calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日");
+        mCurCalendar = (Calendar) getIntent().getSerializableExtra(PLAY_DATE);
+        mTvPlaces.setText(getIntent().getStringExtra(PLACENAME));
+        mTimerShaftBar.setRefereshPlayTimeWithPlayer();
+        mTimerShaftBar.setPlayCalendar(mCurCalendar);
+        int month = mCurCalendar.get(Calendar.MONTH) + 1;
+        mTvTitleDate.setText(mCurCalendar.get(Calendar.YEAR) + "年" +  month + "月" + mCurCalendar.get(Calendar.DAY_OF_MONTH) + "日");
         mLocalInfo = LocalInfo.getInstance();
         mEZUiPlayBack.setbPlayBackUse(true);
         DisplayMetrics metric = new DisplayMetrics();
@@ -360,6 +351,8 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             mScreenOrientationHelper.portrait();
             return;
         }
+        if (mLocalInfo!=null)
+            mLocalInfo.setSoundOpen(false);
         super.onBackPressedSupport();
     }
 
@@ -476,13 +469,36 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             @Override
             public void onClick(View v) {
                 //选择日期
-                DateTimeDialog dateTimeDialog = new DateTimeDialog(PlayerBackActiviaty.this, mCurDate, PlayerBackActiviaty.this, 0);
-                dateTimeDialog.show();
+                new DatePickerDialog(PlayerBackActiviaty.this, new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        mCurCalendar.set(year,month,dayOfMonth);
+                        final Calendar tempCalenar = (Calendar)mCurCalendar.clone();
+                        mTimerShaftBar.setPlayCalendar(mCurCalendar);
+                        int m = month + 1;
+                        final String url = mPlayPreUrl + year + m + dayOfMonth;
+                        mTvTitleDate.setText(year + "年" +  m + "月" + dayOfMonth + "日");
+
+                        mEZUiPlayBack.stopPlay();
+                        mEZUiPlayBack.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                tempCalenar.setTimeInMillis(0);
+                                mEZUiPlayBack.seekPlayback(tempCalenar);
+                                mEZUiPlayBack.setUrl(url);
+                            }
+                        },500);
+                    }
+                },mCurCalendar.get(Calendar.YEAR),mCurCalendar.get(Calendar.MONTH),mCurCalendar.get(Calendar.DAY_OF_MONTH)).show();
+//                DateTimeDialog dateTimeDialog = new DateTimeDialog(PlayerBackActiviaty.this, mCurDate, PlayerBackActiviaty.this, 0);
+//                dateTimeDialog.show();
             }
         });
         mImgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mLocalInfo!=null)
+                    mLocalInfo.setSoundOpen(false);
                 finish();
             }
         });
@@ -1007,7 +1023,6 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     public void onPlayTime(Calendar calendar) {
         Log.d(TAG,"onPlayTime calendar");
         if (calendar != null) {
-            // TODO: 2017/2/16 当前播放时间
             Log.d(TAG,"onPlayTime calendar = "+calendar.getTime().toString());
             mTimerShaftBar.setPlayCalendar(calendar);
         }
@@ -1018,7 +1033,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         Log.d(TAG,"onPrepared");
         ArrayList<EZRecordFile> mlist = (ArrayList) mEZUiPlayBack.getPlayList();
         if (mlist != null && mlist.size() > 0) {
-            mTimeShaftItems = new ArrayList<TimerShaftRegionItem>();
+            mTimeShaftItems = new ArrayList<>();
             for (int i = 0; i < mlist.size(); i++) {
                 TimerShaftRegionItem timeShaftItem = new TimerShaftRegionItem(mlist.get(i).getStartTime(),  mlist.get(i).getEndTime(), mlist.get(i).getRecType());
                 mTimeShaftItems.add(timeShaftItem);

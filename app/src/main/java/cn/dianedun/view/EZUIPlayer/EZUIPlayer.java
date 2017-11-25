@@ -473,8 +473,8 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
             this.post(new Runnable() {
                 public void run() {
                     if((EZUIPlayer.this.mRecordFiles == null || EZUIPlayer.this.mRecordFiles.size() <= 0) && EZUIPlayer.this.mEzUIPlayerCallBack != null) {
-                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("未查到录像文件", -1));
-                        EZUIPlayer.this.showPlayError("未查到录像文件(UE108)");
+                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("暂无资源", -1));
+                        EZUIPlayer.this.showPlayError("暂无资源(UE108)");
                     }
 
                     if(EZUIPlayer.this.mEzUIPlayerCallBack != null) {
