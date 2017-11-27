@@ -2556,6 +2556,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mEZPlayer.closeSound();
         }
         mEZPlayer.startVoiceTalk();
+        mLLTalkBack.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mEZPlayer.setVoiceTalkStatus(true);
+            }
+        },200);
     }
 
     /**
@@ -2792,6 +2798,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //分屏窗口
+                stopVoiceTalk();
                 if (mAccessTokenBean == null){
                     showToast("暂无设备信息");
                     return;

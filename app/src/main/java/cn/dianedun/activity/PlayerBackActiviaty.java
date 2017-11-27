@@ -2,6 +2,7 @@ package cn.dianedun.activity;
 
 import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
@@ -12,6 +13,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -42,6 +44,7 @@ import com.videogo.util.SDCardUtil;
 import com.videogo.util.Utils;
 import com.videogo.widget.CheckTextButton;
 import com.videogo.widget.TitleBar;
+import com.vise.xsnow.manager.AppManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -469,27 +472,63 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             @Override
             public void onClick(View v) {
                 //选择日期
-                new DatePickerDialog(PlayerBackActiviaty.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        mCurCalendar.set(year,month,dayOfMonth);
-                        final Calendar tempCalenar = (Calendar)mCurCalendar.clone();
-                        mTimerShaftBar.setPlayCalendar(mCurCalendar);
-                        int m = month + 1;
-                        final String url = mPlayPreUrl + year + m + dayOfMonth;
-                        mTvTitleDate.setText(year + "年" +  m + "月" + dayOfMonth + "日");
+                if (mIsRecording) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
+                    builder.setTitle("提示");
+                    builder.setMessage("当前正在录像，是否选择回放日期？选择日期后录像将停止并自动保存");
+                    builder.setPositiveButton("取消", null);
+                    builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            stopRealPlayRecord();
+                            new DatePickerDialog(PlayerBackActiviaty.this, new DatePickerDialog.OnDateSetListener() {
+                                @Override
+                                public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                                    mCurCalendar.set(year,month,dayOfMonth);
+                                    final Calendar tempCalenar = (Calendar)mCurCalendar.clone();
+                                    mTimerShaftBar.setPlayCalendar(mCurCalendar);
+                                    int m = month + 1;
+                                    final String url = mPlayPreUrl + year + m + dayOfMonth;
+                                    mTvTitleDate.setText(year + "年" +  m + "月" + dayOfMonth + "日");
 
-                        mEZUiPlayBack.stopPlay();
-                        mEZUiPlayBack.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                tempCalenar.setTimeInMillis(0);
-                                mEZUiPlayBack.seekPlayback(tempCalenar);
-                                mEZUiPlayBack.setUrl(url);
-                            }
-                        },500);
-                    }
-                },mCurCalendar.get(Calendar.YEAR),mCurCalendar.get(Calendar.MONTH),mCurCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                                    mEZUiPlayBack.stopPlay();
+                                    mEZUiPlayBack.postDelayed(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            tempCalenar.setTimeInMillis(0);
+                                            mEZUiPlayBack.seekPlayback(tempCalenar);
+                                            mEZUiPlayBack.setUrl(url);
+                                        }
+                                    },500);
+                                }
+                            },mCurCalendar.get(Calendar.YEAR),mCurCalendar.get(Calendar.MONTH),mCurCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                        }
+                    });
+                    builder.show();
+                    return;
+                }else{
+                    new DatePickerDialog(PlayerBackActiviaty.this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            mCurCalendar.set(year,month,dayOfMonth);
+                            final Calendar tempCalenar = (Calendar)mCurCalendar.clone();
+                            mTimerShaftBar.setPlayCalendar(mCurCalendar);
+                            int m = month + 1;
+                            final String url = mPlayPreUrl + year + m + dayOfMonth;
+                            mTvTitleDate.setText(year + "年" +  m + "月" + dayOfMonth + "日");
+
+                            mEZUiPlayBack.stopPlay();
+                            mEZUiPlayBack.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    tempCalenar.setTimeInMillis(0);
+                                    mEZUiPlayBack.seekPlayback(tempCalenar);
+                                    mEZUiPlayBack.setUrl(url);
+                                }
+                            },500);
+                        }
+                    },mCurCalendar.get(Calendar.YEAR),mCurCalendar.get(Calendar.MONTH),mCurCalendar.get(Calendar.DAY_OF_MONTH)).show();
+                }
 //                DateTimeDialog dateTimeDialog = new DateTimeDialog(PlayerBackActiviaty.this, mCurDate, PlayerBackActiviaty.this, 0);
 //                dateTimeDialog.show();
             }
