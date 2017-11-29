@@ -31,6 +31,7 @@ import com.amap.api.maps2d.model.MarkerOptions;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import org.w3c.dom.Text;
 
@@ -565,5 +566,13 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         } else {
             srl_detection.autoRefresh();
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("监测");
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("监测");
     }
 }

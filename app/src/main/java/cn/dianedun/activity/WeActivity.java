@@ -5,6 +5,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 
+import com.umeng.analytics.MobclickAgent;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,5 +65,16 @@ public class WeActivity extends BaseTitlActivity {
         });
         myAsyncTast.execute();
 
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("关于我们");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("关于我们");
+        MobclickAgent.onPause(this);
     }
 }

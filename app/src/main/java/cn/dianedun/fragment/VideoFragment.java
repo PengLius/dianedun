@@ -14,6 +14,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 import com.vise.xsnow.net.api.ViseApi;
 import com.vise.xsnow.net.callback.ApiCallback;
 import com.vise.xsnow.net.exception.ApiException;
@@ -235,6 +236,14 @@ public class VideoFragment extends BaseTitlFragment {
                 mRefreshLayout.autoRefresh();
             }
         });
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("视频");
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("视频");
     }
 
 }

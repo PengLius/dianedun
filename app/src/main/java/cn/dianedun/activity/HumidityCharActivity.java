@@ -10,6 +10,7 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import org.w3c.dom.Text;
 
@@ -300,5 +301,16 @@ public class HumidityCharActivity extends BaseTitlActivity implements View.OnCli
     protected void onDestroy() {
         treadoff = false;
         super.onDestroy();
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("实时监测");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("实时监测");
+        MobclickAgent.onPause(this);
     }
 }

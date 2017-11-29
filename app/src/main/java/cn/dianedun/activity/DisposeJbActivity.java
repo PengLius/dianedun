@@ -39,6 +39,7 @@ import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.nanchen.compresshelper.CompressHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.xutils.common.Callback;
 import org.xutils.common.util.KeyValue;
@@ -792,6 +793,16 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
             return loadingDialog;
         }
     }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("警报处理");
+        MobclickAgent.onResume(this);
+    }
 
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("警报处理");
+        MobclickAgent.onPause(this);
+    }
 
 }

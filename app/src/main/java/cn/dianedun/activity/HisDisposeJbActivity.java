@@ -13,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -269,5 +270,16 @@ public class HisDisposeJbActivity extends BaseTitlActivity {
         super.onDestroy();
         Glide.get(this).clearMemory();
         System.gc();
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("历史警报详情");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("历史警报详情");
+        MobclickAgent.onPause(this);
     }
 }

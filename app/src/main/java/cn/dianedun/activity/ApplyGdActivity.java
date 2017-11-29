@@ -32,6 +32,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.umeng.analytics.MobclickAgent;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -542,14 +543,14 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
     @Override
     public void onDateSet(Date date, int type) {
         if (type == STARTTIME) {
-            tv_amendgd_startime.setText(mFormatter.format(date) + "");
+            tv_amendgd_startime.setText(mFormatter.format(date) + ":00");
             beginTime = mFormatter.format(date) + "";
             startTimer = date;
         } else if (type == ENDTTIME) {
             if (startTimer.getTime() > date.getTime()) {
                 showToast("开始时间不能大于结束时间");
             } else {
-                tv_amendgd_endtime.setText(mFormatter.format(date) + "");
+                tv_amendgd_endtime.setText(mFormatter.format(date) + ":00");
                 endTime = mFormatter.format(date) + "";
             }
         }
@@ -907,5 +908,15 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
             loadingDialog.setContentView(layout);// 设置布局
             return loadingDialog;
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("工单申请");
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("工单申请");
+        MobclickAgent.onPause(this);
     }
 }

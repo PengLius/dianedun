@@ -13,6 +13,7 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -310,5 +311,16 @@ public class TempChartActivity extends BaseTitlActivity implements View.OnClickL
     protected void onDestroy() {
         treadoff = false;
         super.onDestroy();
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("");
+        MobclickAgent.onPause(this);
     }
 }

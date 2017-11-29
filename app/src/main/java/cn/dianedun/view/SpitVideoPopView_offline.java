@@ -425,7 +425,7 @@ public class SpitVideoPopView_offline extends PopupWindow {
 //            mAdapter.notifyDataSetChanged();
 //        }
 //    }
-
+ 
     @Override
     public void dismiss() {
         EZHCNetDeviceSDK.getInstance().stopLocalSearch();

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -96,5 +97,16 @@ public class ImagActivity extends BaseTitlActivity implements ViewPager.OnPageCh
             // 把ImageView从ViewPager中移除掉
             view_pager.removeView(imgList.get(position % imgList.size()));
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("图片大图");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("图片大图");
+        MobclickAgent.onPause(this);
     }
 }

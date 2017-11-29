@@ -12,24 +12,28 @@
         <item name="android:windowEnterAnimation">@anim/basepopup_fade_in</item>
         <item name="android:windowExitAnimation">@anim/basepopup_fade_out</item>
     </style>
+
     <style name="TitleBar">
         <item name="textColor">@android:color/white</item>
         <item name="background">@color/dark_bg_70p</item>
         <item name="backButton">@drawable/message_back_selector</item>
     </style>
+
     <style name="popwindowUpAnim">
         <item name="android:windowEnterAnimation">@anim/fade_up</item>
         <item name="android:windowExitAnimation">@anim/fade_down</item>
     </style>
+
     <style name="popwindowTopInAnim">
         <item name="android:windowEnterAnimation">@anim/fade_up</item>
         <item name="android:windowExitAnimation">@anim/fade_down</item>
     </style>
+
     <declare-styleable name="SwitchView">
-        <attr name="hasShadow" format="boolean"/>
-        <attr name="primaryColor" format="color"/>
-        <attr name="primaryColorDark" format="color"/>
-        <attr name="isOpened" format="boolean"/>
+        <attr name="hasShadow" format="boolean" />
+        <attr name="primaryColor" format="color" />
+        <attr name="primaryColorDark" format="color" />
+        <attr name="isOpened" format="boolean" />
     </declare-styleable>
 
     <!--popview-->
@@ -43,10 +47,12 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowIsFloating">true</item>
     </style>
+
     <style name="PopWindowAnimation" parent="android:Animation">
         <item name="android:windowEnterAnimation">@null</item>
         <item name="android:windowExitAnimation">@null</item>
     </style>
+
     <style name="PopDownWindow">
         <item name="android:windowEnterAnimation">@anim/fade_in</item>
         <item name="android:windowExitAnimation">@anim/fade_out</item>
@@ -69,6 +75,7 @@
         <attr name="upv_automeasure" format="boolean" />
         <attr name="upv_itemratio" format="float" />
     </declare-styleable>
+
     <style name="loading_dialog" parent="android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowNoTitle">true</item>
@@ -76,6 +83,7 @@
         <item name="android:windowIsFloating">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+
     <style name="loading_dialogs" parent="android:style/Theme.Dialog">
         <item name="android:windowFrame">@null</item>
         <item name="android:windowNoTitle">true</item>
@@ -111,8 +119,17 @@
         <item name="android:windowEnterAnimation">@anim/pop_action_sheet_enter</item>
         <item name="android:windowExitAnimation">@anim/pop_action_sheet_exit</item>
     </style>
+
     <style name="MenuAnimationFade">
         <item name="android:windowEnterAnimation">@anim/menu_fadein</item>
         <item name="android:windowExitAnimation">@anim/menu_fadeout</item>
+    </style>
+
+    <style name="CustomActivityDialogStyle">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <!--是否半透明-->
+        <item name="android:windowIsTranslucent">true</item>
+        <!--是否有标题栏-->
+        <item name="android:windowNoTitle">true</item>
     </style>
 </resources>

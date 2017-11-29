@@ -27,6 +27,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.umeng.analytics.MobclickAgent;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -550,6 +551,16 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
             loadingDialog.setContentView(layout);// 设置布局
             return loadingDialog;
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("工单撤销");
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("工单撤销");
+        MobclickAgent.onPause(this);
     }
 
 }

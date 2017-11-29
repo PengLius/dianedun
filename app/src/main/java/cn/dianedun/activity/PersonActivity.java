@@ -27,6 +27,7 @@ import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.nanchen.compresshelper.CompressHelper;
 import com.thinkcool.circletextimageview.CircleTextImageView;
+import com.umeng.analytics.MobclickAgent;
 import com.yanzhenjie.permission.AndPermission;
 
 
@@ -292,5 +293,17 @@ public class PersonActivity extends BaseTitlActivity {
             loadingDialog.setContentView(layout);// 设置布局
             return loadingDialog;
         }
+    }
+
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("个人资料");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("个人资料");
+        MobclickAgent.onPause(this);
     }
 }

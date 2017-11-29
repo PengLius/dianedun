@@ -15,6 +15,7 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -232,4 +233,15 @@ public class HisWorkOrderActivity extends BaseTitlActivity {
         TextView item_hometv_code, item_hometv_startime, item_hometv_endtime, item_hometv_adress, item_homeitv_jg, item_homeitv_sta;
     }
 
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("历史工单");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("历史工单");
+        MobclickAgent.onPause(this);
+    }
 }

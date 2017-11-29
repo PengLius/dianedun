@@ -15,6 +15,7 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -177,8 +178,6 @@ public class HomeFragment extends BaseTitlFragment {
             @Override
             public void onError(String result) {
                 showToast(result);
-                ll_home_null.setVisibility(View.VISIBLE);
-                lv_home.setVisibility(View.GONE);
                 srl_home.finishRefresh();
             }
 
@@ -380,5 +379,13 @@ public class HomeFragment extends BaseTitlFragment {
             }
             return convertView;
         }
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("首页");
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("首页");
     }
 }

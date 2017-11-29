@@ -12,6 +12,7 @@ import android.widget.TextView;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
+import com.umeng.analytics.MobclickAgent;
 
 import org.xutils.http.RequestParams;
 import org.xutils.x;
@@ -307,5 +308,16 @@ public class WaterOutActivity extends BaseTitlActivity implements View.OnClickLi
     protected void onDestroy() {
         treadoff = false;
         super.onDestroy();
+    }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("");
+        MobclickAgent.onResume(this);
+    }
+
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("");
+        MobclickAgent.onPause(this);
     }
 }

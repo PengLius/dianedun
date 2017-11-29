@@ -31,6 +31,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.google.gson.Gson;
+import com.umeng.analytics.MobclickAgent;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -324,8 +325,8 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                 startTimer = DataUtil.getDate(bean.getData().getBeginTime() + "");
                 endTimer = DataUtil.getDate(bean.getData().getEndTime() + "");
 
-                beginTime = DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm");
-                endTime = DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm");
+                beginTime = DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm:ss");
+                endTime = DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm:ss");
                 tv_amendgd_gdh.setText(bean.getData().getOrderNum() + "");
                 tv_amendgd_startime.setText(beginTime);
                 tv_amendgd_endtime.setText(endTime);
@@ -564,8 +565,8 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                     hashMap.put("applyTime", applyTime + ":00");
                     hashMap.put("handlePersion", handlePersion);
                     hashMap.put("address", xxAdress);
-                    hashMap.put("beginTime", beginTime + ":00");
-                    hashMap.put("endTime", endTime + ":00");
+                    hashMap.put("beginTime", beginTime);
+                    hashMap.put("endTime", endTime);
                     hashMap.put("cause", ed_amendgd_sqyy.getText().toString());
                     hashMap.put("jsonStr", obj2);
                     myAsyncTast = new MyAsyncTast(AmendGdActivity.this, hashMap, AppConfig.MODIFYHANDLEORDER, App.getInstance().getToken(), new MyAsyncTast.Callback() {
@@ -666,16 +667,16 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
             if (endTimer.getTime() < date.getTime()) {
                 showToast("开始时间不能大于结束时间");
             } else {
-                tv_amendgd_startime.setText(mFormatter.format(date) + "");
-                beginTime = mFormatter.format(date) + "";
+                tv_amendgd_startime.setText(mFormatter.format(date) + ":00");
+                beginTime = mFormatter.format(date) + ":00";
                 startTimer = date;
             }
         } else if (type == ENDTTIME) {
             if (startTimer.getTime() > date.getTime()) {
                 showToast("开始时间不能大于结束时间");
             } else {
-                tv_amendgd_endtime.setText(mFormatter.format(date) + "");
-                endTime = mFormatter.format(date) + "";
+                tv_amendgd_endtime.setText(mFormatter.format(date) + ":00");
+                endTime = mFormatter.format(date) + ":00";
                 endTimer = date;
             }
         }
@@ -1033,5 +1034,14 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
             return loadingDialog;
         }
     }
-
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("工单修改");
+        MobclickAgent.onResume(this);
+    }
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("工单修改");
+        MobclickAgent.onPause(this);
+    }
 }

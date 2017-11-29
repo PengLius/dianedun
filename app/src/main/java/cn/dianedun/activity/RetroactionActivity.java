@@ -40,6 +40,7 @@ import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
 import com.nanchen.compresshelper.CompressHelper;
+import com.umeng.analytics.MobclickAgent;
 
 import org.xutils.common.Callback;
 import org.xutils.common.util.KeyValue;
@@ -384,8 +385,8 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
                 tv_retroaction_sqr.setText(bean.getData().getHandlePersion() + "");
                 String beginTime = bean.getData().getBeginTime() / 1000 + "";
                 String endTime = bean.getData().getEndTime() / 1000 + "";
-                tv_annul_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm") + ":00");
-                tv_annul_time.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm") + ":00");
+                tv_annul_starttime.setText(DataUtil.timeStamp2Date(beginTime, "yyyy-MM-dd HH:mm:ss"));
+                tv_annul_time.setText(DataUtil.timeStamp2Date(endTime, "yyyy-MM-dd HH:mm:ss"));
                 tv_retroaction_cause.setText(bean.getData().getCause() + "");
                 tv_annul_adr.setText(bean.getData().getDepartName() + "");
                 tv_annul_xxadr.setText(bean.getData().getAddress() + "");
@@ -923,6 +924,16 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
             return loadingDialog;
         }
     }
+    public void onResume() {
+        super.onResume();
+        MobclickAgent.onPageStart("工单反馈");
+        MobclickAgent.onResume(this);
+    }
 
+    public void onPause() {
+        super.onPause();
+        MobclickAgent.onPageEnd("工单反馈");
+        MobclickAgent.onPause(this);
+    }
 
 }
