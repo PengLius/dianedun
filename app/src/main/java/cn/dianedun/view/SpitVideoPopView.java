@@ -317,6 +317,7 @@ public class SpitVideoPopView extends PopupWindow {
     private void initView() {
         mLlVideo.setVisibility(View.VISIBLE);
         mRecycleView.setLayoutManager(new GridLayoutManager(mContext,4));
+        mRecycleView.addItemDecoration(new ItemOffsetDecoration(CommonUtil.dip2px(mContext,1)));
         mRecycleView.setAdapter(new CommonAdapter<EZDeviceInfo>(mContentView.getContext(),R.layout.item_spitvideo_entity,mDeviceListInfo) {
             @Override
             protected void convert(ViewHolder holder, EZDeviceInfo ezDeviceInfo, final int position) {

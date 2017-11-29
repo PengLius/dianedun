@@ -2722,6 +2722,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 HashMap hashMap = new HashMap();
                 hashMap.put("departId",mDepartId);
                 hashMap.put("cmd",mLightCmd);
+                if (m4BoxOr9Box == null)
+                    hashMap.put("deviceSerial",mCameraInfo.getDeviceSerial());
                 api.post(AppConfig.CONTROLLIGHT,App.getInstance().getToken(),hashMap,false,new ApiCallback<CommonBean>(){
                     @Override
                     public void onNext(CommonBean dataBean) {
@@ -2766,26 +2768,30 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 if (mDeviceInfo == null)
                     return;
                 //回放
-                Calendar calendar = Calendar.getInstance();
-                new DatePickerDialog(VideoShowActivity.this, new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                        String url = "ezopen://open.ys7.com/";
-                        if (mDeviceInfo.getIsEncrypt() == 1){
-                            //加密
-                            url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
-                        }else{
-                            url += mDeviceInfo.getDeviceSerial() + "/1.rec";
-                        }
-                        Calendar calendar = Calendar.getInstance();
-                        calendar.set(year,month,dayOfMonth);
-                        url += "?begin=";
-                        String prefixStr = url;
-                        url += calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
+//                Calendar calendar = Calendar.getInstance();
+               new DateTimeDialogOnlyYMD(VideoShowActivity.this, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
+                   @Override
+                   public void onDateSet(Date date) {
+                       String url = "ezopen://open.ys7.com/";
+                       if (mDeviceInfo.getIsEncrypt() == 1){
+                           //加密
+                           url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
+                       }else{
+                           url += mDeviceInfo.getDeviceSerial() + "/1.rec";
+                       }
+                       Calendar calendar = Calendar.getInstance();
+                       calendar.setTime(date);
+                       url += "?begin=";
+                       String prefixStr = url;
+                       String month = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+                       if (Integer.parseInt(month) < 10){
+                           month = "0" + month;
+                       }
+                       url += calendar.get(Calendar.YEAR) + getMonth(calendar) + month;
 //                        String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
-                        PlayerBackActiviaty.startPlayBackActivity(VideoShowActivity.this,mAccessTokenBean.getAccessToken(),url,prefixStr,calendar,mTvPlaces.getText().toString());
-                    }
-                },calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH)).show();
+                       PlayerBackActiviaty.startPlayBackActivity(VideoShowActivity.this,mAccessTokenBean.getAccessToken(),url,prefixStr,calendar,mTvPlaces.getText().toString());
+                   }
+               },true,true,true).show();
             }
         });
         mImgBack.setOnClickListener(new View.OnClickListener() {
@@ -2799,6 +2805,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             public void onClick(View v) {
                 //分屏窗口
                 stopVoiceTalk();
+                //关闭声音
+                if (mLocalInfo.isSoundOpen()) {
+                    mLocalInfo.setSoundOpen(false);
+                    mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
+                    mEZPlayer.closeSound();
+                }
                 if (mAccessTokenBean == null){
                     showToast("暂无设备信息");
                     return;
