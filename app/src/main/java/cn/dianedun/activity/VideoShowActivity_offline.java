@@ -49,8 +49,9 @@ import android.widget.Toast;
 
 import com.bigkoo.alertview.AlertView;
 import com.bigkoo.alertview.OnItemClickListener;
+import com.ezviz.hcnetsdk.EZLoginDeviceInfo;
+import com.ezviz.hcnetsdk.EZSADPDeviceInfo;
 import com.ezvizuikit.open.EZUIKit;
-import com.hikvision.netsdk.PTZCommand;
 import com.videogo.constant.Config;
 import com.videogo.constant.Constant;
 import com.videogo.constant.IntentConsts;
@@ -64,8 +65,6 @@ import com.videogo.openapi.EZOpenSDK;
 import com.videogo.openapi.EZPlayer;
 import com.videogo.openapi.bean.EZCameraInfo;
 import com.videogo.openapi.bean.EZDeviceInfo;
-import com.videogo.openapi.bean.EZLoginDeviceInfo;
-import com.videogo.openapi.bean.EZSADPDeviceInfo;
 import com.videogo.realplay.RealPlayStatus;
 import com.videogo.util.ConnectionDetector;
 import com.videogo.util.LocalInfo;
@@ -393,23 +392,23 @@ public class VideoShowActivity_offline extends BaseActivity  implements View.OnC
 
     @Override
     public void onDateSet(Date date, int type) {
-        Log.e("d","d");
-        String url = "ezopen://open.ys7.com/";
-
-        if (mDeviceInfo.getIsEncrypt() == 1){
-            //加密
-            url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
-        }else{
-            url += mDeviceInfo.getDeviceSerial() + "/1.rec";
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        url += "?begin=";
-        String prefixStr = url;
-        url += calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
-        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url,prefixStr,date);
+//        Log.e("d","d");
+//        String url = "ezopen://open.ys7.com/";
+//
+//        if (mDeviceInfo.getIsEncrypt() == 1){
+//            //加密
+//            url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
+//        }else{
+//            url += mDeviceInfo.getDeviceSerial() + "/1.rec";
+//        }
+//        Calendar calendar = Calendar.getInstance();
+//        calendar.setTime(date);
+//        url += "?begin=";
+//        String prefixStr = url;
+//        url += calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
+//        int month = calendar.get(Calendar.MONTH) + 1;
+//        String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
+//        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url,prefixStr,date);
     }
 
     private String getMonth(Calendar calendar){
@@ -758,25 +757,25 @@ public class VideoShowActivity_offline extends BaseActivity  implements View.OnC
     @Override
     protected void onActivityLoadFinish() {
         super.onActivityLoadFinish();
-
-        EZHCNetDeviceSDK.getInstance().startLocalSearch(new EZHCNetDeviceSDK.SadpDeviceFoundListener() {
-            @Override
-            public void onDeviceFound(final EZSADPDeviceInfo sadp_device_info) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < mEZSADPDeviceList.size(); i++) {
-                            String serial = sadp_device_info.getDeviceSerial();
-                            String oldserial = mEZSADPDeviceList.get(i).getDeviceSerial();
-                            if (serial.equals(oldserial)) {
-                                return;
-                            }
-                        }
-                        updateCamera(sadp_device_info);
-                    }
-                });
-            }
-        });
+//
+//        EZHCNetDeviceSDK.getInstance().startLocalSearch(new EZHCNetDeviceSDK.SadpDeviceFoundListener() {
+//            @Override
+//            public void onDeviceFound(final EZSADPDeviceInfo sadp_device_info) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        for (int i = 0; i < mEZSADPDeviceList.size(); i++) {
+//                            String serial = sadp_device_info.getDeviceSerial();
+//                            String oldserial = mEZSADPDeviceList.get(i).getDeviceSerial();
+//                            if (serial.equals(oldserial)) {
+//                                return;
+//                            }
+//                        }
+//                        updateCamera(sadp_device_info);
+//                    }
+//                });
+//            }
+//        });
     }
     private String mDepartId;
     private AccesstokenBean.DataBean mAccessTokenBean;
@@ -813,42 +812,42 @@ public class VideoShowActivity_offline extends BaseActivity  implements View.OnC
         }
     }
     private void stayPlay(final EZLoginDeviceInfo loginDeviceInfo) {
-        if (loginDeviceInfo.getByChanNum() + loginDeviceInfo.getByIPChanNum() > 1) {
-            SelectLandeviceDialog selectLandeviceDialog = new SelectLandeviceDialog();
-            selectLandeviceDialog.setLoginDeviceInfo(loginDeviceInfo);
-            selectLandeviceDialog.setCameraItemClick(new SelectLandeviceDialog.CameraItemClick() {
-                @Override
-                public void onCameraItemClick(int playChannelNo) {
-                    mUserId = loginDeviceInfo.getLoginId();
-                    mChannelNo = playChannelNo;
-                    mEZPlayer = EZOpenSDK.getInstance().createPlayerWithUserId(loginDeviceInfo.getLoginId(),playChannelNo,1);
-                    mEZPlayer.setSurfaceHold(mRealPlaySh);
-                    mEZPlayer.setHandler(mHandler);
-                    mEZPlayer.startRealPlay();
-                }
-            });
-            selectLandeviceDialog.show(getFragmentManager(), "onLanPlayClick");
-
-            //Single channel // no channel
-        } else if (loginDeviceInfo.getByChanNum() + loginDeviceInfo.getByIPChanNum() == 1) {
-            if (loginDeviceInfo.getByChanNum() > 0) {
-                mUserId = loginDeviceInfo.getLoginId();
-                mChannelNo = loginDeviceInfo.getByStartChan();
-                mEZPlayer = EZOpenSDK.getInstance().createPlayerWithUserId(loginDeviceInfo.getLoginId(),loginDeviceInfo.getByStartChan(),1);
-                mEZPlayer.setSurfaceHold(mRealPlaySh);
-                mEZPlayer.setHandler(mHandler);
-                mEZPlayer.startRealPlay();
-            } else {
-                mUserId = loginDeviceInfo.getLoginId();
-                mChannelNo = loginDeviceInfo.getByStartDChan();
-                mEZPlayer = EZOpenSDK.getInstance().createPlayerWithUserId(loginDeviceInfo.getLoginId(),loginDeviceInfo.getByStartDChan(),1);
-                mEZPlayer.setSurfaceHold(mRealPlaySh);
-                mEZPlayer.setHandler(mHandler);
-                mEZPlayer.startRealPlay();
-            }
-        } else {
-            showNotSupportViewDailog();
-        }
+//        if (loginDeviceInfo.getByChanNum() + loginDeviceInfo.getByIPChanNum() > 1) {
+//            SelectLandeviceDialog selectLandeviceDialog = new SelectLandeviceDialog();
+//            selectLandeviceDialog.setLoginDeviceInfo(loginDeviceInfo);
+//            selectLandeviceDialog.setCameraItemClick(new SelectLandeviceDialog.CameraItemClick() {
+//                @Override
+//                public void onCameraItemClick(int playChannelNo) {
+//                    mUserId = loginDeviceInfo.getLoginId();
+//                    mChannelNo = playChannelNo;
+//                    mEZPlayer = EZOpenSDK.getInstance().createPlayerWithUserId(loginDeviceInfo.getLoginId(),playChannelNo,1);
+//                    mEZPlayer.setSurfaceHold(mRealPlaySh);
+//                    mEZPlayer.setHandler(mHandler);
+//                    mEZPlayer.startRealPlay();
+//                }
+//            });
+//            selectLandeviceDialog.show(getFragmentManager(), "onLanPlayClick");
+//
+//            //Single channel // no channel
+//        } else if (loginDeviceInfo.getByChanNum() + loginDeviceInfo.getByIPChanNum() == 1) {
+//            if (loginDeviceInfo.getByChanNum() > 0) {
+//                mUserId = loginDeviceInfo.getLoginId();
+//                mChannelNo = loginDeviceInfo.getByStartChan();
+//                mEZPlayer = EZOpenSDK.getInstance().createPlayerWithUserId(loginDeviceInfo.getLoginId(),loginDeviceInfo.getByStartChan(),1);
+//                mEZPlayer.setSurfaceHold(mRealPlaySh);
+//                mEZPlayer.setHandler(mHandler);
+//                mEZPlayer.startRealPlay();
+//            } else {
+//                mUserId = loginDeviceInfo.getLoginId();
+//                mChannelNo = loginDeviceInfo.getByStartDChan();
+//                mEZPlayer = EZOpenSDK.getInstance().createPlayerWithUserId(loginDeviceInfo.getLoginId(),loginDeviceInfo.getByStartDChan(),1);
+//                mEZPlayer.setSurfaceHold(mRealPlaySh);
+//                mEZPlayer.setHandler(mHandler);
+//                mEZPlayer.startRealPlay();
+//            }
+//        } else {
+//            showNotSupportViewDailog();
+//        }
     }
     private void showNotSupportViewDailog() {
         new AlertDialog.Builder(this).setMessage("该设备不支持预览")
@@ -2126,24 +2125,30 @@ public class VideoShowActivity_offline extends BaseActivity  implements View.OnC
                             mEZPlayer.setVoiceTalkStatus(true);
                             break;
                         case R.id.ptz_top_btn:
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.TILT_UP, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandUp, EZConstants.EZPTZAction.EZPTZActionSTART);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.TILT_UP, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
                             break;
                         case R.id.ptz_bottom_btn:
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.TILT_DOWN, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.TILT_DOWN, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandDown, EZConstants.EZPTZAction.EZPTZActionSTART);
                             break;
                         case R.id.ptz_left_btn:
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.PAN_LEFT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandLeft, EZConstants.EZPTZAction.EZPTZActionSTART);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.PAN_LEFT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
                             break;
                         case R.id.ptz_right_btn:
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.PAN_RIGHT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandRight, EZConstants.EZPTZAction.EZPTZActionSTART);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.PAN_RIGHT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
                             break;
                         case R.id.rpw_ib_multiple_del:
                             //变小
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.ZOOM_OUT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandZoomOut, EZConstants.EZPTZAction.EZPTZActionSTART);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.ZOOM_OUT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
                             break;
                         case R.id.rpw_ib_multiple_add:
                             //变大
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.ZOOM_IN, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
+                            ptzOption(EZConstants.EZPTZCommand.EZPTZCommandZoomIn, EZConstants.EZPTZAction.EZPTZActionSTART);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.ZOOM_IN, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_START);
                             break;
 //                        case R.id.rpw_ib_focalize_del:
 //                            //焦变小
@@ -2159,28 +2164,29 @@ public class VideoShowActivity_offline extends BaseActivity  implements View.OnC
                 case MotionEvent.ACTION_UP:
                     switch (view.getId()) {
                         case R.id.talkback_control_btn:
+
                             mEZPlayer.setVoiceTalkStatus(false);
                             mTalkRingView.setVisibility(GONE);
                             break;
                         case R.id.ptz_top_btn:
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.TILT_UP, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, EZConstants.EZPTZCommand.EZPTZCommandUp, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
                             break;
                         case R.id.ptz_bottom_btn:
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.TILT_DOWN, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.TILT_DOWN, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
                             break;
                         case R.id.ptz_left_btn:
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.PAN_LEFT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.PAN_LEFT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
                             break;
                         case R.id.ptz_right_btn:
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.PAN_RIGHT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.PAN_RIGHT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
                             break;
                         case R.id.rpw_ib_multiple_del:
                             //变小
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.ZOOM_OUT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.ZOOM_OUT, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
                             break;
                         case R.id.rpw_ib_multiple_add:
                             //变大
-                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.ZOOM_IN, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
+//                            EZHCNetDeviceSDK.getInstance().ptzControlWithUserId(mUserId,mChannelNo, PTZCommand.ZOOM_IN, EZHCNetDeviceSDK.PTZAction.PTZ_ACTION_STOP);
                             break;
                         default:
                             break;

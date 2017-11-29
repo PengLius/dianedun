@@ -19,6 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:background="@mipmap/ic_nor_greentop"
+            android:textColor="@color/blackfont"
             android:gravity="center"
             android:textSize="@dimen/content_text_s12"
             android:visibility="visible" />
@@ -58,7 +59,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:maxLines="2"
-            android:textColor="@color/white"
+            android:textColor="@color/grayfont_1"
             android:textSize="@dimen/content_text_s12"
             android:visibility="visible" />
 

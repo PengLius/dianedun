@@ -11,7 +11,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.videogo.openapi.bean.EZLoginDeviceInfo;
+//import com.videogo.openapi.bean.EZLoginDeviceInfo;
 
 import java.util.ArrayList;
 
@@ -28,7 +28,7 @@ public class SelectLandeviceDialog extends DialogFragment {
 
     private ListView mListView;
 
-    private EZLoginDeviceInfo mLoginDeviceInfo;
+//    private EZLoginDeviceInfo mLoginDeviceInfo;
 
     private MyAdatpter mMyAdatpter;
 
@@ -53,28 +53,28 @@ public class SelectLandeviceDialog extends DialogFragment {
     public interface CameraItemClick {
         public void onCameraItemClick(int playChannelNo);
     }
-
-    public void setLoginDeviceInfo(EZLoginDeviceInfo ezLoginDeviceInfo) {
-        mLoginDeviceInfo = ezLoginDeviceInfo;
-
-        //Add a channel
-        int chanelCount = mLoginDeviceInfo.getByChanNum();
-        int chanelStart = mLoginDeviceInfo.getByStartChan();
-
-        //channelNo
-        for (int i = 0; i < chanelCount; i++) {
-            mChannelNoList.add(chanelStart + i);
-        }
-
-        //ipc channelNo
-        for (int i = 0; i < mLoginDeviceInfo.getByIPChanNum(); i++) {
-            mChannelNoList.add(mLoginDeviceInfo.getByStartDChan() + i);
-        }
-
-        if (mMyAdatpter != null){
-            mMyAdatpter.notifyDataSetChanged();
-        }
-    }
+//
+//    public void setLoginDeviceInfo(EZLoginDeviceInfo ezLoginDeviceInfo) {
+//        mLoginDeviceInfo = ezLoginDeviceInfo;
+//
+//        //Add a channel
+//        int chanelCount = mLoginDeviceInfo.getByChanNum();
+//        int chanelStart = mLoginDeviceInfo.getByStartChan();
+//
+//        //channelNo
+//        for (int i = 0; i < chanelCount; i++) {
+//            mChannelNoList.add(chanelStart + i);
+//        }
+//
+//        //ipc channelNo
+//        for (int i = 0; i < mLoginDeviceInfo.getByIPChanNum(); i++) {
+//            mChannelNoList.add(mLoginDeviceInfo.getByStartDChan() + i);
+//        }
+//
+//        if (mMyAdatpter != null){
+//            mMyAdatpter.notifyDataSetChanged();
+//        }
+//    }
 
 
     @Override

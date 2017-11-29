@@ -180,6 +180,11 @@ public class VideoFragment extends BaseTitlFragment {
             mCameraAdapter = new CommonAdapter<DepartPlacesListBean.DataBean.ResultBean>(_mActivity,R.layout.item_cameralist,result) {
                 @Override
                 protected void convert(ViewHolder holder, final DepartPlacesListBean.DataBean.ResultBean bean, final int position) {
+                    if (bean.getCameraCount().equals("0")){
+                        holder.setText(R.id.ic_tv_camerastatus,"无");
+                    }else{
+                        holder.setText(R.id.ic_tv_camerastatus,bean.getCameraCount()+"台");
+                    }
                     holder.setOnClickListener(R.id.ic_img_spitVideo, new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {

@@ -1,5 +1,6 @@
 package cn.dianedun.activity;
 
+import android.app.DatePickerDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +18,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
+import android.provider.MediaStore;
 import android.support.annotation.DimenRes;
 import android.support.annotation.NonNull;
 import android.support.v4.view.ViewPager;
@@ -40,6 +42,7 @@ import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -82,6 +85,7 @@ import com.vise.xsnow.manager.AppManager;
 import com.vise.xsnow.net.api.ViseApi;
 import com.vise.xsnow.net.callback.ApiCallback;
 import com.vise.xsnow.net.exception.ApiException;
+import com.yanzhenjie.permission.AndPermission;
 
 
 import java.text.SimpleDateFormat;
@@ -127,8 +131,7 @@ import static cn.dianedun.tools.App.getOpenSDK;
  */
 
 public class VideoShowActivity extends BaseActivity  implements View.OnClickListener, SurfaceHolder.Callback,
-        Handler.Callback, View.OnTouchListener, VerifyCodeInput.VerifyCodeInputListener,SpitVideoFragment.OnSpitVideoSelect,
-        DateTimeDialogOnlyYMD.MyOnDateSetListener, DateTimeDialogOnlyTime.MyOnDateSetListener, DateTimeDialog.MyOnDateSetListener {
+        Handler.Callback, View.OnTouchListener, VerifyCodeInput.VerifyCodeInputListener,SpitVideoFragment.OnSpitVideoSelect {
     @Bind(R.id.av_ll_voice)
     LinearLayout mLLVoice;
 
@@ -404,26 +407,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         }
     }
 
-    @Override
-    public void onDateSet(Date date, int type) {
-        Log.e("d","d");
-        String url = "ezopen://open.ys7.com/";
 
-        if (mDeviceInfo.getIsEncrypt() == 1){
-            //加密
-            url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
-        }else{
-            url += mDeviceInfo.getDeviceSerial() + "/1.rec";
-        }
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        url += "?begin=";
-        String prefixStr = url;
-        url += calendar.get(Calendar.YEAR) + getMonth(calendar) + calendar.get(Calendar.DAY_OF_MONTH);
-        int month = calendar.get(Calendar.MONTH) + 1;
-        String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
-        PlayerBackActiviaty.startPlayBackActivity(this,mAccessTokenBean.getAccessToken(),url,prefixStr,date);
-    }
 
     private String getMonth(Calendar calendar){
         int month = calendar.get(Calendar.MONTH) + 1;
@@ -431,11 +415,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             return "0" + month;
         }
         return String.valueOf(month);
-    }
-
-    @Override
-    public void onDateSet(Date date) {
-
     }
 
     private void stopZoom() {
@@ -792,7 +771,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
             @Override
             public void onError(ApiException e) {
-                showToast("暂无设备");
+//                showToast(e.getMessage());
                 setRealPlayFailUI("暂无设备");
             }
 
@@ -1213,7 +1192,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mDeviceInfo = deviceInfo;
         mCameraInfo = EZUtils.getCameraInfoFromDevice(mDeviceInfo, 0);
         mEZPlayer = getOpenSDK().createPlayer(mCameraInfo.getDeviceSerial(), mCameraInfo.getCameraNo());
-        mTvPlaces.setText(mDepartName + pos  + "号机");
+        mTvPlaces.setText(mDepartName + "-" + pos  + "号机");
         startRealPlay();
     }
 
@@ -1270,7 +1249,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         super.initData();
         // 保持屏幕常亮
         mDepartName = getIntent().getStringExtra("place");
-        mTvPlaces.setText(mDepartName + getIntent().getStringExtra("pos")  + "号机");
+        mTvPlaces.setText(mDepartName + "-" +  getIntent().getStringExtra("pos")  + "号机");
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 //        initTitleBar();
 //        initRealPlayPageLy();
@@ -2556,6 +2535,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Bind(R.id.av_img_talkback)
     ImageView mImgTalkBack;
     private void startVoiceTalk() {
+//        AndPermission.hasPermission(this,)
         LogUtil.debugLog(TAG, "startVoiceTalk");
         if (mEZPlayer == null) {
             LogUtil.debugLog(TAG, "EZPlaer is null");
@@ -2576,6 +2556,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             mEZPlayer.closeSound();
         }
         mEZPlayer.startVoiceTalk();
+        mLLTalkBack.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mEZPlayer.setVoiceTalkStatus(true);
+            }
+        },200);
     }
 
     /**
@@ -2736,6 +2722,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 HashMap hashMap = new HashMap();
                 hashMap.put("departId",mDepartId);
                 hashMap.put("cmd",mLightCmd);
+                if (m4BoxOr9Box == null)
+                    hashMap.put("deviceSerial",mCameraInfo.getDeviceSerial());
                 api.post(AppConfig.CONTROLLIGHT,App.getInstance().getToken(),hashMap,false,new ApiCallback<CommonBean>(){
                     @Override
                     public void onNext(CommonBean dataBean) {
@@ -2780,8 +2768,30 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 if (mDeviceInfo == null)
                     return;
                 //回放
-                DateTimeDialog dateTimeDialog = new DateTimeDialog(VideoShowActivity.this, null, VideoShowActivity.this, 0);
-                dateTimeDialog.show();
+//                Calendar calendar = Calendar.getInstance();
+               new DateTimeDialogOnlyYMD(VideoShowActivity.this, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
+                   @Override
+                   public void onDateSet(Date date) {
+                       String url = "ezopen://open.ys7.com/";
+                       if (mDeviceInfo.getIsEncrypt() == 1){
+                           //加密
+                           url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
+                       }else{
+                           url += mDeviceInfo.getDeviceSerial() + "/1.rec";
+                       }
+                       Calendar calendar = Calendar.getInstance();
+                       calendar.setTime(date);
+                       url += "?begin=";
+                       String prefixStr = url;
+                       String month = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+                       if (Integer.parseInt(month) < 10){
+                           month = "0" + month;
+                       }
+                       url += calendar.get(Calendar.YEAR) + getMonth(calendar) + month;
+//                        String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
+                       PlayerBackActiviaty.startPlayBackActivity(VideoShowActivity.this,mAccessTokenBean.getAccessToken(),url,prefixStr,calendar,mTvPlaces.getText().toString());
+                   }
+               },true,true,true).show();
             }
         });
         mImgBack.setOnClickListener(new View.OnClickListener() {
@@ -2794,6 +2804,17 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //分屏窗口
+                stopVoiceTalk();
+                //关闭声音
+                if (mLocalInfo.isSoundOpen()) {
+                    mLocalInfo.setSoundOpen(false);
+                    mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
+                    mEZPlayer.closeSound();
+                }
+                if (mAccessTokenBean == null){
+                    showToast("暂无设备信息");
+                    return;
+                }
                 openSpitPopWindow(v);
             }
         });

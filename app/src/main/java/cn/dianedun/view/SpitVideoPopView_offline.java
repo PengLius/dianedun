@@ -25,8 +25,8 @@ import com.videogo.exception.BaseException;
 import com.videogo.exception.ErrorCode;
 import com.videogo.openapi.EZHCNetDeviceSDK;
 import com.videogo.openapi.bean.EZDeviceInfo;
-import com.videogo.openapi.bean.EZLoginDeviceInfo;
-import com.videogo.openapi.bean.EZSADPDeviceInfo;
+//import com.videogo.openapi.bean.EZLoginDeviceInfo;
+//import com.videogo.openapi.bean.EZSADPDeviceInfo;
 import com.videogo.util.ConnectionDetector;
 import com.videogo.util.LogUtil;
 import com.vise.xsnow.net.api.ViseApi;
@@ -69,7 +69,7 @@ public class SpitVideoPopView_offline extends PopupWindow {
     ImageView mImgArrow;
 
     private Context mContext;
-    private List<EZSADPDeviceInfo> mDeviceListInfo = new ArrayList<>();
+//    private List<EZSADPDeviceInfo> mDeviceListInfo = new ArrayList<>();
     private String mPlacesId;
 
     public SpitVideoPopView_offline(View contentView, int width, int height, boolean focusable, String placesId){
@@ -166,26 +166,26 @@ public class SpitVideoPopView_offline extends PopupWindow {
 //            }
 //        });
 
-        EZHCNetDeviceSDK.getInstance().startLocalSearch(new EZHCNetDeviceSDK.SadpDeviceFoundListener() {
-            @Override
-            public void onDeviceFound(final EZSADPDeviceInfo sadp_device_info) {
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        mRlLoadingLayout.setVisibility(View.GONE);
-                        for (int i = 0; i < mDeviceListInfo.size(); i++) {
-                            String serial = sadp_device_info.getDeviceSerial();
-                            String oldserial = mDeviceListInfo.get(i).getDeviceSerial();
-                            if (serial.equals(oldserial)) {
-                                return;
-                            }
-                        }
-//                        mLandeviceAdapter.add(sadp_device_info);
-                        updateList(sadp_device_info);
-                    }
-                });
-            }
-        });
+//        EZHCNetDeviceSDK.getInstance().startLocalSearch(new EZHCNetDeviceSDK.SadpDeviceFoundListener() {
+//            @Override
+//            public void onDeviceFound(final EZSADPDeviceInfo sadp_device_info) {
+//                runOnUiThread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        mRlLoadingLayout.setVisibility(View.GONE);
+//                        for (int i = 0; i < mDeviceListInfo.size(); i++) {
+//                            String serial = sadp_device_info.getDeviceSerial();
+//                            String oldserial = mDeviceListInfo.get(i).getDeviceSerial();
+//                            if (serial.equals(oldserial)) {
+//                                return;
+//                            }
+//                        }
+////                        mLandeviceAdapter.add(sadp_device_info);
+//                        updateList(sadp_device_info);
+//                    }
+//                });
+//            }
+//        });
 //        EZUIKit.initWithAppKey(App.getInstance(),AppKey);
 //        设置授权accesstoken
 //        EZUIKit.setAccessToken(token);
@@ -339,10 +339,10 @@ public class SpitVideoPopView_offline extends PopupWindow {
     }
 
 
-    private void onGetDeviceInfoSucess(List<EZSADPDeviceInfo> result) {
-        mDeviceListInfo = result;
-        initView();
-    }
+//    private void onGetDeviceInfoSucess(List<EZSADPDeviceInfo> result) {
+//        mDeviceListInfo = result;
+//        initView();
+//    }
 
     private CommonAdapter mAdapter;
     private void initView() {
@@ -366,68 +366,66 @@ public class SpitVideoPopView_offline extends PopupWindow {
 
     }
 
-    private void updateList( EZSADPDeviceInfo sadp_device_info){
-        if (mAdapter == null){
-            mDeviceListInfo = new ArrayList<>();
-            mDeviceListInfo.add(sadp_device_info);
-            mAdapter = new CommonAdapter<EZSADPDeviceInfo>(mContentView.getContext(),R.layout.item_spitvideo_entity,mDeviceListInfo) {
-                @Override
-                protected void convert(ViewHolder holder, final EZSADPDeviceInfo ezDeviceInfo, final int position) {
-                    final int pos  = position + 1;
-                    holder.setText(R.id.ise_tv_videoname, pos + "号机");
-                    holder.setImageResource(R.id.ise_img_tag,R.mipmap.ic_nor_jiwei);
-                    holder.setOnClickListener(R.id.ise_ll_container, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-
-                            if (!ezDeviceInfo.isActived()) {
-//                                Intent intent = new Intent(LanDeviceActivity.this, LanDeviceActivateActivity.class);
-//                                intent.putExtra(IntentConsts.EXTRA_DEVICE_ID, mLandeviceAdapter.getItem(mCurrentPosition).getDeviceSerial());
-//                                startActivityForResult(intent, REQUEST_ACTIVATE);
-                                Toast.makeText(mContext,"设备未激活",Toast.LENGTH_SHORT).show();
-                                if (mOnVideoSelect!=null)
-                                    mOnVideoSelect.onVideoSelect(position,pos);
-                                dismiss();
-                            } else {
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        try {
-                                            final EZLoginDeviceInfo ezLoginDeviceInfo = EZHCNetDeviceSDK.getInstance()
-                                                    .loginDeviceWithUerName("admin", "QWErty789", ezDeviceInfo.getLocalIp(),
-                                                            ezDeviceInfo.getLocalPort());
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    mOnVideoSelect.onVideoSelect(position,pos);
-                                                    dismiss();
-                                                }
-                                            });
-                                        } catch (final BaseException e) {
-                                            e.printStackTrace();
-                                            runOnUiThread(new Runnable() {
-                                                @Override
-                                                public void run() {
-                                                    mOnVideoSelect.onVideoSelectFaild(e.getErrorCode(), e.getMessage());
-                                                    dismiss();
-                                                }
-                                            });
-                                        }
-                                    }
-                                }).start();
-                            }
-                        }
-                    });
-                }
-            };
-            mRecycleView.setAdapter(mAdapter);
-            mAdapter.notifyDataSetChanged();
-        }else{
-            mAdapter.getDatas().add(sadp_device_info);
-            mAdapter.notifyDataSetChanged();
-        }
-    }
-
+//    private void updateList( EZSADPDeviceInfo sadp_device_info){
+//        if (mAdapter == null){
+//            mDeviceListInfo = new ArrayList<>();
+//            mDeviceListInfo.add(sadp_device_info);
+//            mAdapter = new CommonAdapter<EZSADPDeviceInfo>(mContentView.getContext(),R.layout.item_spitvideo_entity,mDeviceListInfo) {
+//                @Override
+//                protected void convert(ViewHolder holder, final EZSADPDeviceInfo ezDeviceInfo, final int position) {
+//                    final int pos  = position + 1;
+//                    holder.setText(R.id.ise_tv_videoname, pos + "号机");
+//                    holder.setImageResource(R.id.ise_img_tag,R.mipmap.ic_nor_jiwei);
+//                    holder.setOnClickListener(R.id.ise_ll_container, new View.OnClickListener() {
+//                        @Override
+//                        public void onClick(View v) {
+//
+//                            if (!ezDeviceInfo.isActived()) {
+////                                Intent intent = new Intent(LanDeviceActivity.this, LanDeviceActivateActivity.class);
+////                                intent.putExtra(IntentConsts.EXTRA_DEVICE_ID, mLandeviceAdapter.getItem(mCurrentPosition).getDeviceSerial());
+////                                startActivityForResult(intent, REQUEST_ACTIVATE);
+//                                Toast.makeText(mContext,"设备未激活",Toast.LENGTH_SHORT).show();
+//                                if (mOnVideoSelect!=null)
+//                                    mOnVideoSelect.onVideoSelect(position,pos);
+//                                dismiss();
+//                            } else {
+//                                new Thread(new Runnable() {
+//                                    @Override
+//                                    public void run() {
+//                                        try {
+//                                            final EZLoginDeviceInfo ezLoginDeviceInfo = EZHCNetDeviceSDK.getInstance()
+//                                                    .loginDeviceWithUerName("admin", "QWErty789", ezDeviceInfo.getLocalIp(),
+//                                                            ezDeviceInfo.getLocalPort());
+//                                            runOnUiThread(new Runnable() {
+//                                                @Override
+//                                                public void run() {
+//                                                    mOnVideoSelect.onVideoSelect(position,pos);
+//                                                }
+//                                            });
+//                                        } catch (final BaseException e) {
+//                                            e.printStackTrace();
+//                                            runOnUiThread(new Runnable() {
+//                                                @Override
+//                                                public void run() {
+//                                                    mOnVideoSelect.onVideoSelectFaild(e.getErrorCode(), e.getMessage());
+//                                                }
+//                                            });
+//                                        }
+//                                    }
+//                                }).start();
+//                            }
+//                        }
+//                    });
+//                }
+//            };
+//            mRecycleView.setAdapter(mAdapter);
+//            mAdapter.notifyDataSetChanged();
+//        }else{
+//            mAdapter.getDatas().add(sadp_device_info);
+//            mAdapter.notifyDataSetChanged();
+//        }
+//    }
+ 
     @Override
     public void dismiss() {
         EZHCNetDeviceSDK.getInstance().stopLocalSearch();

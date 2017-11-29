@@ -63,6 +63,15 @@ public class DepartPlacesListBean {
             private String id;
             private String departname;
             private String address;
+            private String cameraCount;
+
+            public void setCameraCount(String cameraCount) {
+                this.cameraCount = cameraCount;
+            }
+
+            public String getCameraCount() {
+                return cameraCount;
+            }
 
             public String getId() {
                 return id;
