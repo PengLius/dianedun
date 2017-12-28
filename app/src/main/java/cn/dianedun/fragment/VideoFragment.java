@@ -26,6 +26,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import cn.dianedun.R;
+import cn.dianedun.activity.VideoPlayActivity;
 import cn.dianedun.activity.VideoShowActivity;
 import cn.dianedun.base.BaseTitlFragment;
 import cn.dianedun.bean.DepartPlacesListBean;
@@ -88,6 +89,7 @@ public class VideoFragment extends BaseTitlFragment {
             mRefreshLayout.autoRefresh();
         }
     }
+
     private Boolean mRefreshOrLoadMore = null;
     private void getData(final Boolean headOrLoadMore){
         ViseApi api = new ViseApi.Builder(_mActivity).build();
@@ -182,8 +184,24 @@ public class VideoFragment extends BaseTitlFragment {
                 protected void convert(ViewHolder holder, final DepartPlacesListBean.DataBean.ResultBean bean, final int position) {
                     if (bean.getCameraCount().equals("0")){
                         holder.setText(R.id.ic_tv_camerastatus,"无");
+                        holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                               showToast("暂无设备信息");
+                            }
+                        });
                     }else{
                         holder.setText(R.id.ic_tv_camerastatus,bean.getCameraCount()+"台");
+                        holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                Intent intent = new Intent(_mActivity, VideoPlayActivity.class);
+                                intent.putExtra("id", bean.getId());
+                                intent.putExtra("place",bean.getDepartname());
+                                intent.putExtra("pos", 0);
+                                startActivity(intent);
+                            }
+                        });
                     }
                     holder.setOnClickListener(R.id.ic_img_spitVideo, new View.OnClickListener() {
                         @Override
@@ -193,11 +211,11 @@ public class VideoFragment extends BaseTitlFragment {
                             spitVideoPopView.setOnVideoSelect(new SpitVideoPopView.OnVideoSelect() {
                                 @Override
                                 public void onVideoSelect(int tag,int pos) {
-                                    Intent intent = new Intent(_mActivity, VideoShowActivity.class);
+                                    Intent intent = new Intent(_mActivity, VideoPlayActivity.class);
                                     intent.putExtra("id", bean.getId());
                                     intent.putExtra("place",bean.getDepartname());
                                     intent.putExtra("spit", tag);
-                                    intent.putExtra("pos", String.valueOf(pos));
+                                    intent.putExtra("pos",pos);
                                     startActivity(intent);
                                 }
                             });
@@ -206,16 +224,6 @@ public class VideoFragment extends BaseTitlFragment {
                     });
                     holder.setText(R.id.ic_tv_recenttime,bean.getAddress());
                     holder.setText(R.id.ic_tv_places,bean.getDepartname());
-                    holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            Intent intent = new Intent(_mActivity, VideoShowActivity.class);
-                            intent.putExtra("id", bean.getId());
-                            intent.putExtra("place",bean.getDepartname());
-                            intent.putExtra("pos", "1");
-                            startActivity(intent);
-                        }
-                    });
                 }
             };
             mRecycleView.setLayoutManager(new LinearLayoutManager(_mActivity));

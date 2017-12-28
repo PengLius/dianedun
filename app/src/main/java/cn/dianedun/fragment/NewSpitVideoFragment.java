@@ -1,6 +1,5 @@
 package cn.dianedun.fragment;
 
-import android.graphics.PixelFormat;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -12,11 +11,9 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import com.ezvizuikit.open.EZUIError;
 import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.openapi.bean.EZDeviceInfo;
-import com.videogo.openapi.bean.resp.DeviceInfo;
 
 import java.util.Calendar;
 import java.util.List;
@@ -32,12 +29,12 @@ import me.yokeyword.fragmentation.SupportFragment;
  * Created by Administrator on 2017/9/22.
  */
 
-public class SpitVideoFragment extends SupportFragment {
+public class NewSpitVideoFragment extends SupportFragment {
 
     private List<EZDeviceInfo> mEZDeviceInfoList;
 
-    public static SpitVideoFragment getInstance() {
-        SpitVideoFragment fragment = new SpitVideoFragment();
+    public static NewSpitVideoFragment getInstance() {
+        NewSpitVideoFragment fragment = new NewSpitVideoFragment();
         fragment.setArguments(new Bundle());
         return fragment;
     }
@@ -174,11 +171,19 @@ public class SpitVideoFragment extends SupportFragment {
         }
     }
 
+    public void setSurfaceSize(int width){
+        for (int i=0; i<mSpitPlayerArr.size(); i++){
+            int key = mSpitPlayerArr.keyAt(i);
+            VideoBrother videoBrother = mSpitPlayerArr.get(key);
+            if (videoBrother!=null && videoBrother.mEzUiPlayer!=null)
+                videoBrother.mEzUiPlayer.setSurfaceSize(width,0);
+        }
+    }
+
     private boolean mIsPlay = false;
     public void stopPlay(){
         if (mIsPlay){
             mIsPlay = false;
-//            mLLRootView.removeView(mLlVideoContainer);
             for (int i=0; i<mSpitPlayerArr.size(); i++){
                 int key = mSpitPlayerArr.keyAt(i);
                 VideoBrother videoBrother = mSpitPlayerArr.get(key);
@@ -210,7 +215,7 @@ public class SpitVideoFragment extends SupportFragment {
     }
 
     public interface OnSpitVideoSelect {
-        void onVideoSelect(EZDeviceInfo deviceInfo,int pos);
+        void onVideoSelect(EZDeviceInfo deviceInfo, int pos);
     }
 
     private SparseArray<VideoBrother> mSpitPlayerArr = new SparseArray<>();
@@ -241,17 +246,12 @@ public class SpitVideoFragment extends SupportFragment {
 
         final EZUIPlayer ezuiPlayer = new EZUIPlayer(_mActivity);
         ezuiPlayer.setSurfaceSize(rlVideoContainer.getWidth(),0);
-        ezuiPlayer.setOpenSound(false);
+//        ezuiPlayer.setOpenSound(false);
         ezuiPlayer.setAutoPlay(mAutoPlay);
         ezuiPlayer.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
 
             @Override
             public void onTalkBackState(boolean state, ErrorInfo errorInfo) {
-
-            }
-
-            @Override
-            public void onRetryLoad() {
 
             }
 
@@ -292,11 +292,16 @@ public class SpitVideoFragment extends SupportFragment {
             }
 
             @Override
+            public void onRetryLoad() {
+
+            }
+
+            @Override
             public void onPlayFinish() {
                 Log.e("ezuiplayer","onPlayFinish");
             }
         });
-        String ezopenUrl = "ezopen://open.ys7.com/" + deviceInfo.getDeviceSerial() + "/1.live";
+        String ezopenUrl = "ezopen://open.ys7.com/" + deviceInfo.getDeviceSerial() + "/1.live?mute=true";
         rlVideoContainer.addView(ezuiPlayer,0);
 
         ezuiPlayer.setUrl(ezopenUrl);

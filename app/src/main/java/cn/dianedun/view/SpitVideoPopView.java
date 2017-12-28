@@ -332,7 +332,7 @@ public class SpitVideoPopView extends PopupWindow {
                     @Override
                     public void onClick(View v) {
                         if (mOnVideoSelect!=null)
-                            mOnVideoSelect.onVideoSelect(position,pos);
+                            mOnVideoSelect.onVideoSelect(position,position);
                         dismiss();
                     }
                 });

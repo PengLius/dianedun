@@ -2,39 +2,49 @@ package cn.dianedun.view.EZUIPlayer;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.os.Handler;
 import android.os.Message;
+import android.os.SystemClock;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.SurfaceHolder;
+import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
 import android.view.View;
-import android.view.SurfaceHolder.Callback;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.ezvizuikit.open.EZUIError;
-
 import com.ezvizuikit.open.ParamException;
 import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.errorlayer.ErrorLayer;
 import com.videogo.exception.BaseException;
-import com.videogo.openapi.EZOpenSDK;
+import com.videogo.openapi.EZConstants;
 import com.videogo.openapi.EZPlayer;
 import com.videogo.openapi.EzvizAPI;
 import com.videogo.openapi.bean.EZCloudRecordFile;
 import com.videogo.openapi.bean.EZRecordFile;
+import com.videogo.realplay.RealPlayStatus;
+import com.videogo.stream.EZStreamCtrl;
+import com.videogo.stream.EZStreamParamHelp;
+import com.videogo.util.ConnectionDetector;
 import com.videogo.util.LogUtil;
+import com.videogo.util.Utils;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import cn.dianedun.R;
+import cn.dianedun.activity.VideoShowActivity;
+
+import static cn.dianedun.tools.App.getOpenSDK;
+import static com.videogo.openapi.EZConstants.EZRealPlayConstants.MSG_REALPLAY_VOICETALK_SUCCESS;
 import static java.util.Calendar.DAY_OF_MONTH;
 import static java.util.Calendar.HOUR_OF_DAY;
 import static java.util.Calendar.MINUTE;
@@ -44,7 +54,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
     private static final String TAG = "EZUIPlayer";
     private Context mContext;
     private SurfaceView mSurfaceView;
-//    private RelativeLayout mSurfaceFrame;
+    private RelativeLayout mSurfaceFrame;
     private SurfaceHolder mHolder;
     private EZPlayer mEZPlayer;
     private EZUIPlayer.EZUIPlayerCallBack mEzUIPlayerCallBack;
@@ -58,7 +68,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
     private int mVideoHeight = 0;
     private int mStatus = 0;
     private AtomicBoolean isSurfaceInit = new AtomicBoolean(false);
-    private boolean isOpenSound = false;
+    private boolean isOpenSound = true;
     public static final int STATUS_INIT = 0;
     public static final int STATUS_START = 1;
     public static final int STATUS_STOP = 2;
@@ -71,117 +81,156 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
     private boolean isPlayBack;
     private static final int MSG_UPDATE_OSD = 8888;
     private Calendar mSeekCalendar;
+
+    public int getCameraId(){
+        if (ezPlayURLParams!=null)
+            return ezPlayURLParams.cameraNo;
+        return -1;
+    }
+
     private Handler mHandler = new Handler() {
         public void handleMessage(Message msg) {
             String e;
             switch(msg.what) {
-            case 102:
-            case 205:
-                LogUtil.d("EZUIPlayer", "MSG_REALPLAY_PLAY_SUCCESS");
-                EZUIPlayer.this.dismissomLoading();
-                EZUIPlayer.this.optionSound();
-                if(EZUIPlayer.this.mStatus != 2) {
-                    EZUIPlayer.this.setStatus(3);
-                    EZUIPlayer.this.mEzUIPlayerCallBack.onPlaySuccess();
-                }
-
-                this.sendEmptyMessage(8888);
-                break;
-            case 103:
-            case 206:
-                LogUtil.d("EZUIPlayer", "MSG_REALPLAY_PLAY_FAIL");
-                this.removeMessages(8888);
-                EZUIPlayer.this.dismissomLoading();
-                if(EZUIPlayer.this.mStatus != 2) {
-                    e = "UE105";
-                    if(msg.obj == null) {
-                        ;
+                case EZConstants.EZRealPlayConstants.MSG_SET_VEDIOMODE_SUCCESS:
+                    handleSetVedioModeSuccess();
+                    break;
+                case MSG_REALPLAY_VOICETALK_SUCCESS:
+                    EZUIPlayer.this.mEzUIPlayerCallBack.onTalkBackState(true,null);
+                    break;
+                case EZConstants.EZRealPlayConstants.MSG_REALPLAY_VOICETALK_STOP:
+                    EZUIPlayer.this.mEzUIPlayerCallBack.onTalkBackState(false,null);
+                    break;
+                case EZConstants.EZRealPlayConstants.MSG_REALPLAY_VOICETALK_FAIL:
+                    ErrorInfo errorInfo = (ErrorInfo) msg.obj;
+                    EZUIPlayer.this.mEzUIPlayerCallBack.onTalkBackState(false,errorInfo);
+                    break;
+                case 102:
+                case 205:
+                    LogUtil.d("EZUIPlayer", "MSG_REALPLAY_PLAY_SUCCESS");
+                    EZUIPlayer.this.dismissomLoading();
+                    EZUIPlayer.this.optionSound();
+                    if(EZUIPlayer.this.mStatus != 2) {
+                        EZUIPlayer.this.setStatus(3);
+                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlaySuccess();
                     }
 
-                    switch(((ErrorInfo)msg.obj).errorCode) {
-                    case 110018:
-                        e = "UE002";
-                        break;
-                    case 120001:
-                        e = "UE004";
-                        break;
-                    case 120002:
-                        e = "UE005";
-                        break;
-                    case 380045:
-                        e = "UE101";
-                        break;
-                    case 400002:
-                        e = "UE006";
-                        break;
-                    case 400032:
-                        e = "UE107";
-                        break;
-                    case 400034:
-                        e = "UE103";
-                        break;
-                    case 400035:
-                    case 400036:
-                        e = "UE104";
-                        break;
-                    case 400901:
-                        e = "UE102";
-                        break;
-                    case 400902:
-                        e = "UE001";
-                        break;
-                    case 400903:
-                        e = "UE106";
-                        break;
-                    case 410034:
-                    default:
+                    this.sendEmptyMessage(8888);
+                    break;
+                case 103:
+                case 206:
+                    LogUtil.d("EZUIPlayer", "MSG_REALPLAY_PLAY_FAIL");
+                    this.removeMessages(8888);
+                    EZUIPlayer.this.dismissomLoading();
+                    if(EZUIPlayer.this.mStatus != 2) {
                         e = "UE105";
+                        if(msg.obj == null) {
+                            ;
+                        }
+
+                        switch(((ErrorInfo)msg.obj).errorCode) {
+                            case 110018:
+                                e = "UE002";
+                                break;
+                            case 120001:
+                                e = "UE004";
+                                break;
+                            case 120002:
+                                e = "UE005";
+                                break;
+                            case 380045:
+                            case 395410:
+                                e = "UE101";
+                                break;
+                            case 395546:
+                                e = "UE109";
+                                break;
+                            case 400002:
+                                e = "UE006";
+                                break;
+                            case 400032:
+                                e = "UE107";
+                                break;
+                            case 400034:
+                                e = "UE103";
+                                break;
+                            case 400035:
+                            case 400036:
+                                e = "UE104";
+                                break;
+                            case 400901:
+                                e = "UE102";
+                                break;
+                            case 400902:
+                                e = "UE001";
+                                break;
+                            case 400903:
+                                e = "UE106";
+                                break;
+                            case 410034:
+                            default:
+                                e = "UE105";
+                        }
+
+                        EZUIPlayer.this.stopPlay();
+                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError(e, ((ErrorInfo)msg.obj).errorCode));
+                        EZUIPlayer.this.showPlayError(e + "(" + ((ErrorInfo)msg.obj).errorCode + ")");
                     }
+                    break;
+                case 134:
+                    LogUtil.d("EZUIPlayer", "MSG_VIDEO_SIZE_CHANGED");
+                    EZUIPlayer.this.dismissomLoading();
 
-                    EZUIPlayer.this.stopPlay();
-                    EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError(e, ((ErrorInfo)msg.obj).errorCode));
-                    EZUIPlayer.this.showPlayError(e + "(" + ((ErrorInfo)msg.obj).errorCode + ")");
-                }
-                break;
-            case 134:
-                LogUtil.d("EZUIPlayer", "MSG_VIDEO_SIZE_CHANGED");
-                EZUIPlayer.this.dismissomLoading();
 
-                if (bPlayBackUse)
-                    return;
+                    if (bPlayBackUse)
+                        return;
 
-                try {
-                    e = (String)msg.obj;
-                    String[] strings = e.split(":");
-                    EZUIPlayer.this.mEzUIPlayerCallBack.onVideoSizeChange(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]));
-                    EZUIPlayer.this.mVideoWidth = Integer.parseInt(strings[0]);
-                    EZUIPlayer.this.mVideoHeight = Integer.parseInt(strings[1]);
-                    EZUIPlayer.this.setSurfaceSize(EZUIPlayer.this.mWidth, EZUIPlayer.this.mHeight);
-                } catch (Exception var4) {
-                    var4.printStackTrace();
-                }
-                break;
-            case 201:
-                LogUtil.d("EZUIPlayer", "MSG_REMOTEPLAYBACK_PLAY_FINISH");
-                EZUIPlayer.this.handlePlayFinish();
-                break;
-            case 8888:
-                this.removeMessages(8888);
-                if(EZUIPlayer.this.mEzUIPlayerCallBack != null && EZUIPlayer.this.mStatus == 3) {
-                    EZUIPlayer.this.mSeekCalendar = EZUIPlayer.this.getOSDTime();
-                    if(EZUIPlayer.this.mSeekCalendar != null) {
-                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayTime((Calendar)EZUIPlayer.this.mSeekCalendar.clone());
+
+                    try {
+                        e = (String)msg.obj;
+                        String[] strings = e.split(":");
+                        EZUIPlayer.this.mEzUIPlayerCallBack.onVideoSizeChange(Integer.parseInt(strings[0]), Integer.parseInt(strings[1]));
+                        EZUIPlayer.this.mVideoWidth = Integer.parseInt(strings[0]);
+                        EZUIPlayer.this.mVideoHeight = Integer.parseInt(strings[1]);
+                        EZUIPlayer.this.setSurfaceSize(EZUIPlayer.this.mWidth, EZUIPlayer.this.mHeight);
+                    } catch (Exception var4) {
+                        var4.printStackTrace();
                     }
+                    break;
+                case 201:
+                    LogUtil.d("EZUIPlayer", "MSG_REMOTEPLAYBACK_PLAY_FINISH");
+                    EZUIPlayer.this.handlePlayFinish();
+                    break;
+                case 8888:
+                    this.removeMessages(8888);
+                    if(EZUIPlayer.this.mEzUIPlayerCallBack != null && EZUIPlayer.this.mStatus == 3) {
+                        EZUIPlayer.this.mSeekCalendar = EZUIPlayer.this.getOSDTime();
+                        if(EZUIPlayer.this.mSeekCalendar != null) {
+                            EZUIPlayer.this.mEzUIPlayerCallBack.onPlayTime((Calendar)EZUIPlayer.this.mSeekCalendar.clone());
+                        }
 
-                    this.sendEmptyMessageDelayed(8888, 1000L);
-                }
+                        this.sendEmptyMessageDelayed(8888, 1000L);
+                    }
             }
-
         }
     };
 
-    public void sendMessage(Message message){
-        mHandler.sendMessage(message);
+    private void handleSetVedioModeSuccess() {
+        if (mStatus == RealPlayStatus.STATUS_PLAY) {
+            // 停止播放
+            mEZPlayer.stopRealPlay();
+            //下面语句防止stopRealPlay线程还没释放surface, startRealPlay线程已经开始使用surface
+            //因此需要等待500ms
+            SystemClock.sleep(500);
+            // 开始播放
+            mEZPlayer.startRealPlay();
+        }
+    }
+
+    private boolean mAutoPlay = false;
+
+    public void setAutoPlay(boolean autoPlay){
+        mAutoPlay = autoPlay;
     }
 
     private boolean bPlayBackUse = false;
@@ -195,7 +244,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
         this.optionSound();
     }
 
-    private boolean isOpenSound() {
+    public boolean isOpenSound() {
         return this.isOpenSound;
     }
 
@@ -208,10 +257,6 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
             }
         }
 
-    }
-
-    public EZPlayer getEzPlayer(){
-        return mEZPlayer;
     }
 
     public EZUIPlayer(Context context) {
@@ -235,18 +280,12 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
     private void initSurfaceView() {
         if(this.mSurfaceView == null) {
             this.mSurfaceView = new SurfaceView(this.mContext);
-            LayoutParams lp = new LayoutParams(-1, -1);
+            LayoutParams lp = new LayoutParams(-2, -2);
             lp.addRule(13);
             this.mSurfaceView.setLayoutParams(lp);
             this.addView(this.mSurfaceView);
         }
 
-    }
-
-    public void setZOrderMediaOverlay(boolean overlay){
-        mSurfaceView.setZOrderOnTop(overlay);
-        mSurfaceView.setZOrderMediaOverlay(overlay);
-        mSurfaceView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -290,15 +329,9 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
-//
-//    @Override
-//    public void setCallBack(com.ezvizuikit.open.EZUIPlayer.EZUIPlayerCallBack var1) {
-//
-//    }
 
-    private boolean mAutoPlay = false;
-    public void setAutoPlay(boolean autoPlay){
-        mAutoPlay = autoPlay;
+    public EZPlayer getEzPlayer(){
+        return mEZPlayer;
     }
 
     public void setCallBack(EZUIPlayer.EZUIPlayerCallBack callBack) {
@@ -351,12 +384,13 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                 }
 
             } else {
-//                this.isOpenSound = !this.ezPlayURLParams.mute;
+                this.isOpenSound = !this.ezPlayURLParams.mute;
+
                 if(this.ezPlayURLParams.type == 1) {
                     this.isPlayBack = false;
                     if(this.mEZPlayer == null) {
                         this.setStatus(0);
-                        this.mEZPlayer = EZOpenSDK.getInstance().createPlayer(this.ezPlayURLParams.deviceSerial, this.ezPlayURLParams.cameraNo);
+                        this.mEZPlayer = EzvizAPI.getInstance().createPlayerWithUrl(url);
                         if(!TextUtils.isEmpty(this.ezPlayURLParams.verifyCode)) {
                             this.mEZPlayer.setPlayVerifyCode(this.ezPlayURLParams.verifyCode);
                         }
@@ -399,7 +433,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                         }
 
                         if(this.mEZPlayer == null) {
-                            this.mEZPlayer = EZOpenSDK.getInstance().createPlayer(this.ezPlayURLParams.deviceSerial, this.ezPlayURLParams.cameraNo);
+                            this.mEZPlayer = EzvizAPI.getInstance().createPlayer(this.ezPlayURLParams.deviceSerial, this.ezPlayURLParams.cameraNo);
                             if(!TextUtils.isEmpty(this.ezPlayURLParams.verifyCode)) {
                                 this.mEZPlayer.setPlayVerifyCode(this.ezPlayURLParams.verifyCode);
                             }
@@ -415,7 +449,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                                     if(!TextUtils.isEmpty(EZUIPlayer.this.ezPlayURLParams.alarmId)) {
                                         EZUIPlayer.this.searchRecordFilesByAlarmId(EZUIPlayer.this.ezPlayURLParams.deviceSerial, EZUIPlayer.this.ezPlayURLParams.cameraNo, EZUIPlayer.this.ezPlayURLParams.alarmId);
                                     } else {
-                                        EZUIPlayer.this.searchDeviceFilesByTime( EZUIPlayer.this.ezPlayURLParams.deviceSerial, EZUIPlayer.this.ezPlayURLParams.cameraNo, EZUIPlayer.this.ezPlayURLParams.startTime.getTimeInMillis(), EZUIPlayer.this.ezPlayURLParams.endTime.getTimeInMillis(), EZUIPlayer.this.ezPlayURLParams.recodeType);
+                                        searchDeviceFilesByTime( EZUIPlayer.this.ezPlayURLParams.deviceSerial, EZUIPlayer.this.ezPlayURLParams.cameraNo, EZUIPlayer.this.ezPlayURLParams.startTime.getTimeInMillis(), EZUIPlayer.this.ezPlayURLParams.endTime.getTimeInMillis(), EZUIPlayer.this.ezPlayURLParams.recodeType);
                                     }
 
                                 }
@@ -434,7 +468,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
     private List<EZRecordFile> searchDeviceFilesByTime(String deviceSerial, int cameraNo, long startTime, long endTime, int recordtype) {
         try {
-            ArrayList e = (ArrayList)EzvizAPI.getInstance().searchRecordFilesByTime(deviceSerial, cameraNo, startTime, endTime, recordtype);
+            ArrayList e = (ArrayList) EzvizAPI.getInstance().searchRecordFilesByTime(deviceSerial, cameraNo, startTime, endTime, recordtype);
             this.mPlayRecordList = new ArrayList();
             EZRecordFile var13 = null;
             if(this.mRecordFiles != null) {
@@ -473,8 +507,8 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
             this.post(new Runnable() {
                 public void run() {
                     if((EZUIPlayer.this.mRecordFiles == null || EZUIPlayer.this.mRecordFiles.size() <= 0) && EZUIPlayer.this.mEzUIPlayerCallBack != null) {
-                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("暂无资源", -1));
-                        EZUIPlayer.this.showPlayError("暂无资源(UE108)");
+                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("UE108", -1));
+                        EZUIPlayer.this.showPlayError("UE108(-1)");
                     }
 
                     if(EZUIPlayer.this.mEzUIPlayerCallBack != null) {
@@ -542,7 +576,45 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
             return null;
         }
     }
+    /**
+     * 码流配置 清晰度 2-高清，1-标清，0-流畅
+     *
+     * @see
+     * @since V2.0
+     */
+    private EZConstants.EZVideoLevel mCurrentQulityMode = EZConstants.EZVideoLevel.VIDEO_LEVEL_HD;
 
+    public EZConstants.EZVideoLevel getCurrentQulityMode() {
+        return mCurrentQulityMode;
+    }
+
+    public void setQualityMode(final EZConstants.EZVideoLevel mode) {
+        if (mEZPlayer != null && ezPlayURLParams!=null) {
+            Thread thr = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        // need to modify by yudan at 08-11
+                        getOpenSDK().setVideoLevel(ezPlayURLParams.deviceSerial,ezPlayURLParams.cameraNo, mode.getVideoLevel());
+                        mCurrentQulityMode = mode;
+                        Message msg = Message.obtain();
+                        msg.what = EZConstants.EZRealPlayConstants.MSG_SET_VEDIOMODE_SUCCESS;
+                        mHandler.sendMessage(msg);
+                        LogUtil.i(TAG, "setQualityMode success");
+                    } catch (BaseException e) {
+                        mCurrentQulityMode = EZConstants.EZVideoLevel.VIDEO_LEVEL_FLUNET;
+                        e.printStackTrace();
+                        Message msg = Message.obtain();
+                        msg.what = EZConstants.EZRealPlayConstants.MSG_SET_VEDIOMODE_FAIL;
+                        mHandler.sendMessage(msg);
+                        LogUtil.i(TAG, "setQualityMode fail");
+                    }
+
+                }
+            });
+            thr.start();
+        }
+    }
     private EZRecordFile copyEZRecordFile(EZRecordFile recordfile) {
         EZRecordFile recordFile = new EZRecordFile();
         recordFile.setEndTime(recordfile.getEndTime());
@@ -618,7 +690,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                 if(index < 0) {
                     this.dismissomLoading();
                     if(this.mEzUIPlayerCallBack != null) {
-                        this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("此时段暂无视频",0));
+                        this.mEzUIPlayerCallBack.onPlayFinish();
                     }
 
                 } else {
@@ -678,15 +750,30 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
     }
 
+    public boolean closeSound() {
+        if (mEZPlayer == null){
+            return false;
+        }
+        return mEZPlayer.closeSound();
+    }
+
+    public boolean stopVoiceTalk() {
+        if (mEZPlayer == null){
+            return false;
+        }
+        return mEZPlayer.stopVoiceTalk();
+    }
+
+    public void setVoiceTalkStatus(boolean pressed) {
+        mEZPlayer.setVoiceTalkStatus(pressed);
+    }
+
     public void releasePlayer() {
         this.mHandler.removeMessages(8888);
         if(this.mEZPlayer != null) {
             this.mEZPlayer.release();
             this.mEZPlayer = null;
         }
-        if (this.mHolder!=null)
-            this.mHolder.getSurface().release();
-
     }
 
     private void handlePlayFinish() {
@@ -745,6 +832,11 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
         this.changeSurfaceSize(this.mSurfaceView, this.mVideoWidth, this.mVideoHeight);
     }
 
+    public boolean startVoiceTalk() {
+        return mEZPlayer.startVoiceTalk();
+    }
+
+
     private void showPlayError(String errorInfo) {
         if(this.mLoadView != null) {
             this.mLoadView.setVisibility(GONE);
@@ -752,10 +844,19 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
         if(this.mErrorTextView == null) {
             this.mErrorTextView = new TextView(this.mContext);
-            this.mErrorTextView.setText(errorInfo);
+            this.mErrorTextView.setText(errorInfo + "\n" + "点击重新加载" );
             this.mErrorTextView.setTextColor(Color.rgb(255, 255, 255));
+            mErrorTextView.setGravity(Gravity.CENTER);
+            this.mErrorTextView.setOnClickListener(new OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                       if (mEzUIPlayerCallBack!=null)
+                           mEzUIPlayerCallBack.onRetryLoad();
+                }
+            });
             LayoutParams lp = new LayoutParams(-2, -2);
             lp.addRule(13);
+
             this.mErrorTextView.setLayoutParams(lp);
             this.addView(this.mErrorTextView);
         }
@@ -777,25 +878,21 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                 this.addView(this.mLoadView);
             }
 
-
             this.mLoadView.setVisibility(VISIBLE);
         } else {
-            EZUIPlayer.this.mEzUIPlayerCallBack.onShowLoading();
-//            this.mLoadView = new ProgressBar(this.mContext);
-//            LayoutParams lp = new LayoutParams(-2, -2);
-//            lp.addRule(13);
-//            this.mLoadView.setLayoutParams(lp);
-//            this.addView(this.mLoadView);
-//            this.mLoadView.setVisibility(VISIBLE);
+            this.mLoadView = new ProgressBar(this.mContext);
+            LayoutParams lp = new LayoutParams(-2, -2);
+            lp.addRule(13);
+            this.mLoadView.setLayoutParams(lp);
+            this.addView(this.mLoadView);
+            this.mLoadView.setVisibility(VISIBLE);
         }
 
     }
 
     private void dismissomLoading() {
         if(this.mLoadView != null) {
-//            this.removeView(mLoadView);
             this.mLoadView.setVisibility(GONE);
-//            this.mLoadView.setVisibility(GONE);
         }
 
     }
@@ -855,7 +952,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
     private int getCurrentIndex(Calendar calendar) {
         if(this.mPlayRecordList != null && this.mPlayRecordList.size() > 0) {
             for(int i = 0; i < this.mPlayRecordList.size(); ++i) {
-                EZRecordFile recordFile = this.mPlayRecordList.get(i);
+                EZRecordFile recordFile = (EZRecordFile)this.mPlayRecordList.get(i);
                 boolean var10000 = calendar.getTimeInMillis() > recordFile.getEndTime()?true:true;
                 if(calendar.getTimeInMillis() < recordFile.getEndTime()) {
                     return i;
@@ -868,7 +965,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
         }
     }
 
-    public static EZUIKitPlayMode getUrlPlayType(String url) {
+    public static EZUIPlayer.EZUIKitPlayMode getUrlPlayType(String url) {
         return EZUIKitUilts.getUrlPlayType(url);
     }
 
@@ -887,6 +984,9 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
         void onPlayTime(Calendar var1);
 
         void onPlayFinish();
+
+        void onRetryLoad();
+        void onTalkBackState(boolean state,ErrorInfo errorInfo);
     }
 
     public static enum EZUIKitPlayMode {

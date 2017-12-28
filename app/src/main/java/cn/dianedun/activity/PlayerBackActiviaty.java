@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.ezvizuikit.open.EZUIError;
 import com.ezvizuikit.open.EZUIKit;
+import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.exception.InnerException;
 import com.videogo.openapi.bean.EZRecordFile;
 import com.videogo.util.LocalInfo;
@@ -235,7 +236,12 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         return String.valueOf(month);
     }
 
-//    private Date mCurDate;
+    @Override
+    public void onRetryLoad() {
+
+    }
+
+    //    private Date mCurDate;
     private Calendar mCurCalendar;
     @Override
     protected void initView() {
@@ -348,15 +354,26 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mEZUiPlayBack.releasePlayer();
         mScreenOrientationHelper = null;
     }
-
+//    private void buildOrientationHelper(){
+//        mScreenOrientationHelper = new ScreenOrientationHelper(this, mCtbFullscreen, /*mFullscreenFullButton*/null);
+//    }
     @Override
     public void onBackPressedSupport() {
         if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
-            mScreenOrientationHelper.portrait();
+//            if (mScreenOrientationHelper == null) {
+//                buildOrientationHelper();
+//            }
+//            mScreenOrientationHelper.portrait();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             return;
         }
         if (mLocalInfo!=null)
             mLocalInfo.setSoundOpen(false);
+
+        if (mIsRecording) {
+            stopRealPlayRecord();
+        }
+
         super.onBackPressedSupport();
     }
 
@@ -482,7 +499,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             stopRealPlayRecord();
-                            new DateTimeDialogOnlyYMD(PlayerBackActiviaty.this, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
+                            new DateTimeDialogOnlyYMD(PlayerBackActiviaty.this,mCurCalendar, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
                                 @Override
                                 public void onDateSet(Date date) {
                                     mCurCalendar.setTime(date);
@@ -532,7 +549,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                     builder.show();
                     return;
                 }else{
-                    new DateTimeDialogOnlyYMD(PlayerBackActiviaty.this, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
+                    new DateTimeDialogOnlyYMD(PlayerBackActiviaty.this,mCurCalendar, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
                         @Override
                         public void onDateSet(Date date) {
                             mCurCalendar.setTime(date);
@@ -614,6 +631,10 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                     //播放状态，点击停止播放
                     mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
                     mEZUiPlayBack.pausePlay();
+
+                    if (mIsRecording) {
+                        stopRealPlayRecord();
+                    }
                 } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PAUSE) {
                     //停止状态，点击播放
                     mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
@@ -655,7 +676,6 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     }
     private void updateOrientation() {
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -808,6 +828,16 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         if (mIsRecording) {
             stopRealPlayRecord();
             return;
+        }
+
+        if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PAUSE) {
+            //停止状态，点击播放
+            mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+            mEZUiPlayBack.resumePlay();
+        } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_STOP
+                || mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_INIT) {
+            mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+            mEZUiPlayBack.startPlay();
         }
 
         if (!SDCardUtil.isSDCardUseable()) {
@@ -983,6 +1013,8 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             thr.start();
         }
     }
+
+
     @Override
     protected void initData() {
         super.initData();
@@ -1094,6 +1126,11 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
 
     @Override
     public void onPlayFinish() {
+
+    }
+
+    @Override
+    public void onTalkBackState(boolean state, ErrorInfo errorInfo) {
 
     }
 

@@ -121,6 +121,12 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustPan|stateHidden"></activity>
+
+        <activity android:name=".activity.VideoPlayActivity"
+            android:launchMode="singleTask"
+            android:exported="false"
+            android:configChanges="orientation|keyboardHidden|screenSize"/>
+
         <activity
             android:name=".activity.LoginActivity"
             android:launchMode="singleTask"

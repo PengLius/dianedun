@@ -48,6 +48,7 @@ public class App extends MultiDexApplication {
 
 
     private void initSDK() {
+        EZUIKit.initWithAppKey(this,AppKey);
         {
             /**
              * sdk日志开关，正式发布需要去掉
