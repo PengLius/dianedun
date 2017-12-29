@@ -363,10 +363,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
             // 显示状态栏
             fullScreen(false);
-//            setStatusViewVisiable(true);
             mRlTitleLayout.setVisibility(VISIBLE);
-//            if (!m4BoxOr9Box)
-//                mRlPlace.setVisibility(GONE);
             mRlVideoPlay.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -376,10 +373,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         } else {
             // 隐藏状态栏
             fullScreen(true);
-//            setStatusViewVisiable(false);
             mRlTitleLayout.setVisibility(GONE);
-//            if (!m4BoxOr9Box)
-//                mRlPlace.setVisibility(VISIBLE);
             mRlVideoPlay.postDelayed(new Runnable() {
                 @Override
                 public void run() {
@@ -660,6 +654,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
     public void onVideoSelect(EZDeviceInfo deviceInfo, int pos) {
         m4BoxOr9Box = null;
         removeSpitPlayer();
+        mRlPlace.setVisibility(VISIBLE);
         mRlVideoPlay.removeView(mViewPagerMult);
         mRlVideoPlay.addView(mViewPagerSingle,0);
 //        mImgMultScreen.setImageResource(R.mipmap.ic_nor_multscreen);
@@ -674,7 +669,6 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
                 break;
             }
         }
-        mRlPlace.setVisibility(VISIBLE);
     }
 
     private void buildSingleViewPager() {
@@ -698,7 +692,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
                 }
 
                 @Override
-                public void onVideoClick() {
+                public void onVideoClick(){
 
                 }
 

@@ -231,7 +231,7 @@ public class VideoEntiryFragment extends SupportFragment {
 
     public final static String QA_HD = "/1.hd.live?mute=true";
     public final static String QA_BA = "/1.live?mute=true";
-    private String mVideoQa = QA_HD;
+    private String mVideoQa = QA_BA;
 
     public void setSurfaceSize(int width){
         if (mEzUiPlayer!=null)

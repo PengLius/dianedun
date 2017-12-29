@@ -93,7 +93,7 @@ public class VideoFragment extends BaseTitlFragment {
     private Boolean mRefreshOrLoadMore = null;
     private void getData(final Boolean headOrLoadMore){
         ViseApi api = new ViseApi.Builder(_mActivity).build();
-        api.apiPost(AppConfig.GETDEPARTPLACES,App.getInstance().getToken(),new HashMap(),false,new ApiCallback<DepartPlacesListBean.DataBean>(){
+        api.apiPost(AppConfig.GETDEPARTPLACES, App.getInstance().getToken(),new HashMap(),false,new ApiCallback<DepartPlacesListBean.DataBean>(){
             @Override
             public void onStart() {
 
