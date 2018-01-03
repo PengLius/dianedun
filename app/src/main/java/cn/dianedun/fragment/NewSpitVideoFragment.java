@@ -242,12 +242,16 @@ public class NewSpitVideoFragment extends SupportFragment {
         });
 
         final View laodingView = LayoutInflater.from(_mActivity).inflate(R.layout.view_video_loading,rlVideoContainer,false);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+        laodingView.setLayoutParams(lp);
         rlVideoContainer.addView(laodingView);
 
         final EZUIPlayer ezuiPlayer = new EZUIPlayer(_mActivity);
         ezuiPlayer.setSurfaceSize(rlVideoContainer.getWidth(),0);
 //        ezuiPlayer.setOpenSound(false);
         ezuiPlayer.setAutoPlay(mAutoPlay);
+        ezuiPlayer.setLoadingView(laodingView);
         ezuiPlayer.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
 
             @Override
@@ -257,14 +261,14 @@ public class NewSpitVideoFragment extends SupportFragment {
 
             @Override
             public void onShowLoading() {
-                laodingView.setVisibility(View.VISIBLE);
+//                laodingView.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onPlaySuccess() {
                 Log.e("ezuiplayer","onPlaySuccess");
 //                            ezUIPlayer.setZOrderOnTop(true);
-                laodingView.setVisibility(View.INVISIBLE);
+//                laodingView.setVisibility(View.INVISIBLE);
             }
 
             @Override

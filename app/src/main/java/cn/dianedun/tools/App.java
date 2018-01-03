@@ -37,32 +37,12 @@ public class App extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-        initSDK();
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         CrashHandler crashHandler = CrashHandler.getInstance();
         crashHandler.init(mInstance);
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
         UMConfigure.init(this, "598bf5bc310c93481f0012c3", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, null);
-    }
-
-
-    private void initSDK() {
-        EZUIKit.initWithAppKey(this,AppKey);
-        {
-            /**
-             * sdk日志开关，正式发布需要去掉
-             */
-            EZOpenSDK.showSDKLog(true);
-
-            EZOpenSDK.enableP2P(false);
-
-            EZUIKit.setDebug(true);
-
-            EZOpenSDK.initLib(this, AppKey, "");
-        }
-        x.Ext.init(this);
-        x.Ext.setDebug(BuildConfig.DEBUG);
     }
 
     public static App getInstance() {

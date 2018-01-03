@@ -280,6 +280,8 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
     private void initSurfaceView() {
         if(this.mSurfaceView == null) {
             this.mSurfaceView = new SurfaceView(this.mContext);
+//            mSurfaceView.setZOrderOnTop(true);
+//            mSurfaceView.setZOrderMediaOverlay(true);
             LayoutParams lp = new LayoutParams(-2, -2);
             lp.addRule(13);
             this.mSurfaceView.setLayoutParams(lp);
@@ -844,7 +846,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
         if(this.mErrorTextView == null) {
             this.mErrorTextView = new TextView(this.mContext);
-            this.mErrorTextView.setText(errorInfo + "\n" + "点击重新加载" );
+            this.mErrorTextView.setText("播放视频失败" + "\n" + errorInfo +  "\n" + "点击重新加载" );
             this.mErrorTextView.setTextColor(Color.rgb(255, 255, 255));
             mErrorTextView.setGravity(Gravity.CENTER);
             this.mErrorTextView.setOnClickListener(new OnClickListener() {
@@ -877,7 +879,6 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
             if(this.mLoadView.getParent() == null) {
                 this.addView(this.mLoadView);
             }
-
             this.mLoadView.setVisibility(VISIBLE);
         } else {
             this.mLoadView = new ProgressBar(this.mContext);

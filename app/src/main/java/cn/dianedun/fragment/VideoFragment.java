@@ -26,6 +26,7 @@ import java.util.List;
 
 import butterknife.Bind;
 import cn.dianedun.R;
+import cn.dianedun.activity.LoginActivity;
 import cn.dianedun.activity.VideoPlayActivity;
 import cn.dianedun.activity.VideoShowActivity;
 import cn.dianedun.base.BaseTitlFragment;
@@ -144,6 +145,8 @@ public class VideoFragment extends BaseTitlFragment {
 
             @Override
             public void onError(ApiException e) {
+                if(e.getCode() == 2001)
+                    _mActivity.startActivity(new Intent(_mActivity, LoginActivity.class));
                 showToast(e.getMessage());
                 if (headOrLoadMore!= null){
                     if (headOrLoadMore)

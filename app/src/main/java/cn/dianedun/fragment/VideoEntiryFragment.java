@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
-import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ezvizuikit.open.EZUIError;
-import com.ezvizuikit.open.EZUIKit;
 import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.exception.BaseException;
 import com.videogo.exception.InnerException;
@@ -35,7 +33,6 @@ import com.videogo.util.LogUtil;
 import com.videogo.util.MediaScanner;
 import com.videogo.util.SDCardUtil;
 import com.videogo.util.Utils;
-import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -69,11 +66,12 @@ public class VideoEntiryFragment extends SupportFragment {
     private EZUIPlayer mEzUiPlayer;
     private RelativeLayout mRlContainer;
     private TextView mTvTip;
-    private ImageView mImgPic,mImgDirection;
+    private ImageView mImgDirection;
     private LinearLayout mLLRecordView;
     private ImageView mImgRecordTag;
     private TextView mTvRecordSec;
     private VideoPlayActivity.OnVideoSelect mVideoParent;
+//    protected ProgressBar mProgress;
 
     public int getVideoStatus(){
         if (mEzUiPlayer==null)
@@ -105,15 +103,13 @@ public class VideoEntiryFragment extends SupportFragment {
                     mVideoParent.onVideoClick();
             }
         });
-
-
         mEzUiPlayer = (EZUIPlayer) view.findViewById(R.id.vv_ezuiplayer);
         mTvTip = (TextView)view.findViewById(R.id.vv_tv_tip);
-        mImgPic = (ImageView)view.findViewById(R.id.vv_img_pic);
         mLLRecordView = (LinearLayout)view.findViewById(R.id.vv_ll_record);
         mImgRecordTag = (ImageView)view.findViewById(R.id.vv_img_realplay);
         mTvRecordSec = (TextView)view.findViewById(R.id.vv_tv_realplay);
         mImgDirection = (ImageView)view.findViewById(R.id.vv_img_direction);
+//        mProgress = (ProgressBar)view.findViewById(R.id.vv_progress);
         mDataBean = getArguments().getParcelable("data");
     }
 
@@ -141,9 +137,7 @@ public class VideoEntiryFragment extends SupportFragment {
 //        }
         mLocalInfo = LocalInfo.getInstance();
         mAudioPlayUtil = AudioPlayUtil.getInstance(App.getInstance());
-        final View laodingView = LayoutInflater.from(_mActivity).inflate(R.layout.view_video_loading,mRlContainer,false);
-        mRlContainer.addView(laodingView);
-        DisplayMetrics dm = new DisplayMetrics();
+        final DisplayMetrics dm = new DisplayMetrics();
         _mActivity.getWindowManager().getDefaultDisplay().getMetrics(dm);
         mEzUiPlayer.setSurfaceSize(dm.widthPixels, 0);
         mEzUiPlayer.setOpenSound(false);
@@ -155,13 +149,12 @@ public class VideoEntiryFragment extends SupportFragment {
             @Override
             public void onTalkBackState(boolean state, ErrorInfo errorInfo) {
                 if (!state){
-                    mIsOnTalk = false;
+//                    mIsOnTalk = false;
                 }else{
                     mIsOnTalk = true;
+                    if (mVideoParent!=null)
+                        mVideoParent.onVideoTalkBackState(state,errorInfo);
                 }
-
-                if (mVideoParent!=null)
-                    mVideoParent.onVideoTalkBackState(state,errorInfo);
             }
 
             @Override
@@ -171,17 +164,15 @@ public class VideoEntiryFragment extends SupportFragment {
 
             @Override
             public void onShowLoading() {
-                mImgPic.setVisibility(GONE);
 //                mTvTip.setVisibility(GONE);
-                laodingView.setVisibility(View.VISIBLE);
+//                laodingView.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onPlaySuccess() {
                 Log.e("ezuiplayer","onPlaySuccess");
 //                            ezUIPlayer.setZOrderOnTop(true);
-                mImgPic.setVisibility(GONE);
-                laodingView.setVisibility(View.INVISIBLE);
+//                laodingView.setVisibility(View.INVISIBLE);
                 if (mInTop && mVideoParent!=null) {
                     mVideoParent.onVideoPlayState(EZUIPlayer.STATUS_PLAY,null);
                     mVideoParent.onVideoVoiceControl(true);
@@ -200,7 +191,7 @@ public class VideoEntiryFragment extends SupportFragment {
                 }
                 mErrStr = ezuiError.getErrorString();
                 Toast.makeText(_mActivity, mErrStr, Toast.LENGTH_SHORT).show();
-                laodingView.setVisibility(View.INVISIBLE);
+//                laodingView.setVisibility(View.INVISIBLE);
 //                mTvTip.setText(mErrStr);
 //                mTvTip.setVisibility(View.VISIBLE);
             }
@@ -246,7 +237,6 @@ public class VideoEntiryFragment extends SupportFragment {
             mVideoParent.onVideoSelect(mPos,mDataBean);
 
         if (mDataBean.getStatus() == 1 && mEzUiPlayer.getStatus() != EZUIPlayer.STATUS_PLAY){
-            mImgPic.setVisibility(GONE);
             mEzUiPlayer.startPlay();
         }else {
             if (mVideoParent!=null){
@@ -358,12 +348,14 @@ public class VideoEntiryFragment extends SupportFragment {
         if (mEzUiPlayer.getEzPlayer() != null) {
             mAudioPlayUtil.playAudioFile(AudioPlayUtil.RECORD_SOUND);
             java.util.Date date = new java.util.Date();
-            String strRecordFile = Environment.getExternalStorageDirectory().getPath() + "/DianEDun/Records/" + String.format("%tY", date)
+
+            String entityPath = "DianEDun/Records/" + String.format("%tY", date)
                     + String.format("%tm", date) + String.format("%td", date) + "/"
                     + String.format("%tH", date) + String.format("%tM", date) + String.format("%tS", date) + String.format("%tL", date) + ".mp4";
+            String strRecordFile = Environment.getExternalStorageDirectory().getPath() + "/" +  entityPath;
             if (mEzUiPlayer.getEzPlayer().startLocalRecordWithFile(strRecordFile))
             {
-                handleRecordSuccess(strRecordFile);
+                handleRecordSuccess(strRecordFile,entityPath);
             } else {
                 handleRecordFail();
             }
@@ -391,9 +383,10 @@ public class VideoEntiryFragment extends SupportFragment {
      * 录像时间
      */
     private int mRecordSecond = 0;
-    private void handleRecordSuccess(String recordFilePath) {
+    private void handleRecordSuccess(String recordFilePath,String entityPath) {
         EZUtils.updateVideo(_mActivity,recordFilePath);
-        mCurRecordName = "已将录像保存至目录：" + recordFilePath;
+
+        mCurRecordName = "已将录像保存至目录：" + entityPath;
         if (mVideoParent!=null){
             mVideoParent.onVideoRecordState(true);
         }
@@ -649,89 +642,89 @@ public class VideoEntiryFragment extends SupportFragment {
         }
     }
 
-    public Boolean startPlay(){
-        if (!isVideoNormal()){
-            return null;
-        }
-
-        if (mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_PLAY) {
-            //播放状态，点击停止播放
-            if (mIsRecording){
-                AlertDialog.Builder builder = new AlertDialog.Builder(_mActivity);
-                builder.setTitle("提示");
-                builder.setMessage("暂停观看直播会终止录像，是否暂停观看？");
-                builder.setPositiveButton("取消", null);
-                builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        stopRealPlayRecord();
-                        if (mVideoParent!=null){
-                            mVideoParent.onVideoPlayState(EZUIPlayer.STATUS_INIT,null);
-                        }
-                        if (mEzUiPlayer.getEzPlayer() != null && mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_PLAY) {
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    final WeakReference<Bitmap> bmp = new WeakReference(mEzUiPlayer.getEzPlayer().capturePicture());
-                                    if (bmp==null || bmp.get()==null)
-                                        return;
-                                    try {
-                                        _mActivity.runOnUiThread(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                mImgPic.setImageBitmap(bmp.get());
-                                                mImgPic.setVisibility(View.VISIBLE);
-                                                mEzUiPlayer.stopPlay();
-                                            }
-                                        });
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    } finally {
-                                    }
-                                }
-                            }).start();
-                        }
-                    }
-                });
-                builder.show();
-                return null;
-            }
-
-            if (mEzUiPlayer.getEzPlayer() != null && mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_PLAY) {
-                new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        final WeakReference<Bitmap> bmp = new WeakReference(mEzUiPlayer.getEzPlayer().capturePicture());
-                        if (bmp==null || bmp.get()==null)
-                            return;
-                        try {
-                            _mActivity.runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    mImgPic.setImageBitmap(bmp.get());
-                                    mImgPic.setVisibility(View.VISIBLE);
-                                    mEzUiPlayer.stopPlay();
-                                }
-                            });
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        } finally {
-//                            if (bmp != null && bmp.get()!=null) {
-//                                bmp.get().recycle();
-//                            }
-                        }
-                    }
-                }).start();
-                return false;
-            }
-        }  else if (mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_STOP
-                || mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_INIT) {
-            mImgPic.setVisibility(View.GONE);
-            mEzUiPlayer.startPlay();
-            return true;
-        }
-        return null;
-    }
+//    public Boolean startPlay(){
+//        if (!isVideoNormal()){
+//            return null;
+//        }
+//
+//        if (mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_PLAY) {
+//            //播放状态，点击停止播放
+//            if (mIsRecording){
+//                AlertDialog.Builder builder = new AlertDialog.Builder(_mActivity);
+//                builder.setTitle("提示");
+//                builder.setMessage("暂停观看直播会终止录像，是否暂停观看？");
+//                builder.setPositiveButton("取消", null);
+//                builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialog, int which) {
+//                        stopRealPlayRecord();
+//                        if (mVideoParent!=null){
+//                            mVideoParent.onVideoPlayState(EZUIPlayer.STATUS_INIT,null);
+//                        }
+//                        if (mEzUiPlayer.getEzPlayer() != null && mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_PLAY) {
+//                            new Thread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    final WeakReference<Bitmap> bmp = new WeakReference(mEzUiPlayer.getEzPlayer().capturePicture());
+//                                    if (bmp==null || bmp.get()==null)
+//                                        return;
+//                                    try {
+//                                        _mActivity.runOnUiThread(new Runnable() {
+//                                            @Override
+//                                            public void run() {
+//                                                mImgPic.setImageBitmap(bmp.get());
+//                                                mImgPic.setVisibility(View.VISIBLE);
+//                                                mEzUiPlayer.stopPlay();
+//                                            }
+//                                        });
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    } finally {
+//                                    }
+//                                }
+//                            }).start();
+//                        }
+//                    }
+//                });
+//                builder.show();
+//                return null;
+//            }
+//
+//            if (mEzUiPlayer.getEzPlayer() != null && mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_PLAY) {
+//                new Thread(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        final WeakReference<Bitmap> bmp = new WeakReference(mEzUiPlayer.getEzPlayer().capturePicture());
+//                        if (bmp==null || bmp.get()==null)
+//                            return;
+//                        try {
+//                            _mActivity.runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//                                    mImgPic.setImageBitmap(bmp.get());
+//                                    mImgPic.setVisibility(View.VISIBLE);
+//                                    mEzUiPlayer.stopPlay();
+//                                }
+//                            });
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        } finally {
+////                            if (bmp != null && bmp.get()!=null) {
+////                                bmp.get().recycle();
+////                            }
+//                        }
+//                    }
+//                }).start();
+//                return false;
+//            }
+//        }  else if (mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_STOP
+//                || mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_INIT) {
+//            mImgPic.setVisibility(View.GONE);
+//            mEzUiPlayer.startPlay();
+//            return true;
+//        }
+//        return null;
+//    }
 
     /**
      * 云台操作
@@ -853,6 +846,9 @@ public class VideoEntiryFragment extends SupportFragment {
     private void stopVoiceTalk() {
         if (mEzUiPlayer!=null){
             mEzUiPlayer.stopVoiceTalk();
+            mIsOnTalk = false;
+            if (mVideoParent!=null)
+                mVideoParent.onVideoTalkBackState(false,null);
         }
     }
 }

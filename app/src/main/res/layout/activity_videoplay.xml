@@ -51,12 +51,14 @@
         <android.support.v4.view.ViewPager
             android:id="@+id/av_viewpager_single"
             android:layout_width="match_parent"
+            android:layout_alignParentTop="true"
             android:layout_height="match_parent" />
 
         <android.support.v4.view.ViewPager
             android:id="@+id/av_viewpager_mult"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_alignParentTop="true"
             android:visibility="gone" />
 
         <TextView
@@ -92,6 +94,7 @@
                 android:layout_centerVertical="true"
                 android:src="@mipmap/ic_nor_fullscreen" />
         </RelativeLayout>
+
     </RelativeLayout>
 
     <android.support.percent.PercentRelativeLayout

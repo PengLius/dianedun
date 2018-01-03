@@ -69,6 +69,7 @@ import cn.dianedun.adapter.NormalFragmentAdapter;
 import cn.dianedun.base.BaseActivity;
 import cn.dianedun.bean.AccesstokenBean;
 import cn.dianedun.bean.CommonBean;
+import cn.dianedun.bean.DepartPlacesListBean;
 import cn.dianedun.fragment.NewSpitVideoFragment;
 import cn.dianedun.fragment.VideoEntiryFragment;
 import cn.dianedun.tools.App;
@@ -335,8 +336,13 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         }else{
             DisplayMetrics dm = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(dm);
-            for (int i=0; i<mSpitFragments.length;i++)
-                mSpitFragments[i].setSurfaceSize(dm.widthPixels/2);
+            if (m4BoxOr9Box){
+                for (int i=0; i<mSpitFragments.length;i++)
+                    mSpitFragments[i].setSurfaceSize(dm.widthPixels/2);
+            }else{
+                for (int i=0; i<mSpitFragments.length;i++)
+                    mSpitFragments[i].setSurfaceSize(dm.widthPixels/3);
+            }
         }
     }
 
@@ -403,6 +409,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON,
                 WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         super.onCreate(savedInstanceState);
+        AppManager.getInstance().addActivity(this);
         setContentView(R.layout.activity_videoplay);
         ButterKnife.bind(this);
     }
@@ -424,12 +431,12 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
 
     @Override
     protected void bindEvent() {
-        mRlVideoPlay.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-            @Override
-            public void onGlobalLayout() {
-                mRlVideoPlay.getLayoutParams().height = (int) (mRlVideoPlay.getWidth());
-            }
-        });
+//        mRlVideoPlay.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+//            @Override
+//            public void onGlobalLayout() {
+//                mRlVideoPlay.getLayoutParams().height = (int) (mRlVideoPlay.getWidth());
+//            }
+//        });
         mImgFullScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -490,7 +497,9 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
 
             @Override
             public void onError(ApiException e) {
-//                showToast(e.getMessage());
+                showToast(e.getMessage());
+                if (e.getCode() == 2001)
+                    startActivity(new Intent(VideoPlayActivity.this, LoginActivity.class));
                 mTvTip.setText("暂无设备");
             }
 
@@ -502,6 +511,33 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
             @Override
             public void onCompleted() {
 
+            }
+        });
+    }
+
+    //验证token
+    private void getTokenEffect(){
+        ViseApi api = new ViseApi.Builder(this).build();
+        api.apiPost(AppConfig.GETDEPARTPLACES, App.getInstance().getToken(),new HashMap(),false,new ApiCallback<DepartPlacesListBean.DataBean>(){
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onNext(DepartPlacesListBean.DataBean dataBean){
+
+            }
+
+            @Override
+            public void onError(ApiException e) {
+                if(e.getCode() == 2001)
+                    startActivity(new Intent(VideoPlayActivity.this, LoginActivity.class));
+                showToast(e.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
             }
         });
     }
@@ -656,17 +692,18 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         removeSpitPlayer();
         mRlPlace.setVisibility(VISIBLE);
         mRlVideoPlay.removeView(mViewPagerMult);
-        mRlVideoPlay.addView(mViewPagerSingle,0);
-//        mImgMultScreen.setImageResource(R.mipmap.ic_nor_multscreen);
+        if (mRlVideoPlay.findViewById(R.id.av_viewpager_single) == null)
+            mRlVideoPlay.addView(mViewPagerSingle,0);
         int i=0;
+        DisplayMetrics dm = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(dm);
         for (;i<mVideoEntiryFragments.length;i++){
             if (mVideoEntiryFragments[i].getDataBean().getDeviceSerial().equals(deviceInfo.getDeviceSerial())){
                 mViewPagerSingle.setCurrentItem(i);
                 mVideoEntiryFragments[i].onSupportVisible();
-                DisplayMetrics dm = new DisplayMetrics();
-                getWindowManager().getDefaultDisplay().getMetrics(dm);
-                mVideoEntiryFragments[i].setSurfaceSize(dm.widthPixels);
-                break;
+                mVideoEntiryFragments[i].setSurfaceSize(m4BoxOr9Box !=null  ? (m4BoxOr9Box ? dm.widthPixels/2 : dm.widthPixels/3) : (dm.widthPixels));
+            }else {
+                mVideoEntiryFragments[i].setSurfaceSize(m4BoxOr9Box !=null  ? (m4BoxOr9Box ? dm.widthPixels/2 : dm.widthPixels/3) : (dm.widthPixels));
             }
         }
     }
@@ -715,6 +752,8 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
                     if (state == EZUIPlayer.STATUS_PLAY){
 //                        mImgStartVideo.setImageResource(R.mipmap.ic_nor_stop_2);
                         setControlBtnEnable(true);
+                        if (m4BoxOr9Box == null)
+                            mRlPlace.setVisibility(VISIBLE);
                     }else{
                         setControlBtnEnable(false);
 //                        mImgStartVideo.setImageResource(R.mipmap.ic_nor_);
@@ -898,13 +937,15 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
                 calendar.setTime(date);
                 url += "?begin=";
                 String prefixStr = url;
-                String month = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
-                if (Integer.parseInt(month) < 10){
-                    month = "0" + month;
+                String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+                if (Integer.parseInt(day) < 10){
+                    day = "0" + day;
                 }
-                url += calendar.get(Calendar.YEAR) + getMonth(calendar) + month;
+                url += calendar.get(Calendar.YEAR) + getMonth(calendar) + day;
 //                        String dateStr = calendar.get(Calendar.YEAR) + "年" +  month + "月" + calendar.get(Calendar.DAY_OF_MONTH) + "日";
-                PlayerBackActiviaty.startPlayBackActivity(VideoPlayActivity.this,mAccessTokenBean.getAccessToken(),url,prefixStr,calendar,mTvPlaces.getText().toString());
+
+                PlayerBackActiviaty.startPlayBackActivity(VideoPlayActivity.this,mAccessTokenBean.getAccessToken(),url,prefixStr,calendar,
+                        mTvPlaces.getText().toString());
             }
         },true,true,true).show();
     }
@@ -922,7 +963,8 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
                     return;
                 }
                 mStatusLight = true;
-                Toast.makeText(VideoPlayActivity.this, "正在灯控操作中", Toast.LENGTH_LONG).show();
+//                Toast.makeText(VideoPlayActivity.this, "正在灯控操作中", Toast.LENGTH_LONG).show();
+                Utils.showToast(VideoPlayActivity.this,"正在灯控操作中");
                 ViseApi api = new ViseApi.Builder(VideoPlayActivity.this).build();
                 HashMap hashMap = new HashMap();
                 hashMap.put("departId",mDepartId);
@@ -937,11 +979,13 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
                     public void onNext(CommonBean dataBean) {
                         if (dataBean.getCode() == 0){
                             if (mLightCmd == 1){
-                                showToast("开灯操作成功");
+                                Utils.showToast(VideoPlayActivity.this,"开灯操作成功");
+//                                showToast("开灯操作成功");
                                 mLightCmd = 0;
                                 mImgLight.setImageResource(R.mipmap.ic_nor_openlight);
                             }else{
-                                showToast("关灯操作成功");
+                                Utils.showToast(VideoPlayActivity.this,"关灯操作成功");
+//                                showToast("关灯操作成功");
                                 mLightCmd = 1;
                                 mImgLight.setImageResource(R.mipmap.ic_nor_closelight);
                             }
@@ -953,6 +997,8 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
 
                     @Override
                     public void onError(ApiException e) {
+                        if (e.getCode() == 2001)
+                            startActivity(new Intent(VideoPlayActivity.this, LoginActivity.class));
                         showToast(e.getMessage());
                         mStatusLight = false;
 //                        setRealPlayFailUI("暂无设备在线");
@@ -974,6 +1020,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mLLPlayBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 final VideoEntiryFragment fragment = getInTopVideo();
                 if (fragment == null)
                     return;
@@ -999,6 +1046,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mLLTalkBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (m4BoxOr9Box != null){
                     showToast("请选择具体设备");
                     return;
@@ -1014,6 +1062,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mRealPlayRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (m4BoxOr9Box != null){
                     showToast("请选择具体设备");
                     return;
@@ -1029,6 +1078,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mLLControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (m4BoxOr9Box != null) {
                     showToast("请选择具体设备");
                     return;
@@ -1040,6 +1090,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mRealPlayCaptureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (m4BoxOr9Box != null){
                     showToast("请选择具体设备");
                     return;
@@ -1055,6 +1106,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mLLVoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (m4BoxOr9Box != null){
                     showToast("请选择具体设备");
                     return;
@@ -1078,6 +1130,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mImgSpit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 //分屏窗口
                 if (mAccessTokenBean == null){
                     showToast("暂无设备信息");
@@ -1090,6 +1143,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mLLStream.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (m4BoxOr9Box != null){
                     showToast("请选择具体设备");
                     return;
@@ -1152,7 +1206,6 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
 
     private PopupWindow mSpitPopupWindow = null;
     private void openSpitPopWindow(View parent){
-
         LayoutInflater layoutInflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         ViewGroup layoutView = (ViewGroup) layoutInflater.inflate(R.layout.view_realplay_spit, null, true);
         final LinearLayout vrs_ll_4box = (LinearLayout) layoutView.findViewById(R.id.vrs_ll_4box);
