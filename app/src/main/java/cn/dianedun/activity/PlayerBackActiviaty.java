@@ -1,6 +1,5 @@
 package cn.dianedun.activity;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,7 +22,6 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -267,7 +265,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mCurCalendar = (Calendar) getIntent().getSerializableExtra(PLAY_DATE);
         mTvPlaces.setText(getIntent().getStringExtra(PLACENAME));
         mTimerShaftBar.setRefereshPlayTimeWithPlayer();
-        mCurCalendar.set(Calendar.HOUR,0);
+        mCurCalendar.set(Calendar.HOUR_OF_DAY,0);
         mCurCalendar.set(Calendar.MINUTE,0);
         mCurCalendar.set(Calendar.SECOND,0);
         mTimerShaftBar.setPlayCalendar(mCurCalendar);
@@ -563,7 +561,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                                 public void onDateSet(Date date) {
                                     mCurCalendar.setTime(date);
                                     final Calendar tempCalenar = (Calendar)mCurCalendar.clone();
-                                    mCurCalendar.set(Calendar.HOUR,0);
+                                    mCurCalendar.set(Calendar.HOUR_OF_DAY,0);
                                     mCurCalendar.set(Calendar.MINUTE,0);
                                     mCurCalendar.set(Calendar.SECOND,0);
                                     mTimerShaftBar.setPlayCalendar(mCurCalendar);
@@ -612,7 +610,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                         public void onDateSet(Date date) {
                             mCurCalendar.setTime(date);
                             final Calendar tempCalenar = (Calendar)mCurCalendar.clone();
-                            mCurCalendar.set(Calendar.HOUR,0);
+                            mCurCalendar.set(Calendar.HOUR_OF_DAY,0);
                             mCurCalendar.set(Calendar.MINUTE,0);
                             mCurCalendar.set(Calendar.SECOND,0);
                             mTimerShaftBar.setPlayCalendar(mCurCalendar);

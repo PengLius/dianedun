@@ -429,14 +429,19 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         setControlBtnEnable(false);
     }
 
+    private int m16to9Height = 0;
+
     @Override
     protected void bindEvent() {
-//        mRlVideoPlay.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
-//            @Override
-//            public void onGlobalLayout() {
-//                mRlVideoPlay.getLayoutParams().height = (int) (mRlVideoPlay.getWidth());
-//            }
-//        });
+        mRlVideoPlay.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (m16to9Height == 0) {
+                    m16to9Height = (int) Math.round(mRlVideoPlay.getWidth() / 1.77);
+                    mRlVideoPlay.getLayoutParams().height = m16to9Height;
+                }
+            }
+        });
         mImgFullScreen.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -754,6 +759,11 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
                         setControlBtnEnable(true);
                         if (m4BoxOr9Box == null)
                             mRlPlace.setVisibility(VISIBLE);
+
+                        if (mNeedOpenTalkBack)
+                            doTalkBack();
+                        else if (mNeedOpenVideoRecord)
+                            doRecorde();
                     }else{
                         setControlBtnEnable(false);
 //                        mImgStartVideo.setImageResource(R.mipmap.ic_nor_);
@@ -897,6 +907,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
     protected void doRecorde(){
         VideoEntiryFragment fragment = getInTopVideo();
         if (fragment!=null){
+            mNeedOpenVideoRecord = false;
             fragment.onRecordBtnClick();
         }
     }
@@ -906,6 +917,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
     private void doTalkBack(){
         VideoEntiryFragment fragment = getInTopVideo();
         if (fragment!=null){
+            mNeedOpenTalkBack = false;
             mLLTalkBack.setEnabled(false);
             fragment.startVoiceTalk();
         }
@@ -1172,6 +1184,8 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         });
     }
 
+    private boolean mNeedOpenTalkBack = false;
+    private boolean mNeedOpenVideoRecord = false;
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -1180,9 +1194,11 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
             public void onSucceed(int requestCode, List<String> grantPermissions) {
                 for (int i=0;i<grantPermissions.size();i++){
                     if (grantPermissions.get(i).equals(Manifest.permission.WRITE_EXTERNAL_STORAGE) && requestCode == 0){
+                        mNeedOpenVideoRecord = true;
                         doRecorde();
                         break;
                     }else if (grantPermissions.get(i).equals(RECORD_AUDIO) && requestCode == 1){
+                        mNeedOpenTalkBack = true;
                         doTalkBack();
                         break;
                     }

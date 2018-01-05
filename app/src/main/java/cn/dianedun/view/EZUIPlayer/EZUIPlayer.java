@@ -379,7 +379,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                 return;
             }
 
-            if(this.ezPlayURLParams == null) {
+            if(this.ezPlayURLParams == null ) {
                 if(this.mEzUIPlayerCallBack != null) {
                     this.mEzUIPlayerCallBack.onPlayFail(new EZUIError("UE007", -1));
                     this.showPlayError("UE007(-1)");
