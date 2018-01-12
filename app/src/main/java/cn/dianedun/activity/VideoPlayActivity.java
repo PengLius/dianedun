@@ -852,6 +852,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         showToast(this,"对讲结束");
         mLLTalkBack.setEnabled(true);
         mImgTalkBack.setImageResource(R.mipmap.ic_nor_novoice);
+
     }
 
     private void handleVoiceTalkSucceed() {
