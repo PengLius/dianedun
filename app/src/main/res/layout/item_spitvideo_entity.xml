@@ -11,6 +11,7 @@
     <ImageView
         android:id="@+id/ise_img_tag"
         android:layout_width="match_parent"
+        android:scaleType="fitXY"
         android:layout_height="60dp" />
 
     <TextView
