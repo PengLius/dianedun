@@ -46,6 +46,7 @@ import cn.dianedun.bean.ToJsonBean;
 import cn.dianedun.bean.UpdataBean;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
+import cn.dianedun.tools.AppManager;
 import cn.dianedun.tools.DataUtil;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
@@ -242,6 +243,8 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                             @Override
                             public void send(String result) {
                                 showToast("撤销成功");
+
+                                com.vise.xsnow.manager.AppManager.getInstance().finishActivity(DetailsingActivity.class);
                                 finish();
                             }
                         });
@@ -270,24 +273,28 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
             case R.id.rl_luyin_type:
                 //开始录音
                 if (type == 0) {
+                    recorder = new MediaRecorder();
+                    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                    recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                    recorder.setOutputFile(fileName);
+                    try {
+                        recorder.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     type = 1;
                     recorder.start();
                     offs = true;
-                    img_luyin.setImageResource(R.mipmap.zanting);
+                    img_luyin.setImageResource(R.mipmap.tingzhi);
                     countTimer.start();
                 } else if (type == 1) {
                     img_luyin.setImageResource(R.mipmap.bofang);
-                    recorder.pause();
-                    countTimer.pause();
-                    type = 4;
-                } else if (type == 3) {
-                    showToast("录音时间到");
-                } else if (type == 4) {
-                    type = 1;
-                    offs = true;
-                    img_luyin.setImageResource(R.mipmap.zanting);
-                    recorder.start();
-                    countTimer.resume();
+                    recorder.stop();
+                    recorder.release();
+                    countTimer.cancel();
+                    type = 0;
+                    offs = false;
                 }
                 break;
             case R.id.img_luyin_uploading:
@@ -365,23 +372,13 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                     recorder.stop();
                     recorder.release();
                     recorder = null;
-                    type = 3;
+                    type = 0;
                     showToast("录音时间到");
                     offs = false;
                 }
             }
         };
 
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        recorder.setOutputFile(fileName);
-        try {
-            recorder.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         pop3 = new PopupWindow(view3, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT, false);
         pop3.setTouchable(true);
@@ -552,15 +549,30 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
             return loadingDialog;
         }
     }
+
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("工单撤销");
         MobclickAgent.onResume(this);
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("工单撤销");
         MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (countTimer != null) {
+            countTimer.cancel();
+        }
+        if (recorder != null && offs) {
+            recorder.stop();
+            recorder.release();
+        }
+        recorder = null;
     }
 
 }

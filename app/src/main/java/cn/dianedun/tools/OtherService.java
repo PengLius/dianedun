@@ -26,6 +26,9 @@ import cn.dianedun.activity.DialogActivity;
 public class OtherService extends Service {
 
 
+    private boolean isCloseSocket = true;
+    private WebSocket tWebSocket;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -40,6 +43,7 @@ public class OtherService extends Service {
     private AsyncHttpClient.WebSocketConnectCallback callback = new AsyncHttpClient.WebSocketConnectCallback() {
         @Override
         public void onCompleted(Exception ex, final WebSocket webSocket) {
+            tWebSocket = webSocket;
             if (ex != null) {
                 ex.printStackTrace();
                 startWebSocket();
@@ -48,7 +52,9 @@ public class OtherService extends Service {
             webSocket.setClosedCallback(new CompletedCallback() {
                 @Override
                 public void onCompleted(Exception ex) {
-                    startWebSocket();
+                    if (isCloseSocket) {
+                        startWebSocket();
+                    }
                 }
             });
 
@@ -56,10 +62,10 @@ public class OtherService extends Service {
             try {
                 jsonObject.put("token", App.getInstance().getToken() + "");
                 webSocket.send(jsonObject + "");// 发送消息的方法
+
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-
             webSocket.setStringCallback(new WebSocket.StringCallback() {
                 public void onStringAvailable(String s) {
                     try {
@@ -67,6 +73,7 @@ public class OtherService extends Service {
                         if (jsonObject1.getString("code").equals("0")) {
                             if (jsonObject1.getString("data").equals("JB")) {
                                 Intent intent = new Intent(getApplicationContext(), DialogActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                 startActivity(intent);
                             }
                         }
@@ -83,7 +90,7 @@ public class OtherService extends Service {
         AsyncHttpClient.getDefaultInstance().websocket(
 //                "ws://47.92.155.108:8081/webSocketServer",
 //                "8081",
-                "ws://dyd-app.dianedun.cn/webSocketServer",
+                "wss://dyd-app.dianedun.cn/webSocketServer",
                 "443",
                 callback);
     }
@@ -91,5 +98,12 @@ public class OtherService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         return null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        isCloseSocket = false;
+        tWebSocket.close();
     }
 }

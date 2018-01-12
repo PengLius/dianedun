@@ -26,10 +26,11 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.tools.App;
-import cn.dianedun.tools.OtherService;
+
+import static cn.dianedun.tools.App.AppKey;
+import static cn.dianedun.tools.App.getInstance;
 
 import static cn.dianedun.tools.App.AppKey;
 import static cn.dianedun.tools.App.getInstance;

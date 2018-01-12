@@ -43,20 +43,9 @@
             android:layout_marginBottom="3dp"
             android:background="@mipmap/jc_topright" />
     </RelativeLayout>
-
-
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
-
-        <com.scwang.smartrefresh.layout.SmartRefreshLayout
-            android:id="@+id/srl_acdetection"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <com.scwang.smartrefresh.layout.header.ClassicsHeader
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"></com.scwang.smartrefresh.layout.header.ClassicsHeader>
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -128,14 +117,12 @@
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
                 </LinearLayout>
-
                 <android.support.v4.view.ViewPager
                     android:id="@+id/vp_detection"
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_weight="1"></android.support.v4.view.ViewPager>
             </LinearLayout>
-        </com.scwang.smartrefresh.layout.SmartRefreshLayout>
 
         <RelativeLayout
             android:id="@+id/rl_detection"

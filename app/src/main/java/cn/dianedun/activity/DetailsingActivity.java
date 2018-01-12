@@ -104,7 +104,6 @@ public class DetailsingActivity extends BaseTitlActivity {
                 intent = new Intent(getApplicationContext(), AnnulActivity.class);
                 intent.putExtra("orderNum", getIntent().getStringExtra("orderNum"));
                 startActivity(intent);
-                finish();
             }
         });
         rl_detail_xg.setOnClickListener(new View.OnClickListener() {
@@ -114,7 +113,6 @@ public class DetailsingActivity extends BaseTitlActivity {
                 intent = new Intent(getApplicationContext(), AmendGdActivity.class);
                 intent.putExtra("orderNum", getIntent().getStringExtra("orderNum"));
                 startActivity(intent);
-                finish();
             }
         });
         initData();
@@ -258,11 +256,13 @@ public class DetailsingActivity extends BaseTitlActivity {
         });
         myAsyncTast.execute();
     }
+
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("工单详情");
         MobclickAgent.onResume(this);
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("工单详情");

@@ -37,7 +37,7 @@
                 android:layout_height="wrap_content"
                 android:background="@mipmap/home_4side_green"
                 android:gravity="center"
-                android:text="工单号"
+                android:text="工  单  号"
                 android:textColor="#FFF"
                 android:textSize="@dimen/content_text_s14" />
 
@@ -142,7 +142,7 @@
                         android:layout_height="wrap_content"
                         android:background="@mipmap/home_4side_green"
                         android:gravity="center"
-                        android:text="地   点"
+                        android:text="地       点"
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
 
