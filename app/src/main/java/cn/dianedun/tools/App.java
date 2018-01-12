@@ -1,9 +1,6 @@
 package cn.dianedun.tools;
 
-import android.app.Application;
-import android.content.Context;
 import android.support.multidex.MultiDexApplication;
-import android.util.Log;
 
 
 import com.ezvizuikit.open.EZUIKit;
@@ -37,7 +34,6 @@ public class App extends MultiDexApplication {
     public void onCreate() {
         super.onCreate();
         mInstance = this;
-        initSDK();
         JPushInterface.setDebugMode(true);
         JPushInterface.init(this);
         CrashHandler crashHandler = CrashHandler.getInstance();
@@ -47,22 +43,6 @@ public class App extends MultiDexApplication {
     }
 
 
-    private void initSDK() {
-        {
-            /**
-             * sdk日志开关，正式发布需要去掉
-             */
-            EZOpenSDK.showSDKLog(true);
-
-            EZOpenSDK.enableP2P(false);
-
-            EZUIKit.setDebug(true);
-
-            EZOpenSDK.initLib(this, AppKey, "");
-        }
-        x.Ext.init(this);
-        x.Ext.setDebug(BuildConfig.DEBUG);
-    }
 
     public static App getInstance() {
         return mInstance;

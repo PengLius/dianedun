@@ -38,6 +38,7 @@ import com.luck.picture.lib.PictureSelector;
 import com.luck.picture.lib.config.PictureConfig;
 import com.luck.picture.lib.config.PictureMimeType;
 import com.luck.picture.lib.entity.LocalMedia;
+import com.luck.picture.lib.tools.PictureFileUtils;
 import com.nanchen.compresshelper.CompressHelper;
 import com.umeng.analytics.MobclickAgent;
 
@@ -185,7 +186,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                     recorder.stop();
                     recorder.release();
                     recorder = null;
-                    type = 3;
+                    type = 0;
                     showToast("录音时间到");
                     offs = false;
                 }
@@ -380,24 +381,28 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
             case R.id.rl_luyin_type:
                 //开始录音
                 if (type == 0) {
+                    recorder = new MediaRecorder();
+                    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                    recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                    recorder.setOutputFile(fileName);
+                    try {
+                        recorder.prepare();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                     type = 1;
                     recorder.start();
                     offs = true;
-                    img_luyin.setImageResource(R.mipmap.zanting);
+                    img_luyin.setImageResource(R.mipmap.tingzhi);
                     countTimer.start();
                 } else if (type == 1) {
                     img_luyin.setImageResource(R.mipmap.bofang);
-                    recorder.pause();
-                    countTimer.pause();
-                    type = 4;
-                } else if (type == 3) {
-                    showToast("录音时间到");
-                } else if (type == 4) {
-                    type = 1;
-                    offs = true;
-                    img_luyin.setImageResource(R.mipmap.zanting);
-                    recorder.start();
-                    countTimer.resume();
+                    recorder.stop();
+                    recorder.release();
+                    countTimer.cancel();
+                    type = 0;
+                    offs = false;
                 }
                 break;
             case R.id.img_luyin_uploading:
@@ -470,6 +475,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
                     }
                     num = 9 - imgList.size();
                     adapter.notifyDataSetChanged();
+                    PictureFileUtils.deleteCacheDirFile(DisposeJbActivity.this);
                 }
 
                 @Override
@@ -692,16 +698,6 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
 
     private void showDialog3() {
         // TODO Auto-generated method stub
-        recorder = new MediaRecorder();
-        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-        recorder.setOutputFile(fileName);
-        try {
-            recorder.prepare();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         pop3 = new PopupWindow(view3, ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT, false);
         pop3.setTouchable(true);
@@ -793,6 +789,7 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
             return loadingDialog;
         }
     }
+
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("警报处理");
@@ -805,4 +802,14 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
         MobclickAgent.onPause(this);
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        countTimer.cancel();
+        if (recorder != null && offs) {
+            recorder.stop();
+            recorder.release();
+        }
+        recorder = null;
+    }
 }

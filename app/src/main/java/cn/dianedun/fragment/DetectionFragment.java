@@ -3,6 +3,8 @@ package cn.dianedun.fragment;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -87,8 +89,6 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     @Bind(R.id.tv_detection_adress)
     TextView tv_detection_adress;
 
-    @Bind(R.id.srl_detection)
-    SmartRefreshLayout srl_detection;
 
     private MyAsyncTast myAsyncTast;
     private HashMap<String, String> hashMap;
@@ -106,6 +106,9 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     private DetactionXBean xBean;
     private MapBean mapBean;
     private String pdsId, depart;
+    private Boolean treadoff = true;
+    private Thread thread;
+    private Boolean firstCome = true;
 
     public static DetectionFragment getInstance() {
         DetectionFragment fragment = new DetectionFragment();
@@ -132,9 +135,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
             aMap.clear();
             setImgRightVisibility(View.GONE);
             setTitleBack(R.mipmap.home_backg_null);
-            initMap();
         } else {
-            initListV();
             setTvTitleText("监测");
             mapView.setVisibility(View.GONE);
             ll_detection_all.setVisibility(View.VISIBLE);
@@ -150,7 +151,8 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                     } else {
                         hashMap = new HashMap<>();
                         hashMap.put("id", "");
-                        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
+                        myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID,
+                                App.getInstance().getToken(), new MyAsyncTast.Callback() {
                             @Override
                             public void onError(String result) {
                                 showToast(result);
@@ -167,7 +169,6 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                         });
                         myAsyncTast.execute();
                     }
-
                 }
             });
             rl_detection.setOnClickListener(new View.OnClickListener() {
@@ -177,8 +178,8 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                     rightState = false;
                 }
             });
+            initListV();
         }
-
     }
 
     private void initMap() {
@@ -223,23 +224,8 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
         vp_fdetection.setCurrentItem(0);
         vp_fdetection.setOnPageChangeListener(new MyOnPageChangeListener());
         vp_fdetection.setOffscreenPageLimit(3);
-        initRefreshLayout();
     }
 
-
-    private void initRefreshLayout() {
-        srl_detection.setLoadmoreFinished(true);
-        srl_detection.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(RefreshLayout refreshlayout) {
-                if (pdsId != null) {
-                    getPDSAll(pdsId, false);
-                } else {
-                    fristData();
-                }
-            }
-        });
-    }
 
     @Override
     protected void initData() {
@@ -249,22 +235,21 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     /**
      * 获取所有配电室id
      */
-    private void fristData() {
+    private void firstData() {
         hashMap = new HashMap<>();
         hashMap.put("id", "");
         myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), false, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-                srl_detection.finishRefresh();
                 showToast(result);
+                new Thread(sendable).start();
             }
 
             @Override
             public void send(String result) {
-                srl_detection.finishRefresh();
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
                 pdsId = bean.getData().getSwitchRoomList().get(0).getId();
-                getPDSAll(pdsId, true);
+                getPDSAll(pdsId, true, true);
                 tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
                 depart = bean.getData().getSwitchRoomList().get(0).getDepartname();
             }
@@ -277,15 +262,17 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
      *
      * @param RoomId 配电室Id
      */
-    private void getPDSAll(final String RoomId, boolean loading) {
+    private void getPDSAll(final String RoomId, boolean loading, final boolean isStarThread) {
 
         hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
         myAsyncTast = new MyAsyncTast(getActivity(), hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), loading, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-                srl_detection.finishRefresh();
                 showToast(result);
+                if (isStarThread) {
+                    new Thread(sendable).start();
+                }
             }
 
             @Override
@@ -295,7 +282,9 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                 diYaFragment.setData(xBean, RoomId, depart);
                 temperatureFragment.setData(xBean, RoomId, depart);
                 humidityFragment.setData(xBean, RoomId, depart);
-                srl_detection.finishRefresh();
+                if (isStarThread) {
+                    new Thread(sendable).start();
+                }
             }
         });
         myAsyncTast.execute();
@@ -536,8 +525,7 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
                     depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
-//                    srl_detection.autoRefresh();
-                    getPDSAll(pdsId, true);
+                    getPDSAll(pdsId, true, false);
                 }
             });
             return convertView;
@@ -552,27 +540,78 @@ public class DetectionFragment extends BaseTitlFragment implements View.OnClickL
     public void onSupportVisible() {
         super.onSupportVisible();
         if (App.getInstance().getIsAdmin().equals("2")) {
-            setTvTitleText("概览");
-            mapView.setVisibility(View.VISIBLE);
-            ll_detection_all.setVisibility(View.GONE);
-//            mapView.onCreate(savedInstanceState);
-            if (aMap == null) {
-                aMap = mapView.getMap();
-            }
             aMap.clear();
-            setImgRightVisibility(View.GONE);
-            setTitleBack(R.mipmap.home_backg_null);
             initMap();
         } else {
-            srl_detection.autoRefresh();
+            treadoff = true;
+            if (firstCome) {
+                firstData();
+                firstCome = false;
+            } else {
+                if (pdsId != null) {
+                    new Thread(sendable).start();
+                } else {
+                    firstData();
+                }
+            }
         }
     }
+
+    @Override
+    public void onSupportInvisible() {
+        super.onSupportInvisible();
+        treadoff = false;
+    }
+
+    /**
+     * 定时刷新
+     */
+    private Runnable sendable = new Runnable() {
+        @Override
+        public void run() {
+            int a = 12;
+            while (-1 < a && treadoff) {
+                try {
+                    Thread.sleep(1000);
+                    Message message = new Message();
+                    message.arg1 = a;
+                    handler.sendMessage(message);
+                    a--;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    };
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.arg1 == 0) {
+                if (pdsId != null) {
+                    getPDSAll(pdsId, false, true);
+                } else {
+                    firstData();
+                }
+            }
+        }
+    };
+
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("监测");
     }
+
     public void onPause() {
         super.onPause();
         MobclickAgent.onPageEnd("监测");
+    }
+
+
+    @Override
+    public void onDestroy() {
+        treadoff = false;
+        super.onDestroy();
     }
 }

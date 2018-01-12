@@ -59,7 +59,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
-                    android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
@@ -89,7 +88,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
-                    android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
                     android:orientation="horizontal">
 
@@ -120,9 +118,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="25dp"
-                    android:layout_marginRight="20dp"
                     android:layout_marginTop="10dp"
-                    android:gravity="center_vertical"
+                    android:gravity="center_horizontal"
                     android:orientation="horizontal">
 
                     <TextView
@@ -138,11 +135,9 @@
 
                     <TextView
                         android:id="@+id/item_hometv_adress"
-                        android:layout_width="0dp"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="20dp"
-                        android:layout_marginTop="5dp"
-                        android:layout_weight="1"
                         android:text=""
                         android:textColor="#FFF"
                         android:textSize="@dimen/content_text_s14" />
@@ -152,7 +147,7 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="10dp"
                 android:gravity="right"
                 android:orientation="horizontal">
 
@@ -192,12 +187,13 @@
                     android:text="普通"
                     android:textColor="#FFF" />
             </LinearLayout>
+
             <TextView
                 android:id="@+id/item_homeitv_sta"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="right|bottom"
                 android:layout_marginRight="20dp"
+                android:gravity="right|bottom"
                 android:text=""
                 android:textColor="#FFFFFF"
 

@@ -17,7 +17,6 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.umeng.analytics.MobclickAgent;
-import com.vise.xsnow.manager.AppManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -211,7 +210,7 @@ public class AmendPSWActivity extends BaseTitlActivity implements View.OnClickLi
                                     editor.putString("isAdmin", isAdmin);
                                     editor.commit();
                                     showToast("修改成功");
-                                    AppManager.getInstance().finishActivity(MainActivity.class);
+                                    com.vise.xsnow.manager.AppManager.getInstance().finishAllActivity();
                                     Intent intent = new Intent(getApplicationContext(), MainActivity.class);
                                     startActivity(intent);
                                     finish();

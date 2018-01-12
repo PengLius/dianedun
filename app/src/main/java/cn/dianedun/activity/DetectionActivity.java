@@ -2,6 +2,8 @@ package cn.dianedun.activity;
 
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -21,6 +23,9 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.umeng.analytics.MobclickAgent;
+
+import org.xutils.http.RequestParams;
+import org.xutils.x;
 
 import java.io.File;
 import java.io.RandomAccessFile;
@@ -84,9 +89,6 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
     @Bind(R.id.tv_detection_adress)
     TextView tv_detection_adress;
 
-    @Bind(R.id.srl_acdetection)
-    SmartRefreshLayout srl_acdetection;
-
 
     private List<Fragment> mList;
     private boolean rightState = false;
@@ -100,6 +102,9 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
     private TemperatureFragment temperatureFragment;
     private HumidityFragment humidityFragment;
     private String pdsId, depart;
+    private Boolean treadoff = true;
+    private Thread thread;
+    private Boolean firstCome = true;
 
 
     @Override
@@ -146,24 +151,8 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
         vp_detection.setCurrentItem(0);
         vp_detection.setOffscreenPageLimit(3);
         vp_detection.setOnPageChangeListener(new MyOnPageChangeListener());
-        initRefreshLayout();
-        srl_acdetection.autoRefresh();
     }
 
-    private void initRefreshLayout() {
-        srl_acdetection.setLoadmoreFinished(true);
-        srl_acdetection.setOnRefreshListener(new OnRefreshListener() {
-            @Override
-            public void onRefresh(RefreshLayout refreshlayout) {
-                if (pdsId != null) {
-                    getPDSAll(pdsId, false);
-                } else {
-                    initDatas("第一次刷新数据");
-                    fristData();
-                }
-            }
-        });
-    }
 
     @Override
     public void onClick(View v) {
@@ -338,11 +327,10 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
                 public void onClick(View v) {
                     depart = bean.getData().getSwitchRoomList().get(position).getDepartname();
                     pdsId = bean.getData().getSwitchRoomList().get(position).getId();
-//                    srl_acdetection.autoRefresh();
                     tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(position).getDepartname());
                     rl_detection.setVisibility(View.GONE);
                     rightState = false;
-                    getPDSAll(pdsId, true);
+                    getPDSAll(pdsId, true, false);
                 }
             });
             return convertView;
@@ -358,52 +346,48 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
      *
      * @param RoomId 配电室Id
      */
-    private void getPDSAll(final String RoomId, boolean laodoff) {
+    private void getPDSAll(final String RoomId, boolean laodoff, final boolean isStarThread) {
         hashMap = new HashMap<>();
         hashMap.put("RoomId", RoomId);
         myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDALLLATEST, App.getInstance().getToken(), laodoff, new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
                 showToast(result);
-                srl_acdetection.finishRefresh();
+                if (isStarThread) {
+                    new Thread(sendable).start();
+                }
             }
 
             @Override
             public void send(String result) {
-                initDatas("已经拿到配电室id，准备获得配电室详细信息");
-                initDatas(result);
                 xBean = GsonUtil.parseJsonWithGson(result, DetactionXBean.class);
-                initDatas("解析成功");
                 gaoCeFragment.setData(xBean, RoomId, depart);
-                initDatas("高压侧成功");
                 diYaFragment.setData(xBean, RoomId, depart);
-                initDatas("低压侧成功");
                 temperatureFragment.setData(xBean, RoomId, depart);
-                initDatas("温度成功");
                 humidityFragment.setData(xBean, RoomId, depart);
-                initDatas("湿度成功");
-                srl_acdetection.finishRefresh();
+                if (isStarThread) {
+                    new Thread(sendable).start();
+                }
             }
         });
         myAsyncTast.execute();
     }
 
-    private void fristData() {
+    private void firstData() {
         hashMap = new HashMap<>();
         hashMap.put("id", getIntent().getStringExtra("id"));
         myAsyncTast = new MyAsyncTast(DetectionActivity.this, hashMap, AppConfig.FINDSWITCHROOMBYID, App.getInstance().getToken(), new MyAsyncTast.Callback() {
             @Override
             public void onError(String result) {
-                srl_acdetection.finishRefresh();
                 showToast(result);
+                new Thread(sendable).start();
             }
 
             @Override
             public void send(String result) {
-                initDatas("准备拿配电id");
                 bean = GsonUtil.parseJsonWithGson(result, PeiDSBean.class);
                 pdsId = bean.getData().getSwitchRoomList().get(0).getId();
-                getPDSAll(pdsId, false);
+                getPDSAll(pdsId, false, true);
                 depart = bean.getData().getSwitchRoomList().get(0).getDepartname();
                 tv_detection_adress.setText(bean.getData().getSwitchRoomList().get(0).getDepartname());
             }
@@ -411,70 +395,69 @@ public class DetectionActivity extends BaseActivity implements View.OnClickListe
         myAsyncTast.execute();
     }
 
-    private void initDatas(String result) {
-        String filePath = "/sdcard/Test/";
-        String fileName = "log.txt";
-        writeTxtToFile(result, filePath, fileName);
-    }
-
-    public void writeTxtToFile(String strcontent, String filePath, String fileName) {
-        //生成文件夹之后，再生成文件，不然会出错
-        makeFilePath(filePath, fileName);
-
-        String strFilePath = filePath + fileName;
-        // 每次写入时，都换行写
-        String strContent = strcontent + "\r\n";
-        try {
-            File file = new File(strFilePath);
-            if (!file.exists()) {
-                file.getParentFile().mkdirs();
-                file.createNewFile();
-            }
-            RandomAccessFile raf = new RandomAccessFile(file, "rwd");
-            raf.seek(file.length());
-            raf.write(strContent.getBytes());
-            raf.close();
-        } catch (Exception e) {
-        }
-    }
-
-    // 生成文件
-    public File makeFilePath(String filePath, String fileName) {
-        File file = null;
-        makeRootDirectory(filePath);
-        try {
-            file = new File(filePath + fileName);
-            if (!file.exists()) {
-                file.createNewFile();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return file;
-    }
-
-    // 生成文件夹
-    public static void makeRootDirectory(String filePath) {
-        File file = null;
-        try {
-            file = new File(filePath);
-            if (!file.exists()) {
-                file.mkdir();
-            }
-        } catch (Exception e) {
-            Log.i("error:", e + "");
-        }
-    }
 
     public void onResume() {
         super.onResume();
         MobclickAgent.onPageStart("监测Activity");
         MobclickAgent.onResume(this);
+        treadoff = true;
+        if (firstCome) {
+            firstData();
+            firstCome = false;
+        } else {
+            if (pdsId != null) {
+                new Thread(sendable).start();
+            } else {
+                firstData();
+            }
+        }
     }
 
     public void onPause() {
         super.onPause();
+        treadoff = false;
         MobclickAgent.onPageEnd("监测Activity");
         MobclickAgent.onPause(this);
+    }
+
+    /**
+     * 定时刷新
+     */
+    private Runnable sendable = new Runnable() {
+        @Override
+        public void run() {
+            int a = 12;
+            while (-1 < a && treadoff) {
+                try {
+                    Thread.sleep(1000);
+                    Message message = new Message();
+                    message.arg1 = a;
+                    handler.sendMessage(message);
+                    a--;
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
+        }
+    };
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.arg1 == 0) {
+                if (pdsId != null) {
+                    getPDSAll(pdsId, false, true);
+                } else {
+                    firstData();
+                }
+            }
+        }
+    };
+
+    @Override
+    protected void onDestroy() {
+        treadoff = false;
+        super.onDestroy();
     }
 }

@@ -59,6 +59,7 @@ import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.GsonUtil;
 import cn.dianedun.tools.MyAsyncTast;
+import cn.dianedun.tools.OtherService;
 
 /**
  * Created by Administrator on 2017/8/3.
@@ -270,6 +271,8 @@ public class MineFragment extends BaseTitlFragment implements View.OnClickListen
                         intent = new Intent(getActivity(), LoginActivity.class);
                         startActivity(intent);
                         getActivity().finish();
+                        Intent intent = new Intent(getActivity(), OtherService.class);
+                        getActivity().stopService(intent);
                         showToast("退出成功");
                     }
                 });

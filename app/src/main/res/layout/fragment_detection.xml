@@ -5,96 +5,87 @@
     android:background="@mipmap/backall"
     android:orientation="vertical">
 
-    <com.scwang.smartrefresh.layout.SmartRefreshLayout
-        android:id="@+id/srl_detection"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
 
-        <com.scwang.smartrefresh.layout.header.ClassicsHeader
+    <LinearLayout
+        android:id="@+id/ll_detection_all"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_detection_adress"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"></com.scwang.smartrefresh.layout.header.ClassicsHeader>
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:text=""
+            android:textColor="#FFF"
+            android:textSize="@dimen/content_text_s14" />
 
         <LinearLayout
-            android:id="@+id/ll_detection_all"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="gone">
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:orientation="horizontal">
 
             <TextView
-                android:id="@+id/tv_detection_adress"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="15dp"
-                android:layout_marginTop="15dp"
+                android:id="@+id/tv_fdetection_gy"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_weight="1"
+                android:background="@mipmap/jc_tab1"
                 android:gravity="center"
-                android:text=""
+                android:text="高压侧"
                 android:textColor="#FFF"
                 android:textSize="@dimen/content_text_s14" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+            <TextView
+                android:id="@+id/tv_fdetection_dy"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
                 android:layout_marginLeft="5dp"
-                android:layout_marginRight="5dp"
-                android:orientation="horizontal">
+                android:layout_weight="1"
+                android:background="@mipmap/jc_tab"
+                android:gravity="center"
+                android:text="低压侧"
+                android:textColor="#FFF"
+                android:textSize="@dimen/content_text_s14" />
 
-                <TextView
-                    android:id="@+id/tv_fdetection_gy"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab1"
-                    android:gravity="center"
-                    android:text="高压侧"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
+            <TextView
+                android:id="@+id/tv_fdetection_wd"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="@mipmap/jc_tab"
+                android:gravity="center"
+                android:text="温度"
+                android:textColor="#FFF"
+                android:textSize="@dimen/content_text_s14" />
 
-                <TextView
-                    android:id="@+id/tv_fdetection_dy"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
-                    android:gravity="center"
-                    android:text="低压侧"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
+            <TextView
+                android:id="@+id/tv_fdetection_sd"
+                android:layout_width="0dp"
+                android:layout_height="30dp"
+                android:layout_marginLeft="5dp"
+                android:layout_weight="1"
+                android:background="@mipmap/jc_tab"
+                android:gravity="center"
+                android:text="湿度/水浸"
+                android:textColor="#FFF"
+                android:textSize="@dimen/content_text_s14" />
 
-                <TextView
-                    android:id="@+id/tv_fdetection_wd"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
-                    android:gravity="center"
-                    android:text="温度"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
-
-                <TextView
-                    android:id="@+id/tv_fdetection_sd"
-                    android:layout_width="0dp"
-                    android:layout_height="30dp"
-                    android:layout_marginLeft="5dp"
-                    android:layout_weight="1"
-                    android:background="@mipmap/jc_tab"
-                    android:gravity="center"
-                    android:text="湿度/水浸"
-                    android:textColor="#FFF"
-                    android:textSize="@dimen/content_text_s14" />
-
-            </LinearLayout>
-
-            <android.support.v4.view.ViewPager
-                android:id="@+id/vp_fdetection"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_weight="1"></android.support.v4.view.ViewPager>
         </LinearLayout>
-    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+        <android.support.v4.view.ViewPager
+            android:id="@+id/vp_fdetection"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"></android.support.v4.view.ViewPager>
+    </LinearLayout>
 
     <RelativeLayout
         android:id="@+id/rl_detection"
