@@ -14,7 +14,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewTreeObserver;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -34,6 +33,7 @@ import com.videogo.util.LogUtil;
 import com.videogo.util.MediaScanner;
 import com.videogo.util.SDCardUtil;
 import com.videogo.util.Utils;
+
 import java.util.Calendar;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -54,7 +54,7 @@ import static android.view.View.GONE;
 
 public class VideoEntiryFragment extends SupportFragment {
 
-    public static VideoEntiryFragment getInstance(int pos,boolean bShow,EZDeviceInfo bean) {
+    public static VideoEntiryFragment getInstance(int pos, boolean bShow, EZDeviceInfo bean) {
         VideoEntiryFragment fragment = new VideoEntiryFragment();
         Bundle bundle = new Bundle();
         bundle.putInt("pos",pos);
@@ -826,6 +826,10 @@ public class VideoEntiryFragment extends SupportFragment {
     }
     private boolean mIsOnTalk = false;
 
+    public boolean getIsOnTalk(){
+        return mIsOnTalk;
+    }
+
 
     public void startVoiceTalk() {
         if (mEzUiPlayer == null) {
@@ -858,7 +862,7 @@ public class VideoEntiryFragment extends SupportFragment {
      * @see
      * @since V2.0
      */
-    private void stopVoiceTalk() {
+    public void stopVoiceTalk() {
         if (mEzUiPlayer!=null){
             mEzUiPlayer.stopVoiceTalk();
             mIsOnTalk = false;

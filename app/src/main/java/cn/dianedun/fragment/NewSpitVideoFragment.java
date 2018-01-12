@@ -11,6 +11,7 @@ import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+
 import com.ezvizuikit.open.EZUIError;
 import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.openapi.bean.EZDeviceInfo;
@@ -111,16 +112,16 @@ public class NewSpitVideoFragment extends SupportFragment {
             for (int i=0;i < mEZDeviceInfoList.size(); i++){
                 switch (i){
                     case 0:
-                        buildChildPlayer(0,R.id.fs_rl_ezuiplayer_1,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(0, R.id.fs_rl_ezuiplayer_1,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 1:
-                        buildChildPlayer(1,R.id.fs_rl_ezuiplayer_2,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(1, R.id.fs_rl_ezuiplayer_2,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 2:
-                        buildChildPlayer(2,R.id.fs_rl_ezuiplayer_3,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(2, R.id.fs_rl_ezuiplayer_3,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 3:
-                        buildChildPlayer(3,R.id.fs_rl_ezuiplayer_4,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(3, R.id.fs_rl_ezuiplayer_4,contentView,mEZDeviceInfoList.get(i));
                         break;
                 }
             }
@@ -128,31 +129,31 @@ public class NewSpitVideoFragment extends SupportFragment {
             for (int i=0;i < mEZDeviceInfoList.size(); i++){
                 switch (i){
                     case 0:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_1,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_1,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 1:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_2,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_2,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 2:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_3,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_3,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 3:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_4,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_4,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 4:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_5,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_5,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 5:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_6,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_6,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 6:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_7,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_7,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 7:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_8,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_8,contentView,mEZDeviceInfoList.get(i));
                         break;
                     case 8:
-                        buildChildPlayer(i,R.id.fs_rl_ezuiplayer_9,contentView,mEZDeviceInfoList.get(i));
+                        buildChildPlayer(i, R.id.fs_rl_ezuiplayer_9,contentView,mEZDeviceInfoList.get(i));
                         break;
                 }
             }
@@ -315,7 +316,7 @@ public class NewSpitVideoFragment extends SupportFragment {
     class VideoBrother {
         public EZUIPlayer mEzUiPlayer;
         public View mLoadingView;
-        public VideoBrother(EZUIPlayer ezuiPlayer,View loadingView){
+        public VideoBrother(EZUIPlayer ezuiPlayer, View loadingView){
             mEzUiPlayer = ezuiPlayer;
             mLoadingView = loadingView;
         }

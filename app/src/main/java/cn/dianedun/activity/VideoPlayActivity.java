@@ -33,10 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.PopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.bigkoo.alertview.AlertView;
-import com.bigkoo.alertview.OnItemClickListener;
 import com.ezvizuikit.open.EZUIError;
 import com.ezvizuikit.open.EZUIKit;
 import com.videogo.errorlayer.ErrorInfo;
@@ -533,7 +530,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
     }
 
     //验证token
-    private void getTokenEffect(){
+    private void getTokenEffect(final Runnable runnable){
         ViseApi api = new ViseApi.Builder(this).build();
         api.apiPost(AppConfig.GETDEPARTPLACES, App.getInstance().getToken(),new HashMap(),false,new ApiCallback<DepartPlacesListBean.DataBean>(){
             @Override
@@ -543,11 +540,18 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
 
             @Override
             public void onNext(DepartPlacesListBean.DataBean dataBean){
-
+                runOnUiThread(runnable);
             }
 
             @Override
             public void onError(ApiException e) {
+                final VideoEntiryFragment fragment = getInTopVideo();
+                if (fragment == null){
+                    if (fragment.getIsRecord())
+                        fragment.stopRealPlayRecord();
+                    if (fragment.getIsOnTalk())
+                        fragment.stopVoiceTalk();
+                }
                 if(e.getCode() == 2001)
                     startActivity(new Intent(VideoPlayActivity.this, LoginActivity.class));
                 showToast(e.getMessage());
@@ -845,14 +849,14 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
     }
 
     private void handleVoiceTalkStoped() {
-        showToast("对讲结束");
+        showToast(this,"对讲结束");
         mLLTalkBack.setEnabled(true);
         mImgTalkBack.setImageResource(R.mipmap.ic_nor_novoice);
     }
 
     private void handleVoiceTalkSucceed() {
         mLLTalkBack.setEnabled(true);
-        showToast("对讲中…");
+        showToast(this,"对讲中…");
         mImgTalkBack.setImageResource(R.mipmap.ic_nor_voice);
     }
 
@@ -983,59 +987,65 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mLLlight.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mStatusLight){
-                    return;
-                }
-                mStatusLight = true;
-//                Toast.makeText(VideoPlayActivity.this, "正在灯控操作中", Toast.LENGTH_LONG).show();
-                Utils.showToast(VideoPlayActivity.this,"正在灯控操作中");
-                ViseApi api = new ViseApi.Builder(VideoPlayActivity.this).build();
-                HashMap hashMap = new HashMap();
-                hashMap.put("departId",mDepartId);
-                hashMap.put("cmd",mLightCmd);
-                if (m4BoxOr9Box == null) {
-                    VideoEntiryFragment fragment = getInTopVideo();
-                    if (fragment!=null)
-                        hashMap.put("deviceSerial", fragment.getDataBean().getDeviceSerial());
-                }
-                api.post(AppConfig.CONTROLLIGHT,App.getInstance().getToken(),hashMap,false,new ApiCallback<CommonBean>(){
+                getTokenEffect(new Runnable() {
                     @Override
-                    public void onNext(CommonBean dataBean) {
-                        if (dataBean.getCode() == 0){
-                            if (mLightCmd == 1){
-                                Utils.showToast(VideoPlayActivity.this,"开灯操作成功");
-//                                showToast("开灯操作成功");
-                                mLightCmd = 0;
-                                mImgLight.setImageResource(R.mipmap.ic_nor_openlight);
-                            }else{
-                                Utils.showToast(VideoPlayActivity.this,"关灯操作成功");
-//                                showToast("关灯操作成功");
-                                mLightCmd = 1;
-                                mImgLight.setImageResource(R.mipmap.ic_nor_closelight);
-                            }
-                        }else{
-                            showToast(dataBean.getMsg());
+                    public void run() {
+                        if (mStatusLight){
+                            return;
                         }
-                        mStatusLight = false;
-                    }
+                        mStatusLight = true;
+//                Toast.makeText(VideoPlayActivity.this, "正在灯控操作中", Toast.LENGTH_LONG).show();
+//                Utils.showToast(VideoPlayActivity.this,"正在灯控操作中");
+                        showToast(VideoPlayActivity.this,"正在灯控操作中");
+                        ViseApi api = new ViseApi.Builder(VideoPlayActivity.this).build();
+                        HashMap hashMap = new HashMap();
+                        hashMap.put("departId",mDepartId);
+                        hashMap.put("cmd",mLightCmd);
+                        if (m4BoxOr9Box == null) {
+                            VideoEntiryFragment fragment = getInTopVideo();
+                            if (fragment!=null)
+                                hashMap.put("deviceSerial", fragment.getDataBean().getDeviceSerial());
+                        }
+                        api.post(AppConfig.CONTROLLIGHT, App.getInstance().getToken(),hashMap,false,new ApiCallback<CommonBean>(){
+                            @Override
+                            public void onNext(CommonBean dataBean) {
+                                if (dataBean.getCode() == 0){
+                                    if (mLightCmd == 1){
+                                        showToast(VideoPlayActivity.this,"开灯操作成功");
+//                                showToast("开灯操作成功");
+                                        mLightCmd = 0;
+                                        mImgLight.setImageResource(R.mipmap.ic_nor_openlight);
+                                    }else{
+                                        showToast(VideoPlayActivity.this,"关灯操作成功");
+//                                showToast("关灯操作成功");
+                                        mLightCmd = 1;
+                                        mImgLight.setImageResource(R.mipmap.ic_nor_closelight);
+                                    }
+                                }else{
+                                    showToast(dataBean.getMsg());
+                                }
+                                mStatusLight = false;
+                            }
 
-                    @Override
-                    public void onError(ApiException e) {
-                        if (e.getCode() == 2001)
-                            startActivity(new Intent(VideoPlayActivity.this, LoginActivity.class));
-                        showToast(e.getMessage());
-                        mStatusLight = false;
+                            @Override
+                            public void onError(ApiException e) {
+                                if (e.getCode() == 2001)
+                                    startActivity(new Intent(VideoPlayActivity.this, LoginActivity.class));
+                                showToast(e.getMessage());
+                                mStatusLight = false;
 //                        setRealPlayFailUI("暂无设备在线");
-                    }
+                            }
 
-                    @Override
-                    public void onStart() {
+                            @Override
+                            public void onStart() {
 
-                    }
+                            }
 
-                    @Override
-                    public void onCompleted() {
+                            @Override
+                            public void onCompleted() {
 
+                            }
+                        });
                     }
                 });
             }
@@ -1044,154 +1054,186 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         mLLPlayBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTokenEffect();
-                final VideoEntiryFragment fragment = getInTopVideo();
-                if (fragment == null)
-                    return;
-                if (fragment.getIsRecord()){
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayActivity.this);
-                    builder.setTitle("提示");
-                    builder.setMessage("该操作会中断录像，是否继续？");
-                    builder.setPositiveButton("取消", null);
-                    builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            fragment.stopRealPlayRecord();
-                            dialog.dismiss();
-                            openPlayBackWindow(fragment.getDataBean().getDeviceSerial());
+                getTokenEffect(new Runnable() {
+                    @Override
+                    public void run() {
+                        final VideoEntiryFragment fragment = getInTopVideo();
+                        if (fragment == null)
+                            return;
+                        if (fragment.getIsRecord()){
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayActivity.this);
+                            builder.setTitle("提示");
+                            builder.setMessage("该操作会中断录像，是否继续？");
+                            builder.setPositiveButton("取消", null);
+                            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    fragment.stopRealPlayRecord();
+                                    dialog.dismiss();
+                                    openPlayBackWindow(fragment.getDataBean().getDeviceSerial());
+                                }
+                            });
+                            builder.show();
+                            return;
                         }
-                    });
-                    builder.show();
-                    return;
-                }
-                openPlayBackWindow(fragment.getDataBean().getDeviceSerial());
+                        openPlayBackWindow(fragment.getDataBean().getDeviceSerial());
+                    }
+                });
             }
         });
         mLLTalkBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTokenEffect();
-                if (m4BoxOr9Box != null){
-                    showToast("请选择具体设备");
-                    return;
-                }
+                getTokenEffect(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (m4BoxOr9Box != null){
+                            showToast("请选择具体设备");
+                            return;
+                        }
 
-                if (AndPermission.hasPermission(VideoPlayActivity.this, RECORD_AUDIO)){
-                    doTalkBack();
-                }else{
-                    AndPermission.with(VideoPlayActivity.this).permission(RECORD_AUDIO).requestCode(1).send();
-                }
+                        if (AndPermission.hasPermission(VideoPlayActivity.this, RECORD_AUDIO)){
+                            doTalkBack();
+                        }else{
+                            AndPermission.with(VideoPlayActivity.this).permission(RECORD_AUDIO).requestCode(1).send();
+                        }
+                    }
+                });
             }
         });
         mRealPlayRecordBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTokenEffect();
-                if (m4BoxOr9Box != null){
-                    showToast("请选择具体设备");
-                    return;
-                }
-                if (AndPermission.hasPermission(VideoPlayActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
-                    doRecorde();
-                }else{
-                    AndPermission.with(VideoPlayActivity.this).permission(Manifest.permission.WRITE_EXTERNAL_STORAGE).requestCode(0).send();
-                }
+                getTokenEffect(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (m4BoxOr9Box != null){
+                            showToast("请选择具体设备");
+                            return;
+                        }
+                        if (AndPermission.hasPermission(VideoPlayActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)){
+                            doRecorde();
+                        }else{
+                            AndPermission.with(VideoPlayActivity.this).permission(Manifest.permission.WRITE_EXTERNAL_STORAGE).requestCode(0).send();
+                        }
+                    }
+                });
             }
         });
 
         mLLControl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTokenEffect();
-                if (m4BoxOr9Box != null) {
-                    showToast("请选择具体设备");
-                    return;
-                }
-                openPtzPopupWindow(mRlVideoPlay);
+                getTokenEffect(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (m4BoxOr9Box != null) {
+                            showToast("请选择具体设备");
+                            return;
+                        }
+                        openPtzPopupWindow(mRlVideoPlay);
+                    }
+                });
             }
         });
 
         mRealPlayCaptureBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTokenEffect();
-                if (m4BoxOr9Box != null){
-                    showToast("请选择具体设备");
-                    return;
-                }
+                getTokenEffect(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (m4BoxOr9Box != null){
+                            showToast("请选择具体设备");
+                            return;
+                        }
 
-                VideoEntiryFragment fragment = getInTopVideo();
-                if (fragment!=null){
-                    fragment.onCapturePicBtnClick();
-                }
+                        VideoEntiryFragment fragment = getInTopVideo();
+                        if (fragment!=null){
+                            fragment.onCapturePicBtnClick();
+                        }
+                    }
+                });
             }
         });
 
         mLLVoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTokenEffect();
-                if (m4BoxOr9Box != null){
-                    showToast("请选择具体设备");
-                    return;
-                }
+                getTokenEffect(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (m4BoxOr9Box != null){
+                            showToast("请选择具体设备");
+                            return;
+                        }
 
-                //声音控制
-                VideoEntiryFragment fragment = getInTopVideo();
-                if (fragment!=null){
-                    Boolean res = fragment.onSoundBtnClick();
-                    if (res!=null){
-                        if (res){
-                            mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_greenhorn);
-                        }else{
-                            mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
+                        //声音控制
+                        VideoEntiryFragment fragment = getInTopVideo();
+                        if (fragment!=null){
+                            Boolean res = fragment.onSoundBtnClick();
+                            if (res!=null){
+                                if (res){
+                                    mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_greenhorn);
+                                }else{
+                                    mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
+                                }
+                            }
                         }
                     }
-                }
+                });
             }
         });
 
         mImgSpit.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
-                getTokenEffect();
-                //分屏窗口
-                if (mAccessTokenBean == null){
-                    showToast("暂无设备信息");
-                    return;
-                }
-                openSpitPopWindow(v);
+            public void onClick(final View v) {
+                getTokenEffect(new Runnable() {
+                    @Override
+                    public void run() {
+                        //分屏窗口
+                        if (mAccessTokenBean == null){
+                            showToast("暂无设备信息");
+                            return;
+                        }
+                        openSpitPopWindow(v);
+                    }
+                });
             }
         });
 
         mLLStream.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTokenEffect();
-                if (m4BoxOr9Box != null){
-                    showToast("请选择具体设备");
-                    return;
-                }
-                final VideoEntiryFragment fragment = getInTopVideo();
-                if (!fragment.isVideoNormal())
-                    return;
-                if (fragment.getIsRecord()){
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayActivity.this);
-                    builder.setTitle("提示");
-                    builder.setMessage("该操作会中断录像，是否继续？");
-                    builder.setPositiveButton("取消", null);
-                    builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            fragment.stopRealPlayRecord();
-                            dialog.dismiss();
-                            openQaWindows();
+                getTokenEffect(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (m4BoxOr9Box != null){
+                            showToast("请选择具体设备");
+                            return;
                         }
-                    });
-                    builder.show();
-                    return;
-                }
-                openQaWindows();
+                        final VideoEntiryFragment fragment = getInTopVideo();
+                        if (!fragment.isVideoNormal())
+                            return;
+                        if (fragment.getIsRecord()){
+                            final AlertDialog.Builder builder = new AlertDialog.Builder(VideoPlayActivity.this);
+                            builder.setTitle("提示");
+                            builder.setMessage("该操作会中断录像，是否继续？");
+                            builder.setPositiveButton("取消", null);
+                            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    fragment.stopRealPlayRecord();
+                                    dialog.dismiss();
+                                    openQaWindows();
+                                }
+                            });
+                            builder.show();
+                            return;
+                        }
+                        openQaWindows();
+                    }
+                });
             }
         });
     }
@@ -1464,10 +1506,10 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
 
     public interface OnVideoSelect {
         void onVideoClick();
-        void onVideoSelect(int pos,EZDeviceInfo bean);
-        void onVideoPlayState(int state,EZUIError ezuiError);
+        void onVideoSelect(int pos, EZDeviceInfo bean);
+        void onVideoPlayState(int state, EZUIError ezuiError);
         void onVideoVoiceControl(boolean bOpen);
         void onVideoRecordState(boolean bStart);
-        void onVideoTalkBackState(boolean state,ErrorInfo errorInfo);
+        void onVideoTalkBackState(boolean state, ErrorInfo errorInfo);
     }
 }

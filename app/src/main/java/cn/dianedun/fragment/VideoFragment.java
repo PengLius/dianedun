@@ -2,7 +2,6 @@ package cn.dianedun.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,7 +11,6 @@ import android.widget.RelativeLayout;
 
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnLoadmoreListener;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 import com.umeng.analytics.MobclickAgent;
 import com.vise.xsnow.net.api.ViseApi;
@@ -28,7 +26,6 @@ import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.activity.LoginActivity;
 import cn.dianedun.activity.VideoPlayActivity;
-import cn.dianedun.activity.VideoShowActivity;
 import cn.dianedun.base.BaseTitlFragment;
 import cn.dianedun.bean.DepartPlacesListBean;
 import cn.dianedun.tools.App;
@@ -182,7 +179,7 @@ public class VideoFragment extends BaseTitlFragment {
     private void addCameraList(List<DepartPlacesListBean.DataBean.ResultBean> result) {
         if (mCameraAdapter == null){
             mInitLoad = true;
-            mCameraAdapter = new CommonAdapter<DepartPlacesListBean.DataBean.ResultBean>(_mActivity,R.layout.item_cameralist,result) {
+            mCameraAdapter = new CommonAdapter<DepartPlacesListBean.DataBean.ResultBean>(_mActivity, R.layout.item_cameralist,result) {
                 @Override
                 protected void convert(ViewHolder holder, final DepartPlacesListBean.DataBean.ResultBean bean, final int position) {
                     if (bean.getCameraCount().equals("0")){

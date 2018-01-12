@@ -985,7 +985,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             mAudioPlayUtil.playAudioFile(AudioPlayUtil.RECORD_SOUND);
 
             // 可以采用deviceSerial+时间作为文件命名，demo中简化，只用时间命名
-            java.util.Date date = new java.util.Date();
+            Date date = new Date();
             String entityPath = "DianEDun/Records/" + String.format("%tY", date)
                     + String.format("%tm", date) + String.format("%td", date) + "/"
                     + String.format("%tH", date) + String.format("%tM", date) + String.format("%tS", date) + String.format("%tL", date) + ".mp4";
@@ -1104,7 +1104,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                             mAudioPlayUtil.playAudioFile(AudioPlayUtil.CAPTURE_SOUND);
 
                             // 可以采用deviceSerial+时间作为文件命名，demo中简化，只用时间命名
-                            java.util.Date date = new java.util.Date();
+                            Date date = new Date();
                             final String path = Environment.getExternalStorageDirectory().getPath() + "/EZOpenSDK/CapturePicture/" + String.format("%tY", date)
                                     + String.format("%tm", date) + String.format("%td", date) + "/"
                                     + String.format("%tH", date) + String.format("%tM", date) + String.format("%tS", date) + String.format("%tL", date) +".jpg";
