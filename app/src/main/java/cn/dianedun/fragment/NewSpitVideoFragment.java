@@ -30,12 +30,12 @@ import me.yokeyword.fragmentation.SupportFragment;
  * Created by Administrator on 2017/9/22.
  */
 
-public class SpitVideoFragment extends SupportFragment {
+public class NewSpitVideoFragment extends SupportFragment {
 
     private List<EZDeviceInfo> mEZDeviceInfoList;
 
-    public static SpitVideoFragment getInstance() {
-        SpitVideoFragment fragment = new SpitVideoFragment();
+    public static NewSpitVideoFragment getInstance() {
+        NewSpitVideoFragment fragment = new NewSpitVideoFragment();
         fragment.setArguments(new Bundle());
         return fragment;
     }
@@ -172,11 +172,19 @@ public class SpitVideoFragment extends SupportFragment {
         }
     }
 
+    public void setSurfaceSize(int width){
+        for (int i=0; i<mSpitPlayerArr.size(); i++){
+            int key = mSpitPlayerArr.keyAt(i);
+            VideoBrother videoBrother = mSpitPlayerArr.get(key);
+            if (videoBrother!=null && videoBrother.mEzUiPlayer!=null)
+                videoBrother.mEzUiPlayer.setSurfaceSize(width,0);
+        }
+    }
+
     private boolean mIsPlay = false;
     public void stopPlay(){
         if (mIsPlay){
             mIsPlay = false;
-//            mLLRootView.removeView(mLlVideoContainer);
             for (int i=0; i<mSpitPlayerArr.size(); i++){
                 int key = mSpitPlayerArr.keyAt(i);
                 VideoBrother videoBrother = mSpitPlayerArr.get(key);
@@ -235,12 +243,16 @@ public class SpitVideoFragment extends SupportFragment {
         });
 
         final View laodingView = LayoutInflater.from(_mActivity).inflate(R.layout.view_video_loading,rlVideoContainer,false);
+        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+        laodingView.setLayoutParams(lp);
         rlVideoContainer.addView(laodingView);
 
         final EZUIPlayer ezuiPlayer = new EZUIPlayer(_mActivity);
         ezuiPlayer.setSurfaceSize(rlVideoContainer.getWidth(),0);
-        ezuiPlayer.setOpenSound(false);
+//        ezuiPlayer.setOpenSound(false);
         ezuiPlayer.setAutoPlay(mAutoPlay);
+        ezuiPlayer.setLoadingView(laodingView);
         ezuiPlayer.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
 
             @Override
@@ -249,20 +261,15 @@ public class SpitVideoFragment extends SupportFragment {
             }
 
             @Override
-            public void onRetryLoad() {
-
-            }
-
-            @Override
             public void onShowLoading() {
-                laodingView.setVisibility(View.VISIBLE);
+//                laodingView.setVisibility(View.VISIBLE);
             }
 
             @Override
             public void onPlaySuccess() {
                 Log.e("ezuiplayer","onPlaySuccess");
 //                            ezUIPlayer.setZOrderOnTop(true);
-                laodingView.setVisibility(View.INVISIBLE);
+//                laodingView.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -290,11 +297,16 @@ public class SpitVideoFragment extends SupportFragment {
             }
 
             @Override
+            public void onRetryLoad() {
+
+            }
+
+            @Override
             public void onPlayFinish() {
                 Log.e("ezuiplayer","onPlayFinish");
             }
         });
-        String ezopenUrl = "ezopen://open.ys7.com/" + deviceInfo.getDeviceSerial() + "/1.live";
+        String ezopenUrl = "ezopen://open.ys7.com/" + deviceInfo.getDeviceSerial() + "/1.live?mute=true";
         rlVideoContainer.addView(ezuiPlayer,0);
 
         ezuiPlayer.setUrl(ezopenUrl);

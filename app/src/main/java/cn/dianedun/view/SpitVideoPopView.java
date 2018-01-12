@@ -101,6 +101,8 @@ public class SpitVideoPopView extends PopupWindow {
 
             @Override
             public void onError(ApiException e) {
+                if(e.getCode() == 2001)
+                    mContext.startActivity(new Intent(mContext, LoginActivity.class));
                 Toast.makeText(mContext,"暂无设备信息",Toast.LENGTH_SHORT).show();
                 mTvErr.setText("暂无设备信息");
                 mRlLoadingLayout.setVisibility(View.GONE);
@@ -332,7 +334,7 @@ public class SpitVideoPopView extends PopupWindow {
                     @Override
                     public void onClick(View v) {
                         if (mOnVideoSelect!=null)
-                            mOnVideoSelect.onVideoSelect(position,pos);
+                            mOnVideoSelect.onVideoSelect(position,position);
                         dismiss();
                     }
                 });

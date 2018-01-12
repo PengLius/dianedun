@@ -440,6 +440,8 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 if (ezuiPlayer!=null)
                     ezuiPlayer.resumePlay();
             }
+        }else if (mStatus == RealPlayStatus.STATUS_PAUSE){
+
         }else if (mEzDeviceInfo!=null && mDeviceInfo!=null && mEzDeviceInfo!=null){
             setDeviceUiInfo();
         }
@@ -486,7 +488,10 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
     @Override
     public void onBackPressedSupport() {
-        if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
+        if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT){
+            if (mScreenOrientationHelper == null) {
+                buildOrientationHelper();
+            }
             mScreenOrientationHelper.portrait();
             return;
         }
@@ -1347,11 +1352,16 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
 
         mSvLayoutParams = mFlDisplayContainer.getLayoutParams();
         initCaptureUI();
-        mScreenOrientationHelper = new ScreenOrientationHelper(this, mCtbFullscreen, /*mFullscreenFullButton*/null);
+        buildOrientationHelper();
 
         mWaitDialog = new WaitDialog(this, android.R.style.Theme_Translucent_NoTitleBar);
         mWaitDialog.setCancelable(false);
     }
+
+    private void buildOrientationHelper(){
+        mScreenOrientationHelper = new ScreenOrientationHelper(this, mCtbFullscreen, /*mFullscreenFullButton*/null);
+    }
+
     /**
      * screen状态广播接收者
      */
@@ -1376,6 +1386,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     private Button mTalkBackControlBtn = null;
 
     private WaitDialog mWaitDialog = null;
+
     private void closeTalkPopupWindow(boolean stopTalk, boolean startAnim) {
         if (mTalkPopupWindow != null) {
             LogUtil.infoLog(TAG, "closeTalkPopupWindow");
@@ -2196,7 +2207,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         mOrientation = newConfig.orientation;
-
         onOrientationChanged();
         super.onConfigurationChanged(newConfig);
     }
@@ -2269,6 +2279,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //4分
+                stopVoiceTalk();
+                //关闭声音
+                if (mLocalInfo.isSoundOpen()) {
+                    mLocalInfo.setSoundOpen(false);
+                    mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
+                    mEZPlayer.closeSound();
+                }
                 show4SpitLayout();
             }
         });
@@ -2276,6 +2293,13 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //9分
+                stopVoiceTalk();
+                //关闭声音
+                if (mLocalInfo.isSoundOpen()) {
+                    mLocalInfo.setSoundOpen(false);
+                    mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
+                    mEZPlayer.closeSound();
+                }
                 show9SpitLayout();
             }
         });
@@ -2765,7 +2789,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mLLPlayBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mDeviceInfo == null)
+                if (mDeviceInfo == null || m4BoxOr9Box!=null)
                     return;
                 //回放
 //                Calendar calendar = Calendar.getInstance();
@@ -2804,13 +2828,6 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
             @Override
             public void onClick(View v) {
                 //分屏窗口
-                stopVoiceTalk();
-                //关闭声音
-                if (mLocalInfo.isSoundOpen()) {
-                    mLocalInfo.setSoundOpen(false);
-                    mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
-                    mEZPlayer.closeSound();
-                }
                 if (mAccessTokenBean == null){
                     showToast("暂无设备信息");
                     return;
@@ -2828,8 +2845,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
         mLLTalkBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //开启设备对讲
-
+                //开启设备
                 if (m4BoxOr9Box != null){
                     showToast("请选择具体设备");
                     return;
@@ -3288,6 +3304,12 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
     protected void onPause() {
         super.onPause();
         if (mStatus != RealPlayStatus.STATUS_PAUSE) {
+
+            if (mIsRecording) {
+                stopRealPlayRecord();
+                return;
+            }
+
             stopRealPlay();
             mStatus = RealPlayStatus.STATUS_PAUSE;
             setRealPlayStopUI();
@@ -3320,7 +3342,7 @@ public class VideoShowActivity extends BaseActivity  implements View.OnClickList
                 return null;
             }
 
-            try {
+            try{
                 List<EZDeviceInfo> result = null;
                 result = getOpenSDK().getDeviceList(0, 20);
                 return result;

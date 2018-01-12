@@ -59,17 +59,30 @@ public class DateTimeDialogOnlyYMD extends AlertDialog implements View.OnClickLi
         this.isYearVisible = isYearVisible;
         this.onDateSetListener = callBack;
         this.isDayVisible = isDayVisible;
-        init();
+        init(null);
     }
 
-    private void init() {
+    public DateTimeDialogOnlyYMD(Context context,Calendar calendar, MyOnDateSetListener callBack, boolean isDayVisible, boolean isMonthVisible, boolean isYearVisible) {
+        super(context);
+        this.isDayVisible = isDayVisible;
+        this.isMonthVisible = isMonthVisible;
+        this.isYearVisible = isYearVisible;
+        this.onDateSetListener = callBack;
+        this.isDayVisible = isDayVisible;
+        init(calendar);
+    }
+
+    private void init(Calendar calendar) {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.view_date_picker_dialog, null);
         setView(view);
         mDatePicker = (DatePicker) view.findViewById(R.id.datePicker);
+        if (calendar!=null)
+            mDatePicker.updateDate(calendar.get(Calendar.YEAR),calendar.get(Calendar.MONTH),calendar.get(Calendar.DAY_OF_MONTH));
         LinearLayout buttonGroup = (LinearLayout) view.findViewById(R.id.buttonGroup);
         cancleButton = (Button) view.findViewById(R.id.cancelButton);
         okButton = (Button) view.findViewById(R.id.okButton);
+
 
         Calendar mCalendar = Calendar.getInstance();
         mCalendar.setTime(new Date());

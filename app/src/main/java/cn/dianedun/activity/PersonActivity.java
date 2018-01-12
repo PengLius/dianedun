@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -225,7 +226,6 @@ public class PersonActivity extends BaseTitlActivity {
             }
         }
     }
-
 
     class MyAsync extends AsyncTask<Object, Object, String> {
         @Override
