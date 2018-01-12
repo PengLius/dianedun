@@ -1,6 +1,5 @@
 package cn.dianedun.activity;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,7 +22,6 @@ import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.DatePicker;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,6 +32,7 @@ import android.widget.Toast;
 
 import com.ezvizuikit.open.EZUIError;
 import com.ezvizuikit.open.EZUIKit;
+import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.exception.InnerException;
 import com.videogo.openapi.bean.EZRecordFile;
 import com.videogo.util.LocalInfo;
@@ -45,17 +44,23 @@ import com.videogo.util.Utils;
 import com.videogo.widget.CheckTextButton;
 import com.videogo.widget.TitleBar;
 import com.vise.xsnow.manager.AppManager;
+import com.vise.xsnow.net.api.ViseApi;
+import com.vise.xsnow.net.callback.ApiCallback;
+import com.vise.xsnow.net.exception.ApiException;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.base.BaseActivity;
+import cn.dianedun.bean.DepartPlacesListBean;
 import cn.dianedun.tools.App;
+import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.AudioPlayUtil;
 import cn.dianedun.tools.EZUtils;
 import cn.dianedun.tools.ScreenOrientationHelper;
@@ -222,6 +227,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        AppManager.getInstance().addActivity(this);
         setContentView(R.layout.activity_playback);
     }
 
@@ -235,8 +241,34 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         return String.valueOf(month);
     }
 
-//    private Date mCurDate;
+    private String getDay(Calendar calendar){
+        String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
+        if (Integer.parseInt(day) < 10){
+            day = "0" + day;
+        }
+        return day;
+    }
+
+    @Override
+    public void onRetryLoad() {
+        mEZUiPlayBack.setUrl(mPlayUrl);
+    }
+
+    //    private Date mCurDate;
     private Calendar mCurCalendar;
+
+
+    private LocalInfo getLocalInfo(){
+        if(mLocalInfo == null) {
+            mLocalInfo = LocalInfo.getInstance();
+            if(mLocalInfo == null) {
+                LocalInfo.init(App.getInstance());
+                mLocalInfo = LocalInfo.getInstance();
+            }
+        }
+        return mLocalInfo;
+    }
+
     @Override
     protected void initView() {
         super.initView();
@@ -246,19 +278,22 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mCurCalendar = (Calendar) getIntent().getSerializableExtra(PLAY_DATE);
         mTvPlaces.setText(getIntent().getStringExtra(PLACENAME));
         mTimerShaftBar.setRefereshPlayTimeWithPlayer();
-        mCurCalendar.set(Calendar.HOUR,0);
+        mCurCalendar.set(Calendar.HOUR_OF_DAY,0);
         mCurCalendar.set(Calendar.MINUTE,0);
         mCurCalendar.set(Calendar.SECOND,0);
         mTimerShaftBar.setPlayCalendar(mCurCalendar);
         int month = mCurCalendar.get(Calendar.MONTH) + 1;
         mTvTitleDate.setText(mCurCalendar.get(Calendar.YEAR) + "年" +  month + "月" + mCurCalendar.get(Calendar.DAY_OF_MONTH) + "日");
-        mLocalInfo = LocalInfo.getInstance();
+        mLocalInfo = getLocalInfo();
+        if (mLocalInfo != null){
+            DisplayMetrics metric = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metric);
+            mLocalInfo.setScreenWidthHeight(metric.widthPixels, metric.heightPixels);
+            mLocalInfo.setNavigationBarHeight((int) Math.ceil(25 * getResources().getDisplayMetrics().density));
+            mLocalInfo.setSoundOpen(false);
+        }
         mEZUiPlayBack.setbPlayBackUse(true);
-        DisplayMetrics metric = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metric);
-        mLocalInfo.setScreenWidthHeight(metric.widthPixels, metric.heightPixels);
-        mLocalInfo.setNavigationBarHeight((int) Math.ceil(25 * getResources().getDisplayMetrics().density));
-        mLocalInfo.setSoundOpen(false);
+
         //默认开启播放
         mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
         //设置加载需要显示的view
@@ -292,11 +327,14 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     }
     //  //声音控制
     private void onSoundBtnClick() {
-        if (mLocalInfo.isSoundOpen()) {
-            mLocalInfo.setSoundOpen(false);
+        LocalInfo localInfo = getLocalInfo();
+        if (localInfo == null) return;
+
+        if (localInfo.isSoundOpen()) {
+            localInfo.setSoundOpen(false);
             mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
         } else {
-            mLocalInfo.setSoundOpen(true);
+            localInfo.setSoundOpen(true);
             mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_greenhorn);
         }
 
@@ -304,7 +342,9 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     }
     private void setRealPlaySound() {
         if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PLAY) {
-            if (mLocalInfo.isSoundOpen()) {
+            LocalInfo localInfo = getLocalInfo();
+            if (localInfo == null) return;
+            if (localInfo.isSoundOpen()) {
                 mEZUiPlayBack.setOpenSound(true);
             } else {
                 mEZUiPlayBack.setOpenSound(false);
@@ -315,7 +355,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     protected void onResume() {
         super.onResume();
 //        mOrientationDetector.enable();
-        Log.d(TAG, "onResume");
+        getTokenEffect();
         //界面stop时，如果在播放，那isResumePlay标志位置为true，resume时恢复播放
         if (isResumePlay) {
             isResumePlay = false;
@@ -348,16 +388,67 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mEZUiPlayBack.releasePlayer();
         mScreenOrientationHelper = null;
     }
-
+//    private void buildOrientationHelper(){
+//        mScreenOrientationHelper = new ScreenOrientationHelper(this, mCtbFullscreen, /*mFullscreenFullButton*/null);
+//    }
     @Override
     public void onBackPressedSupport() {
         if (this.getResources().getConfiguration().orientation != Configuration.ORIENTATION_PORTRAIT) {
-            mScreenOrientationHelper.portrait();
+//            if (mScreenOrientationHelper == null) {
+//                buildOrientationHelper();
+//            }
+//            mScreenOrientationHelper.portrait();
+            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
             return;
         }
+
+        if (mIsRecording) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
+            builder.setTitle("提示");
+            builder.setMessage("该操作会中断录像，是否继续？");
+            builder.setPositiveButton("取消", null);
+            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    stopRealPlayRecord();
+                    finish();
+                }
+            });
+            builder.show();
+            return;
+        }
+
         if (mLocalInfo!=null)
             mLocalInfo.setSoundOpen(false);
+
         super.onBackPressedSupport();
+    }
+
+    //验证token
+    private void getTokenEffect(){
+        ViseApi api = new ViseApi.Builder(this).build();
+        api.apiPost(AppConfig.GETDEPARTPLACES, App.getInstance().getToken(),new HashMap(),false,new ApiCallback<DepartPlacesListBean.DataBean>(){
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onNext(DepartPlacesListBean.DataBean dataBean){
+
+            }
+
+            @Override
+            public void onError(ApiException e) {
+                if(e.getCode() == 2001)
+                    startActivity(new Intent(PlayerBackActiviaty.this, LoginActivity.class));
+                showToast(e.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+            }
+        });
     }
 
     //    /**
@@ -395,6 +486,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlPlayBackVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 //录像
                 if (!TextUtils.isEmpty(mPlayErrStr)) {
                     showToast(mPlayErrStr);
@@ -450,6 +542,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlPlayBackVoice.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (!TextUtils.isEmpty(mPlayErrStr)) {
                     showToast(mPlayErrStr);
                     return;
@@ -461,6 +554,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlPlayBackTakePhoto.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (!TextUtils.isEmpty(mPlayErrStr)) {
                     showToast(mPlayErrStr);
                     return;
@@ -472,28 +566,28 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mTvTitleDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 //选择日期
                 if (mIsRecording) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
                     builder.setTitle("提示");
-                    builder.setMessage("当前正在录像，是否选择回放日期？选择日期后录像将停止并自动保存");
+                    builder.setMessage("该操作会中断录像，是否继续？");
                     builder.setPositiveButton("取消", null);
                     builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             stopRealPlayRecord();
-                            new DateTimeDialogOnlyYMD(PlayerBackActiviaty.this, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
+                            new DateTimeDialogOnlyYMD(PlayerBackActiviaty.this,mCurCalendar, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
                                 @Override
                                 public void onDateSet(Date date) {
                                     mCurCalendar.setTime(date);
                                     final Calendar tempCalenar = (Calendar)mCurCalendar.clone();
-                                    mCurCalendar.set(Calendar.HOUR,0);
+                                    mCurCalendar.set(Calendar.HOUR_OF_DAY,0);
                                     mCurCalendar.set(Calendar.MINUTE,0);
                                     mCurCalendar.set(Calendar.SECOND,0);
                                     mTimerShaftBar.setPlayCalendar(mCurCalendar);
-                                    int m = mCurCalendar.get(Calendar.MONTH) + 1;
-                                    final String url = mPlayPreUrl + mCurCalendar.get(Calendar.YEAR) + m + mCurCalendar.get(Calendar.DAY_OF_MONTH);
-                                    mTvTitleDate.setText(mCurCalendar.get(Calendar.YEAR) + "年" +  m + "月" + mCurCalendar.get(Calendar.DAY_OF_MONTH) + "日");
+                                    mPlayUrl = mPlayPreUrl + mCurCalendar.get(Calendar.YEAR) + getMonth(mCurCalendar) + getDay(mCurCalendar);
+                                    mTvTitleDate.setText(mCurCalendar.get(Calendar.YEAR) + "年" +  getMonth(mCurCalendar) + "月" + getDay(mCurCalendar) + "日");
 
                                     mEZUiPlayBack.stopPlay();
                                     mEZUiPlayBack.postDelayed(new Runnable() {
@@ -501,7 +595,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                                         public void run() {
                                             tempCalenar.setTimeInMillis(0);
                                             mEZUiPlayBack.seekPlayback(tempCalenar);
-                                            mEZUiPlayBack.setUrl(url);
+                                            mEZUiPlayBack.setUrl(mPlayUrl);
                                         }
                                     },500);
                                 }
@@ -532,18 +626,17 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                     builder.show();
                     return;
                 }else{
-                    new DateTimeDialogOnlyYMD(PlayerBackActiviaty.this, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
+                    new DateTimeDialogOnlyYMD(PlayerBackActiviaty.this,mCurCalendar, new DateTimeDialogOnlyYMD.MyOnDateSetListener() {
                         @Override
                         public void onDateSet(Date date) {
                             mCurCalendar.setTime(date);
                             final Calendar tempCalenar = (Calendar)mCurCalendar.clone();
-                            mCurCalendar.set(Calendar.HOUR,0);
+                            mCurCalendar.set(Calendar.HOUR_OF_DAY,0);
                             mCurCalendar.set(Calendar.MINUTE,0);
                             mCurCalendar.set(Calendar.SECOND,0);
                             mTimerShaftBar.setPlayCalendar(mCurCalendar);
-                            int m = mCurCalendar.get(Calendar.MONTH) + 1;
-                            final String url = mPlayPreUrl + mCurCalendar.get(Calendar.YEAR) + m + mCurCalendar.get(Calendar.DAY_OF_MONTH);
-                            mTvTitleDate.setText(mCurCalendar.get(Calendar.YEAR) + "年" +  m + "月" + mCurCalendar.get(Calendar.DAY_OF_MONTH) + "日");
+                            mPlayUrl = mPlayPreUrl + mCurCalendar.get(Calendar.YEAR) +  getMonth(mCurCalendar) + getDay(mCurCalendar);
+                            mTvTitleDate.setText(mCurCalendar.get(Calendar.YEAR) + "年" +   getMonth(mCurCalendar) + "月" + getDay(mCurCalendar) + "日");
 
                             mEZUiPlayBack.stopPlay();
                             mEZUiPlayBack.postDelayed(new Runnable() {
@@ -551,7 +644,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                                 public void run() {
                                     tempCalenar.setTimeInMillis(0);
                                     mEZUiPlayBack.seekPlayback(tempCalenar);
-                                    mEZUiPlayBack.setUrl(url);
+                                    mEZUiPlayBack.setUrl(mPlayUrl);
                                 }
                             },500);
                         }
@@ -585,6 +678,24 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mImgBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (mIsRecording){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
+                    builder.setTitle("提示");
+                    builder.setMessage("该操作会中断录像，是否继续？");
+                    builder.setPositiveButton("取消", null);
+                    builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            stopRealPlayRecord();
+                            if (mLocalInfo!=null)
+                                mLocalInfo.setSoundOpen(false);
+                            finish();
+                        }
+                    });
+                    builder.show();
+                    return;
+                }
+
                 if (mLocalInfo!=null)
                     mLocalInfo.setSoundOpen(false);
                 finish();
@@ -592,8 +703,26 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         });
         mTimerShaftBar.setTimerShaftLayoutListener(new TimerShaftBar.TimerShaftBarListener() {
             @Override
-            public void onTimerShaftBarPosChanged(Calendar calendar) {
+            public void onTimerShaftBarPosChanged(final Calendar calendar) {
                 Log.d(TAG, "onTimerShaftBarPosChanged " + calendar.getTime().toString());
+
+                if (mIsRecording){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
+                    builder.setTitle("提示");
+                    builder.setMessage("该操作会中断录像，是否继续？");
+                    builder.setPositiveButton("取消", null);
+                    builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            stopRealPlayRecord();
+                            mEZUiPlayBack.seekPlayback(calendar);
+                        }
+                    });
+                    builder.show();
+                    return;
+                }
+
+
                 mEZUiPlayBack.seekPlayback(calendar);
             }
 
@@ -606,12 +735,32 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlPlayback_go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                getTokenEffect();
                 if (!TextUtils.isEmpty(mPlayErrStr)) {
                     showToast(mPlayErrStr);
                     return;
                 }
                 if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PLAY) {
                     //播放状态，点击停止播放
+
+                    if (mIsRecording){
+                        AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
+                        builder.setTitle("提示");
+                        builder.setMessage("该操作会中断录像，是否继续？");
+                        builder.setPositiveButton("取消", null);
+                        builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                stopRealPlayRecord();
+                                mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
+                                mEZUiPlayBack.pausePlay();
+                            }
+                        });
+                        builder.show();
+                        return;
+                    }
+
+
                     mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
                     mEZUiPlayBack.pausePlay();
                 } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PAUSE) {
@@ -655,7 +804,6 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     }
     private void updateOrientation() {
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
-//            setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         } else {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -810,6 +958,16 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             return;
         }
 
+        if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PAUSE) {
+            //停止状态，点击播放
+            mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+            mEZUiPlayBack.resumePlay();
+        } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_STOP
+                || mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_INIT) {
+            mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+            mEZUiPlayBack.startPlay();
+        }
+
         if (!SDCardUtil.isSDCardUseable()) {
             // 提示SD卡不可用
             Utils.showToast(PlayerBackActiviaty.this, R.string.remoteplayback_SDCard_disable_use);
@@ -827,14 +985,14 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             mAudioPlayUtil.playAudioFile(AudioPlayUtil.RECORD_SOUND);
 
             // 可以采用deviceSerial+时间作为文件命名，demo中简化，只用时间命名
-            java.util.Date date = new java.util.Date();
-            String strRecordFile = Environment.getExternalStorageDirectory().getPath() + "/EZOpenSDK/Records/" + String.format("%tY", date)
+            Date date = new Date();
+            String entityPath = "DianEDun/Records/" + String.format("%tY", date)
                     + String.format("%tm", date) + String.format("%td", date) + "/"
                     + String.format("%tH", date) + String.format("%tM", date) + String.format("%tS", date) + String.format("%tL", date) + ".mp4";
-
+            String strRecordFile = Environment.getExternalStorageDirectory().getPath() + "/" + entityPath;
             if (mEZUiPlayBack.getEzPlayer().startLocalRecordWithFile(strRecordFile))
             {
-                handleRecordSuccess(strRecordFile);
+                handleRecordSuccess(strRecordFile,entityPath);
             } else {
                 handleRecordFail();
             }
@@ -865,7 +1023,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     ImageView mImgVideoStop;
     protected RotateViewUtil mRecordRotateViewUtil;
     private boolean mIsOnStop = false;
-    private void handleRecordSuccess(String recordFilePath) {
+    private void handleRecordSuccess(String recordFilePath,String entityPath) {
         EZUtils.updateVideo(this,recordFilePath);
         // 设置录像按钮为check状态
         if (!mIsOnStop) {
@@ -875,7 +1033,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             mImgVideoStart.setVisibility(GONE);
             mImgVideoStop.setVisibility(View.VISIBLE);
         }
-        mCurRecordName = "已将录像保存至目录：" + recordFilePath;
+        mCurRecordName = "已将录像保存至目录：" + entityPath;
         mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
                 mImgVideoStop, 0, 90);
         mIsRecording = true;
@@ -946,7 +1104,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
                             mAudioPlayUtil.playAudioFile(AudioPlayUtil.CAPTURE_SOUND);
 
                             // 可以采用deviceSerial+时间作为文件命名，demo中简化，只用时间命名
-                            java.util.Date date = new java.util.Date();
+                            Date date = new Date();
                             final String path = Environment.getExternalStorageDirectory().getPath() + "/EZOpenSDK/CapturePicture/" + String.format("%tY", date)
                                     + String.format("%tm", date) + String.format("%td", date) + "/"
                                     + String.format("%tH", date) + String.format("%tM", date) + String.format("%tS", date) + String.format("%tL", date) +".jpg";
@@ -983,6 +1141,8 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             thr.start();
         }
     }
+
+
     @Override
     protected void initData() {
         super.initData();
@@ -1094,6 +1254,11 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
 
     @Override
     public void onPlayFinish() {
+
+    }
+
+    @Override
+    public void onTalkBackState(boolean state, ErrorInfo errorInfo) {
 
     }
 

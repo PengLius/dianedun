@@ -1,5 +1,6 @@
 package cn.dianedun.base;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -68,6 +69,17 @@ public class BaseActivity extends com.vise.xsnow.ui.BaseActivity {
         }
         mToast.show();
     }
+    public void showToast(Activity activity, String text) {
+        if (mToast == null) {
+            mToast = Toast.makeText(activity, text, Toast.LENGTH_SHORT);
+        } else {
+            mToast.setText(text);
+            mToast.setDuration(Toast.LENGTH_SHORT);
+        }
+        mToast.show();
+    }
+
+
 
 
     private boolean mInitData = true;

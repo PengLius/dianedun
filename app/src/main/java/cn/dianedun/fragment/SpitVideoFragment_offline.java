@@ -13,6 +13,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.ezvizuikit.open.EZUIError;
+import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.openapi.bean.EZDeviceInfo;
 
 import java.util.Calendar;
@@ -241,6 +242,16 @@ public class SpitVideoFragment_offline extends SupportFragment {
         ezuiPlayer.setOpenSound(false);
         ezuiPlayer.setAutoPlay(mAutoPlay);
         ezuiPlayer.setCallBack(new EZUIPlayer.EZUIPlayerCallBack() {
+
+            @Override
+            public void onTalkBackState(boolean state, ErrorInfo errorInfo) {
+
+            }
+
+            @Override
+            public void onRetryLoad() {
+
+            }
 
             @Override
             public void onShowLoading() {

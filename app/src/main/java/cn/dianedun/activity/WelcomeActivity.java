@@ -6,12 +6,18 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.util.Log;
+import android.view.animation.AlphaAnimation;
+import android.widget.RelativeLayout;
 
 import com.ezvizuikit.open.EZUIKit;
 import com.umeng.analytics.MobclickAgent;
 import com.videogo.openapi.EZOpenSDK;
 import com.yanzhenjie.permission.AndPermission;
+import com.yanzhenjie.permission.Permission;
 import com.yanzhenjie.permission.PermissionListener;
+import com.yanzhenjie.permission.Rationale;
+import com.yanzhenjie.permission.RationaleListener;
 
 import org.xutils.BuildConfig;
 import org.xutils.x;
@@ -22,6 +28,9 @@ import java.util.TimerTask;
 
 import cn.dianedun.R;
 import cn.dianedun.tools.App;
+
+import static cn.dianedun.tools.App.AppKey;
+import static cn.dianedun.tools.App.getInstance;
 
 import static cn.dianedun.tools.App.AppKey;
 import static cn.dianedun.tools.App.getInstance;
