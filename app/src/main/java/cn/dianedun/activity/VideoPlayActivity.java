@@ -198,6 +198,7 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         ptzFlipBtn.setOnClickListener(mOnPopWndClickListener);
 
 
+        mLocalInfo = getLocalInfo();
         int height = mLocalInfo.getScreenHeight() - mRlVideoPlay.getHeight()
                 - (mRealPlayRect != null ? mRealPlayRect.top : mLocalInfo.getNavigationBarHeight()) - mRlTitleLayout.getHeight();
         mPtzPopupWindow = new PopupWindow(layoutView, RelativeLayout.LayoutParams.MATCH_PARENT, height, true);
@@ -413,18 +414,29 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
         setContentView(R.layout.activity_videoplay);
         ButterKnife.bind(this);
     }
-
+    private LocalInfo getLocalInfo(){
+        if(mLocalInfo == null) {
+            mLocalInfo = LocalInfo.getInstance();
+            if(mLocalInfo == null) {
+                LocalInfo.init(App.getInstance());
+                mLocalInfo = LocalInfo.getInstance();
+            }
+        }
+        return mLocalInfo;
+    }
     @Override
     protected void initView() {
 //        setToolBarColor(getResources().getColor(R.color.theme_bule));
 //        setTvTitleText(getIntent().getStringExtra("title"));
         // 获取配置信息操作对象
-        mLocalInfo = LocalInfo.getInstance();
-        DisplayMetrics metric = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metric);
-        mLocalInfo.setScreenWidthHeight(metric.widthPixels, metric.heightPixels);
-        mLocalInfo.setNavigationBarHeight((int) Math.ceil(25 * getResources().getDisplayMetrics().density));
-        mLocalInfo.setSoundOpen(false);
+        mLocalInfo = getLocalInfo();
+        if (mLocalInfo!=null){
+            DisplayMetrics metric = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metric);
+            mLocalInfo.setScreenWidthHeight(metric.widthPixels, metric.heightPixels);
+            mLocalInfo.setNavigationBarHeight((int) Math.ceil(25 * getResources().getDisplayMetrics().density));
+            mLocalInfo.setSoundOpen(false);
+        }
         initRealPlayPageLy();
         setControlBtnEnable(false);
     }
@@ -943,11 +955,11 @@ public class VideoPlayActivity extends BaseActivity implements NewSpitVideoFragm
 //                            加密
 //                            url = "MDWBOZ@"+ url + mDeviceInfo.getDeviceSerial() + "/1.rec";
 //                        }else{
-                url += deviceSerial + "/1.rec";
+                url += deviceSerial + "/1.rec?mute=true&";
 //                        }
                 Calendar calendar = Calendar.getInstance();
                 calendar.setTime(date);
-                url += "?begin=";
+                url += "begin=";
                 String prefixStr = url;
                 String day = String.valueOf(calendar.get(Calendar.DAY_OF_MONTH));
                 if (Integer.parseInt(day) < 10){

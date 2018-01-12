@@ -127,6 +127,17 @@ public class VideoEntiryFragment extends SupportFragment {
         initUi();
     }
     private LocalInfo mLocalInfo;
+    private LocalInfo getLocalInfo(){
+        if(mLocalInfo == null) {
+            mLocalInfo = LocalInfo.getInstance();
+            if(mLocalInfo == null) {
+                LocalInfo.init(App.getInstance());
+                mLocalInfo = LocalInfo.getInstance();
+            }
+        }
+        return mLocalInfo;
+    }
+
     private int mPos;
     private void initUi(){
 //        if (mDataBean.getStatus() != 1){
@@ -136,7 +147,7 @@ public class VideoEntiryFragment extends SupportFragment {
 //            mTvTip.setVisibility(View.VISIBLE);
 //            return;
 //        }
-        mLocalInfo = LocalInfo.getInstance();
+        mLocalInfo = getLocalInfo();
         mAudioPlayUtil = AudioPlayUtil.getInstance(App.getInstance());
         final DisplayMetrics dm = new DisplayMetrics();
         _mActivity.getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -527,12 +538,15 @@ public class VideoEntiryFragment extends SupportFragment {
         if (mEzUiPlayer.getStatus() != EZUIPlayer.STATUS_PLAY) {
             return null;
         }
-        if (mLocalInfo.isSoundOpen()) {
-            mLocalInfo.setSoundOpen(false);
+
+        LocalInfo localInfo = getLocalInfo();
+
+        if (localInfo.isSoundOpen()) {
+            localInfo.setSoundOpen(false);
             mEzUiPlayer.setOpenSound(false);
             return false;
         } else {
-            mLocalInfo.setSoundOpen(true);
+            localInfo.setSoundOpen(true);
             mEzUiPlayer.setOpenSound(true);
             return true;
         }

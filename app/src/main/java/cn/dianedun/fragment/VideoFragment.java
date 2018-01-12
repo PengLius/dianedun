@@ -218,7 +218,7 @@ public class VideoFragment extends BaseTitlFragment {
                                     intent.putExtra("id", bean.getId());
                                     intent.putExtra("place",bean.getDepartname());
                                     intent.putExtra("spit", tag);
-                                    intent.putExtra("pos",pos);
+                                    intent.putExtra("pos",pos - 1);
                                     startActivity(intent);
                                 }
                             });

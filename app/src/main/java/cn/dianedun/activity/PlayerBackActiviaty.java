@@ -256,6 +256,19 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
 
     //    private Date mCurDate;
     private Calendar mCurCalendar;
+
+
+    private LocalInfo getLocalInfo(){
+        if(mLocalInfo == null) {
+            mLocalInfo = LocalInfo.getInstance();
+            if(mLocalInfo == null) {
+                LocalInfo.init(App.getInstance());
+                mLocalInfo = LocalInfo.getInstance();
+            }
+        }
+        return mLocalInfo;
+    }
+
     @Override
     protected void initView() {
         super.initView();
@@ -271,13 +284,16 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mTimerShaftBar.setPlayCalendar(mCurCalendar);
         int month = mCurCalendar.get(Calendar.MONTH) + 1;
         mTvTitleDate.setText(mCurCalendar.get(Calendar.YEAR) + "年" +  month + "月" + mCurCalendar.get(Calendar.DAY_OF_MONTH) + "日");
-        mLocalInfo = LocalInfo.getInstance();
+        mLocalInfo = getLocalInfo();
+        if (mLocalInfo != null){
+            DisplayMetrics metric = new DisplayMetrics();
+            getWindowManager().getDefaultDisplay().getMetrics(metric);
+            mLocalInfo.setScreenWidthHeight(metric.widthPixels, metric.heightPixels);
+            mLocalInfo.setNavigationBarHeight((int) Math.ceil(25 * getResources().getDisplayMetrics().density));
+            mLocalInfo.setSoundOpen(false);
+        }
         mEZUiPlayBack.setbPlayBackUse(true);
-        DisplayMetrics metric = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(metric);
-        mLocalInfo.setScreenWidthHeight(metric.widthPixels, metric.heightPixels);
-        mLocalInfo.setNavigationBarHeight((int) Math.ceil(25 * getResources().getDisplayMetrics().density));
-        mLocalInfo.setSoundOpen(false);
+
         //默认开启播放
         mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
         //设置加载需要显示的view
@@ -311,11 +327,14 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     }
     //  //声音控制
     private void onSoundBtnClick() {
-        if (mLocalInfo.isSoundOpen()) {
-            mLocalInfo.setSoundOpen(false);
+        LocalInfo localInfo = getLocalInfo();
+        if (localInfo == null) return;
+
+        if (localInfo.isSoundOpen()) {
+            localInfo.setSoundOpen(false);
             mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
         } else {
-            mLocalInfo.setSoundOpen(true);
+            localInfo.setSoundOpen(true);
             mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_greenhorn);
         }
 
@@ -323,7 +342,9 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     }
     private void setRealPlaySound() {
         if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PLAY) {
-            if (mLocalInfo.isSoundOpen()) {
+            LocalInfo localInfo = getLocalInfo();
+            if (localInfo == null) return;
+            if (localInfo.isSoundOpen()) {
                 mEZUiPlayBack.setOpenSound(true);
             } else {
                 mEZUiPlayBack.setOpenSound(false);
@@ -682,8 +703,26 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         });
         mTimerShaftBar.setTimerShaftLayoutListener(new TimerShaftBar.TimerShaftBarListener() {
             @Override
-            public void onTimerShaftBarPosChanged(Calendar calendar) {
+            public void onTimerShaftBarPosChanged(final Calendar calendar) {
                 Log.d(TAG, "onTimerShaftBarPosChanged " + calendar.getTime().toString());
+
+                if (mIsRecording){
+                    AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
+                    builder.setTitle("提示");
+                    builder.setMessage("该操作会中断录像，是否继续？");
+                    builder.setPositiveButton("取消", null);
+                    builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            stopRealPlayRecord();
+                            mEZUiPlayBack.seekPlayback(calendar);
+                        }
+                    });
+                    builder.show();
+                    return;
+                }
+
+
                 mEZUiPlayBack.seekPlayback(calendar);
             }
 
