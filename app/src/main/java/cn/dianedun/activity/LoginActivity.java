@@ -79,6 +79,11 @@ public class LoginActivity extends Activity implements View.OnClickListener {
         getData();
     }
 
+    @Override
+    public void onBackPressed() {
+        AppManager.getInstance().finishAllActivity();
+    }
+
     private void initView() {
         ed_login_user = (EditText) findViewById(R.id.ed_login_user);
         ed_login_psw = (EditText) findViewById(R.id.ed_login_psw);

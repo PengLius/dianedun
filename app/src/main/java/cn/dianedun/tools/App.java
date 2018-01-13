@@ -41,9 +41,7 @@ public class App extends MultiDexApplication {
         MobclickAgent.setScenarioType(this, MobclickAgent.EScenarioType.E_UM_NORMAL);
         UMConfigure.init(this, "598bf5bc310c93481f0012c3", "Umeng", UMConfigure.DEVICE_TYPE_PHONE, null);
     }
-
-
-
+  
     public static App getInstance() {
         return mInstance;
     }
