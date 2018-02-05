@@ -1,5 +1,6 @@
 package cn.dianedun.activity;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.Context;
 import android.graphics.drawable.AnimationDrawable;
@@ -31,6 +32,7 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 import com.umeng.analytics.MobclickAgent;
+import com.yanzhenjie.permission.AndPermission;
 
 import org.xutils.common.Callback;
 import org.xutils.http.RequestParams;
@@ -468,29 +470,34 @@ public class ApplyGdActivity extends BaseTitlActivity implements View.OnClickLis
                 break;
             case R.id.rl_luyin_type:
                 //开始录音
-                if (type == 0) {
-                    recorder = new MediaRecorder();
-                    recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-                    recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
-                    recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
-                    recorder.setOutputFile(fileName);
-                    try {
-                        recorder.prepare();
-                    } catch (IOException e) {
-                        e.printStackTrace();
+                if (AndPermission.hasPermission(this, Manifest.permission.RECORD_AUDIO)) {
+                    if (type == 0) {
+                        recorder = new MediaRecorder();
+                        recorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+                        recorder.setOutputFormat(MediaRecorder.OutputFormat.AAC_ADTS);
+                        recorder.setAudioEncoder(MediaRecorder.AudioEncoder.AAC);
+                        recorder.setOutputFile(fileName);
+                        try {
+                            recorder.prepare();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        type = 1;
+                        recorder.start();
+                        offs = true;
+                        img_luyin.setImageResource(R.mipmap.tingzhi);
+                        countTimer.start();
+                    } else if (type == 1) {
+                        img_luyin.setImageResource(R.mipmap.bofang);
+                        recorder.stop();
+                        recorder.release();
+                        countTimer.cancel();
+                        type = 0;
+                        offs = false;
                     }
-                    type = 1;
-                    recorder.start();
-                    offs = true;
-                    img_luyin.setImageResource(R.mipmap.tingzhi);
-                    countTimer.start();
-                } else if (type == 1) {
-                    img_luyin.setImageResource(R.mipmap.bofang);
-                    recorder.stop();
-                    recorder.release();
-                    countTimer.cancel();
-                    type = 0;
-                    offs = false;
+
+                } else {
+                    AndPermission.with(this).permission(Manifest.permission.RECORD_AUDIO).requestCode(0).send();
                 }
 
                 break;

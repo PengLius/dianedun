@@ -6,7 +6,7 @@ package cn.dianedun.tools;
 
 public class AppConfig {
     //        public static final String PORTS = "http://47.92.155.108:8081";//线上测试
-    public static final String PORTS = "https://dyd-app.dianedun.cn";//正式
+    public static final String PORTS = "https://sd-app.dianedun.cn";//正式
 
     public static final String LOGIN = PORTS + "/user/login";//登陆接口
     public static final String NOTECODE = PORTS + "/user/getCode";//用户名获取验证码
