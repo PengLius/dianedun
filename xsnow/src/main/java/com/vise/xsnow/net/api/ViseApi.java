@@ -12,6 +12,7 @@ import com.vise.xsnow.common.ViseConfig;
 import com.vise.xsnow.net.HttpsUtils;
 //import com.vise.xsnow.net.NoSSLv3Factory;
 import com.vise.xsnow.net.Tls12SocketFactory;
+import com.vise.xsnow.net.UnSafeHostnameVerifier;
 import com.vise.xsnow.net.callback.ApiCallback;
 import com.vise.xsnow.net.convert.GsonConverterFactory;
 import com.vise.xsnow.net.core.ApiCache;
@@ -1125,7 +1126,7 @@ public class ViseApi {
             }
 
             if (hostnameVerifier == null) {
-                hostnameVerifier = new SSLUtil.UnSafeHostnameVerifier(baseUrl);
+                hostnameVerifier = new UnSafeHostnameVerifier(baseUrl);
             }
             okHttpBuilder.hostnameVerifier(hostnameVerifier);
 
