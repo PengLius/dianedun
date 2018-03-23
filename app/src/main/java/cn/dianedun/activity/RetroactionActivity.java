@@ -939,6 +939,9 @@ public class RetroactionActivity extends BaseTitlActivity implements View.OnClic
         super.onPause();
         MobclickAgent.onPageEnd("工单反馈");
         MobclickAgent.onPause(this);
+        if (pop3 != null && pop3.isShowing()) {
+            pop3.dismiss();
+        }
     }
 
     @Override

@@ -560,6 +560,9 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
         super.onPause();
         MobclickAgent.onPageEnd("工单撤销");
         MobclickAgent.onPause(this);
+        if (pop3 != null && pop3.isShowing()) {
+            pop3.dismiss();
+        }
     }
 
     @Override

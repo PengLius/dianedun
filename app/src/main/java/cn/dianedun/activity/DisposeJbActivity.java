@@ -800,6 +800,9 @@ public class DisposeJbActivity extends BaseTitlActivity implements View.OnClickL
         super.onPause();
         MobclickAgent.onPageEnd("警报处理");
         MobclickAgent.onPause(this);
+        if (pop3 != null && pop3.isShowing()) {
+            pop3.dismiss();
+        }
     }
 
     @Override

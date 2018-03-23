@@ -1040,6 +1040,9 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
         super.onPause();
         MobclickAgent.onPageEnd("工单修改");
         MobclickAgent.onPause(this);
+        if (pop3 != null && pop3.isShowing()) {
+            pop3.dismiss();
+        }
     }
 
     @Override
