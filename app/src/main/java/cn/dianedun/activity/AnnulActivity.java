@@ -44,6 +44,7 @@ import cn.dianedun.bean.DetailsBean;
 import cn.dianedun.bean.JbUpBean;
 import cn.dianedun.bean.ToJsonBean;
 import cn.dianedun.bean.UpdataBean;
+import cn.dianedun.tools.ActivityUtils;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.AppManager;
@@ -243,8 +244,7 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                             @Override
                             public void send(String result) {
                                 showToast("撤销成功");
-
-                                com.vise.xsnow.manager.AppManager.getInstance().finishActivity(DetailsingActivity.class);
+                                ActivityUtils.getInstance().closeActivity("DetailsingActivity");
                                 finish();
                             }
                         });
@@ -264,6 +264,7 @@ public class AnnulActivity extends BaseTitlActivity implements View.OnClickListe
                         @Override
                         public void send(String result) {
                             showToast("撤销成功");
+                            ActivityUtils.getInstance().closeActivity("DetailsingActivity");
                             finish();
                         }
                     });

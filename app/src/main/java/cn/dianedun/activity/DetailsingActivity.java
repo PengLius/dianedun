@@ -19,6 +19,7 @@ import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.base.BaseTitlActivity;
 import cn.dianedun.bean.DetailsBean;
+import cn.dianedun.tools.ActivityUtils;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.DataUtil;
@@ -116,7 +117,7 @@ public class DetailsingActivity extends BaseTitlActivity {
             }
         });
         initData();
-
+        ActivityUtils.getInstance().addActivity("DetailsingActivity", this);
     }
 
     private void initData() {
@@ -267,5 +268,11 @@ public class DetailsingActivity extends BaseTitlActivity {
         super.onPause();
         MobclickAgent.onPageEnd("工单详情");
         MobclickAgent.onPause(this);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ActivityUtils.getInstance().delActivity("DetailsingActivity");
     }
 }

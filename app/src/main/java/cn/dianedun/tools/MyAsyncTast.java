@@ -101,7 +101,7 @@ public class MyAsyncTast extends AsyncTask<Object, Object, String> {
                             callback.send(result);
                         }
                     } else if (jsonObject.getString("code").equals("2001")) {
-                        Toast.makeText(context, "授权验证失败，请重新登录", Toast.LENGTH_SHORT).show();
+                        callback.onError(jsonObject.getString("msg"));
                         SharedPreferences sharedPreferences = context.getSharedPreferences("user",
                                 Activity.MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();

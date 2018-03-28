@@ -55,6 +55,7 @@ import cn.dianedun.bean.JbUpBean;
 import cn.dianedun.bean.ResultBean;
 import cn.dianedun.bean.ToJsonBean;
 import cn.dianedun.bean.UpdataBean;
+import cn.dianedun.tools.ActivityUtils;
 import cn.dianedun.tools.App;
 import cn.dianedun.tools.AppConfig;
 import cn.dianedun.tools.DataUtil;
@@ -580,7 +581,7 @@ public class AmendGdActivity extends BaseTitlActivity implements View.OnClickLis
                             ResultBean bean = GsonUtil.parseJsonWithGson(result, ResultBean.class);
                             if (bean.getCode() == 0) {
                                 showToast("工单修改成功");
-                                com.vise.xsnow.manager.AppManager.getInstance().finishActivity(DetailsingActivity.class);
+                                ActivityUtils.getInstance().closeActivity("DetailsingActivity");
                                 finish();
                             } else {
                                 showToast(bean.getMsg());
