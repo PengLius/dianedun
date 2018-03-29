@@ -48,12 +48,10 @@
 
     <FrameLayout
         android:id="@+id/av_fl_displaycontainer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
         android:layout_gravity="center"
-        android:background="#ff000000"
-        app:layout_heightPercent="45%"
-        app:layout_widthPercent="100%">
+        android:background="#ff000000">
 
         <RelativeLayout
             android:id="@+id/av_rl_videocontainer"
@@ -224,6 +222,81 @@
                     android:background="@drawable/ptz_prompt"
                     android:scaleType="fitXY"
                     android:visibility="gone" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/av_rl_fullcontrolbg"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone">
+
+
+                <RelativeLayout
+                    android:id="@+id/av_rl_fulltoolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="50dp"
+                    android:background="@mipmap/ic_nor_halfblackbar">
+
+                    <ImageView
+                        android:id="@+id/av_img_fullback"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:padding="10dp"
+                        android:src="@mipmap/ic_nor_arrowleft" />
+
+                    <TextView
+                        android:id="@+id/av_tv_fulltitle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/content_text_s16" />
+
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:id="@+id/av_ll_full_normalcontrol"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentBottom="true"
+                    android:gravity="right"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
+
+                    <ImageView
+                        android:id="@+id/av_img_fullvoice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:src="@mipmap/ic_nor_full_closevoice" />
+
+
+                    <ImageView
+                        android:id="@+id/av_img_fullstart"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:src="@mipmap/ic_nor_fullstop" />
+
+
+                    <ImageView
+                        android:id="@+id/av_img_fulltakephoto"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:src="@mipmap/ic_nor_full_takephoto" />
+
+
+                    <ImageView
+                        android:id="@+id/av_img_fullvideo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="5dp"
+                        android:src="@mipmap/ic_nor_full_video" />
+
+                </LinearLayout>
+
             </RelativeLayout>
 
         </RelativeLayout>

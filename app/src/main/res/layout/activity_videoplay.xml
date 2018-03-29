@@ -2,11 +2,11 @@
 <cn.dianedun.view.PercentLinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:fitsSystemWindows="true"
     android:background="@color/black"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <SurfaceView
         android:layout_width="0dp"
@@ -46,7 +46,7 @@
         android:layout_width="match_parent"
         android:layout_height="200dp">
 
-        <android.support.v4.view.ViewPager
+        <cn.dianedun.view.SplitMotionViewPager
             android:id="@+id/av_viewpager_single"
             android:layout_width="match_parent"
             android:layout_alignParentTop="true"
@@ -91,6 +91,197 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:src="@mipmap/ic_nor_fullscreen" />
+        </RelativeLayout>
+
+
+        <RelativeLayout
+            android:id="@+id/av_rl_fullcontrolbg"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+
+            <RelativeLayout
+                android:id="@+id/av_rl_fulltoolbar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:background="@mipmap/ic_nor_halfblackbar">
+
+                <ImageView
+                    android:id="@+id/av_img_fullback"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:padding="10dp"
+                    android:src="@mipmap/ic_nor_arrowleft" />
+
+                <TextView
+                    android:id="@+id/av_tv_fulltitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/content_text_s16" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/av_ll_full_normalcontrol"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="right"
+                android:orientation="horizontal"
+                android:visibility="visible">
+
+                <ImageView
+                    android:id="@+id/av_img_fullvideo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_video" />
+
+                <ImageView
+                    android:id="@+id/av_img_fulltakephoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_takephoto" />
+
+                <ImageView
+                    android:id="@+id/av_img_fullvoice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_closevoice" />
+
+                <ImageView
+                    android:id="@+id/av_img_fulltalk"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_closetalk" />
+
+                <ImageView
+                    android:id="@+id/av_img_fullcontrol"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_control" />
+
+                <TextView
+                    android:id="@+id/av_tv_full_qa"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:background="@mipmap/ic_nor_grayciclebg"
+                    android:gravity="center"
+                    android:text="高清"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/content_text_s12" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/av_ll_full_control"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:gravity="right|bottom"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/av_img_fullcontrolvideo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_video" />
+
+                <ImageView
+                    android:id="@+id/av_img_fullcontroltakephoto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_takephoto" />
+
+                <ImageView
+                    android:id="@+id/av_img_fullcontroltobig"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_tobig" />
+
+                <ImageView
+                    android:id="@+id/av_img_fullcontroltosmall"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="5dp"
+                    android:src="@mipmap/ic_nor_full_tosmall" />
+
+                <RelativeLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/av_full_controlentitry"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:background="@mipmap/ic_nor_full_controlplace"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/av_img_fulltopclick"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1">
+
+                            <ImageView
+                                android:id="@+id/av_img_fullleftclick"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1" />
+
+
+                            <View
+                                android:layout_width="1dp"
+                                android:layout_height="1px"
+                                android:layout_weight="1" />
+
+                            <ImageView
+                                android:id="@+id/av_img_fullrightclick"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_weight="1" />
+
+                        </LinearLayout>
+
+                        <ImageView
+                            android:id="@+id/av_img_fullbottomclick"
+                            android:layout_width="match_parent"
+                            android:layout_height="0dp"
+                            android:layout_weight="1" />
+
+                    </LinearLayout>
+
+                    <ImageView
+                        android:id="@+id/av_img_fullcontrolclose"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_toRightOf="@+id/av_full_controlentitry"
+                        android:padding="5dp"
+                        android:src="@mipmap/ic_nor_full_close" />
+
+                </RelativeLayout>
+            </LinearLayout>
+
         </RelativeLayout>
 
     </RelativeLayout>

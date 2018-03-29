@@ -1,5 +1,6 @@
 package cn.dianedun.view.EZUIPlayer;
 
+import android.graphics.Point;
 import android.view.View;
 import java.util.Calendar;
 import java.util.List;
@@ -27,7 +28,7 @@ interface EZUIPlayerInterface {
 
     List getPlayList();
 
-    void setSurfaceSize(int var1, int var2);
+    Point setSurfaceSize(int var1, int var2);
 
     void setLoadingView(View var1);
 }

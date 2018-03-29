@@ -3,6 +3,7 @@ package cn.dianedun.view.EZUIPlayer;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.Message;
 import android.os.SystemClock;
@@ -23,25 +24,22 @@ import com.ezvizuikit.open.ParamException;
 import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.errorlayer.ErrorLayer;
 import com.videogo.exception.BaseException;
+import com.videogo.exception.InnerException;
+import com.videogo.exception.PlaySDKException;
 import com.videogo.openapi.EZConstants;
 import com.videogo.openapi.EZPlayer;
 import com.videogo.openapi.EzvizAPI;
 import com.videogo.openapi.bean.EZCloudRecordFile;
 import com.videogo.openapi.bean.EZRecordFile;
 import com.videogo.realplay.RealPlayStatus;
-import com.videogo.stream.EZStreamCtrl;
-import com.videogo.stream.EZStreamParamHelp;
-import com.videogo.util.ConnectionDetector;
 import com.videogo.util.LogUtil;
-import com.videogo.util.Utils;
+import com.videogo.widget.CustomRect;
+import com.videogo.widget.CustomTouchListener;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import cn.dianedun.R;
-import cn.dianedun.activity.VideoShowActivity;
 
 import static cn.dianedun.tools.App.getOpenSDK;
 import static com.videogo.openapi.EZConstants.EZRealPlayConstants.MSG_REALPLAY_VOICETALK_SUCCESS;
@@ -173,8 +171,10 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                         }
 
                         EZUIPlayer.this.stopPlay();
-                        EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError(e, ((ErrorInfo)msg.obj).errorCode));
-                        EZUIPlayer.this.showPlayError(e + "(" + ((ErrorInfo)msg.obj).errorCode + ")");
+                        if (!mEzUIPlayerCallBack.onRetryLoad()){
+                            EZUIPlayer.this.mEzUIPlayerCallBack.onPlayFail(new EZUIError(e, ((ErrorInfo)msg.obj).errorCode));
+                            EZUIPlayer.this.showPlayError(e + "(" + ((ErrorInfo)msg.obj).errorCode + ")");
+                        }
                     }
                     break;
                 case 134:
@@ -288,6 +288,11 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
             this.addView(this.mSurfaceView);
         }
 
+    }
+    public void setSufaceViewTouchListener(CustomTouchListener customTouchListener){
+        if (mSurfaceView!=null){
+            mSurfaceView.setOnTouchListener(customTouchListener);
+        }
     }
 
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -504,6 +509,9 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
                         this.mPlayRecordList.add(var13);
                     }
                 }
+            }
+            if(mRecordFiles.size() > 0 && mPlayRecordList.size() == 0){
+                mPlayRecordList.add(var13);
             }
 
             this.post(new Runnable() {
@@ -792,7 +800,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
     }
 
-    public void setSurfaceSize(int width, int height) {
+    public Point setSurfaceSize(int width, int height) {
         this.mWidth = width;
         this.mHeight = height;
         android.view.ViewGroup.LayoutParams lp = this.getLayoutParams();
@@ -832,6 +840,7 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
         this.setLayoutParams(lp);
         this.changeSurfaceSize(this.mSurfaceView, this.mVideoWidth, this.mVideoHeight);
+        return new Point(lp.width,lp.height);
     }
 
     public boolean startVoiceTalk() {
@@ -986,8 +995,9 @@ public class EZUIPlayer extends RelativeLayout implements EZUIPlayerInterface {
 
         void onPlayFinish();
 
-        void onRetryLoad();
-        void onTalkBackState(boolean state,ErrorInfo errorInfo);
+        boolean onRetryLoad();
+
+        void onTalkBackState(boolean state, ErrorInfo errorInfo);
     }
 
     public static enum EZUIKitPlayMode {

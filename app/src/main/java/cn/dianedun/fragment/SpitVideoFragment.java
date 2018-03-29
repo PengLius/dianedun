@@ -249,8 +249,8 @@ public class SpitVideoFragment extends SupportFragment {
             }
 
             @Override
-            public void onRetryLoad() {
-
+            public boolean onRetryLoad() {
+                return false;
             }
 
             @Override

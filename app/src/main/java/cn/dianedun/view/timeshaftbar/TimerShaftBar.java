@@ -214,7 +214,8 @@ public class TimerShaftBar extends View implements TimerShaftInterface{
     /**
      * 绘制时间轴区域的颜色
      */
-    private int mBackColor = 0xFFF5F5F5;
+//    private int mBackColor = 0xFFF5F5F5;
+    private int mBackColor = Color.WHITE;
 
     /**
      * 绘制当前时间轴区域的颜色
@@ -567,7 +568,7 @@ public class TimerShaftBar extends View implements TimerShaftInterface{
      * @param canvas
      */
     private void drawBack(Canvas canvas) {
-        canvas.drawRect(new Rect(0, mTop, mWidth, getHeight()), mBackParint);
+        canvas.drawRect(new Rect(0, mTop - dip2px(mContext, 35), mWidth, getHeight()), mBackParint);
     }
 
     /**
@@ -675,10 +676,10 @@ public class TimerShaftBar extends View implements TimerShaftInterface{
                 mTouchMode = TOUCH_MODE_SCROLLER;
                 isTouchScreent = true;
                 // 第一个点被按下
-//                Toast.makeText(getContext(), "第一个点被按下", Toast.LENGTH_SHORT);
+                Toast.makeText(getContext(), "第一个点被按下", Toast.LENGTH_SHORT);
                 break;
             case MotionEvent.ACTION_POINTER_DOWN:
-//                Toast.makeText(getContext(), "第一个点被按下", Toast.LENGTH_SHORT);
+                Toast.makeText(getContext(), "第一个点被按下", Toast.LENGTH_SHORT);
                 mTouchMode = TOUCH_MODE_SCALE;
                 isRefereshPlayTimeWithPlayer = true;
                 break;

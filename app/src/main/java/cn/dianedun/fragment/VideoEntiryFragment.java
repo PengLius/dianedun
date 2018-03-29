@@ -1,7 +1,10 @@
 package cn.dianedun.fragment;
 
 import android.content.DialogInterface;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Point;
+import android.media.audiofx.LoudnessEnhancer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -12,6 +15,7 @@ import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -21,6 +25,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ezvizuikit.open.EZUIError;
+import com.videogo.constant.Constant;
 import com.videogo.errorlayer.ErrorInfo;
 import com.videogo.exception.BaseException;
 import com.videogo.exception.InnerException;
@@ -33,6 +38,8 @@ import com.videogo.util.LogUtil;
 import com.videogo.util.MediaScanner;
 import com.videogo.util.SDCardUtil;
 import com.videogo.util.Utils;
+import com.videogo.widget.CustomRect;
+import com.videogo.widget.CustomTouchListener;
 
 import java.util.Calendar;
 import java.util.Timer;
@@ -44,6 +51,7 @@ import cn.dianedun.tools.App;
 import cn.dianedun.tools.AudioPlayUtil;
 import cn.dianedun.tools.EZUtils;
 import cn.dianedun.view.EZUIPlayer.EZUIPlayer;
+import cn.dianedun.view.PagesGallery;
 import me.yokeyword.fragmentation.SupportFragment;
 
 import static android.view.View.GONE;
@@ -52,7 +60,9 @@ import static android.view.View.GONE;
  * Created by Administrator on 2017/12/16.
  */
 
-public class VideoEntiryFragment extends SupportFragment {
+public class VideoEntiryFragment extends SupportFragment implements View.OnTouchListener {
+
+    private static final String TAG = "VideoEntiryFragment";
 
     public static VideoEntiryFragment getInstance(int pos, boolean bShow, EZDeviceInfo bean) {
         VideoEntiryFragment fragment = new VideoEntiryFragment();
@@ -69,10 +79,21 @@ public class VideoEntiryFragment extends SupportFragment {
     private TextView mTvTip;
     private ImageView mImgDirection;
     private LinearLayout mLLRecordView;
-    private ImageView mImgRecordTag;
+    private ImageView mImgRecordTag,mImgBg;
     private TextView mTvRecordSec;
     private VideoPlayActivity.OnVideoSelect mVideoParent;
+
+    private Bitmap mCurBitmap;
 //    protected ProgressBar mProgress;
+
+    public void setCurBitmap(Bitmap curBitmap){
+        if (mCurBitmap!=null){
+            mCurBitmap.recycle();
+            mCurBitmap = null;
+        }
+        mCurBitmap = curBitmap;
+        mImgBg.setImageBitmap(mCurBitmap);
+    }
 
     public int getVideoStatus(){
         if (mEzUiPlayer==null)
@@ -96,22 +117,119 @@ public class VideoEntiryFragment extends SupportFragment {
         return view;
     }
 
+    private PagesGallery mPageGallery;
     private void init(View view){
-        view.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (mVideoParent!=null)
-                    mVideoParent.onVideoClick();
-            }
-        });
+//        view.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (mVideoParent!=null)
+//                    mVideoParent.onVideoClick();
+//            }
+//        });
+        mPageGallery = (PagesGallery)view.findViewById(R.id.realplay_pages_gallery);
+        mPageGallery.setOnTouchListener(this);
         mEzUiPlayer = (EZUIPlayer) view.findViewById(R.id.vv_ezuiplayer);
         mTvTip = (TextView)view.findViewById(R.id.vv_tv_tip);
         mLLRecordView = (LinearLayout)view.findViewById(R.id.vv_ll_record);
         mImgRecordTag = (ImageView)view.findViewById(R.id.vv_img_realplay);
         mTvRecordSec = (TextView)view.findViewById(R.id.vv_tv_realplay);
         mImgDirection = (ImageView)view.findViewById(R.id.vv_img_direction);
+        mImgBg = (ImageView)view.findViewById(R.id.vv_img_bg);
 //        mProgress = (ProgressBar)view.findViewById(R.id.vv_progress);
         mDataBean = getArguments().getParcelable("data");
+        mRealPlayTouchListener = new CustomTouchListener() {
+
+            @Override
+            public boolean canZoom(float scale) {
+                if (mEzUiPlayer.getStatus() == RealPlayStatus.STATUS_PLAY){
+//                    if (mPlayScale <= 1){
+//                        mPageGallery.setSwitch(true);
+//                    }else{
+//                        mPageGallery.setSwitch(false);
+//                    }
+                    return true;
+                } else {
+//                    Log.e("zoom false",scale+"");
+                    return false;
+                }
+            }
+
+            @Override
+            public boolean canDrag(int direction) {
+                if (mEzUiPlayer.getStatus() != RealPlayStatus.STATUS_PLAY) {
+                    return false;
+                }
+                if (mEzUiPlayer.getEzPlayer() != null && mDataBean != null) {
+                    // 出界判断
+                    if (DRAG_LEFT == direction || DRAG_RIGHT == direction) {
+                        // 左移/右移出界判断
+                        if (mDataBean.isSupportPTZ()) {
+                            return true;
+                        }
+                    } else if (DRAG_UP == direction || DRAG_DOWN == direction) {
+                        // 上移/下移出界判断
+                        if (mDataBean.isSupportPTZ()) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
+
+            @Override
+            public void onSingleClick() {
+                if (mVideoParent!=null){
+                    mVideoParent.onVideoClick();
+                }
+            }
+
+            @Override
+            public void onDoubleClick(MotionEvent e) {
+            }
+
+            @Override
+            public void onZoom(float scale) {
+//                LogUtil.debugLog(TAG, "onZoom:" + scale);
+//                if (mEzUiPlayer.getEzPlayer() != null && mDataBean != null &&  mDataBean.isSupportZoom()) {
+//                    startZoom(scale);
+//                }
+            }
+
+            @Override
+            public void onDrag(int direction, float distance, float rate) {
+//                LogUtil.debugLog(TAG, "onDrag:" + direction);
+                if (mEzUiPlayer.getEzPlayer() != null) {
+                    //Utils.showLog(RealPlayActivity.this, "onDrag rate:" + rate);
+                    startDrag(direction, distance, rate);
+                }
+            }
+
+            @Override
+            public void onEnd(int mode) {
+//                LogUtil.debugLog(TAG, "onEnd:" + mode);
+                if (mEzUiPlayer.getEzPlayer() != null) {
+                    stopDrag(false);
+                }
+                if (mEzUiPlayer.getEzPlayer() != null && mDataBean != null && mDataBean.isSupportZoom()) {
+//                    stopZoom();
+                }
+            }
+
+            @Override
+            public void onZoomChange(float scale, CustomRect oRect, CustomRect curRect) {
+//                LogUtil.debugLog(TAG, "onZoomChange:" + scale);
+//                if (mEzUiPlayer.getEzPlayer() != null && mDataBean != null && mDataBean.isSupportZoom()) {
+                    //采用云台调焦
+//                    return;
+//                }
+                if (mEzUiPlayer.getStatus() == RealPlayStatus.STATUS_PLAY) {
+                    if (scale > 1.0f && scale < 1.1f) {
+                        scale = 1.1f;
+                    }
+                    setPlayScaleUI(scale, oRect, curRect);
+                }
+            }
+        };
     }
 
     private String mPreUrl,mErrStr;
@@ -138,7 +256,13 @@ public class VideoEntiryFragment extends SupportFragment {
         return mLocalInfo;
     }
 
+    public int getPos(){
+        return mPos;
+    }
+
     private int mPos;
+    private boolean mRetryPlay = false;
+    private CustomTouchListener mRealPlayTouchListener = null;
     private void initUi(){
 //        if (mDataBean.getStatus() != 1){
 //            mRlContainer.removeView(mEzUiPlayer);
@@ -151,7 +275,7 @@ public class VideoEntiryFragment extends SupportFragment {
         mAudioPlayUtil = AudioPlayUtil.getInstance(App.getInstance());
         final DisplayMetrics dm = new DisplayMetrics();
         _mActivity.getWindowManager().getDefaultDisplay().getMetrics(dm);
-        mEzUiPlayer.setSurfaceSize(dm.widthPixels, 0);
+//        mEzUiPlayer.setSurfaceSize(dm.widthPixels, 0);
         mEzUiPlayer.setOpenSound(false);
         mPos = getArguments().getInt("pos",0);
         //getArguments().getInt("pos",0) == 0 ? true : false
@@ -170,8 +294,13 @@ public class VideoEntiryFragment extends SupportFragment {
             }
 
             @Override
-            public void onRetryLoad() {
-                mEzUiPlayer.setUrl(mPreUrl + mVideoQa);
+            public boolean onRetryLoad() {
+                if (!mRetryPlay) {
+                    mEzUiPlayer.setUrl(mPreUrl + mVideoQa);
+                    return mRetryPlay = true;
+                }else{
+                    return mRetryPlay = false;
+                }
             }
 
             @Override
@@ -185,9 +314,18 @@ public class VideoEntiryFragment extends SupportFragment {
                 Log.e("ezuiplayer","onPlaySuccess");
 //                            ezUIPlayer.setZOrderOnTop(true);
 //                laodingView.setVisibility(View.INVISIBLE);
+
+                setCurBitmap(mEzUiPlayer.getEzPlayer().capturePicture());
+                mPageGallery.setVisibility(View.VISIBLE);
                 if (mInTop && mVideoParent!=null) {
                     mVideoParent.onVideoPlayState(EZUIPlayer.STATUS_PLAY,null);
-                    mVideoParent.onVideoVoiceControl(true);
+                    if (getSoundOpenStatus()) {
+                        mEzUiPlayer.setOpenSound(true);
+                        mVideoParent.onVideoVoiceControl(true);
+                    }else {
+                        mEzUiPlayer.setOpenSound(false);
+                        mVideoParent.onVideoVoiceControl(false);
+                    }
                 }
                 mErrStr = null;
             }
@@ -197,9 +335,11 @@ public class VideoEntiryFragment extends SupportFragment {
                 if (mIsRecording){
                     stopRealPlayRecord();
                 }
+                mPageGallery.setVisibility(GONE);
                 if (mInTop && mVideoParent!=null) {
                     mVideoParent.onVideoPlayState(EZUIPlayer.STATUS_INIT,ezuiError);
-                    mVideoParent.onVideoVoiceControl(true);
+                    mEzUiPlayer.setOpenSound(false);
+                    mVideoParent.onVideoVoiceControl(false);
                 }
                 mErrStr = ezuiError.getErrorString();
                 Toast.makeText(_mActivity, mErrStr, Toast.LENGTH_SHORT).show();
@@ -228,32 +368,179 @@ public class VideoEntiryFragment extends SupportFragment {
                 Log.e("ezuiplayer","onPlayFinish");
             }
         });
+
+        mEzUiPlayer.setSufaceViewTouchListener(mRealPlayTouchListener);
+        setSurfaceSize(dm.widthPixels);
         mPreUrl = "ezopen://open.ys7.com/" + mDataBean.getDeviceSerial();
         mEzUiPlayer.setUrl(mPreUrl + mVideoQa);
     }
+    // 播放比例
+    private float mPlayScale = 1;
+    private void setPlayScaleUI(float scale, CustomRect oRect, CustomRect curRect) {
+        if (scale == 1) {
+            if (mPlayScale == scale) {
+                return;
+            }
+//            mRealPlayRatioTv.setVisibility(View.GONE);
+            try {
+                if (mEzUiPlayer.getEzPlayer() != null) {
+                    mEzUiPlayer.getEzPlayer().setDisplayRegion(false, null, null);
+                }
+            } catch (BaseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        } else {
+            if (mPlayScale == scale) {
+                try {
+                    if (mEzUiPlayer.getEzPlayer() != null) {
+                        mEzUiPlayer.getEzPlayer().setDisplayRegion(true, oRect, curRect);
+                    }
+                } catch (BaseException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+                return;
+            }
+//            RelativeLayout.LayoutParams realPlayRatioTvLp = (RelativeLayout.LayoutParams) mRealPlayRatioTv
+//                    .getLayoutParams();
+//            if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
+//                realPlayRatioTvLp.setMargins(Utils.dip2px(this, 10), Utils.dip2px(this, 10), 0, 0);
+//            } else {
+//                realPlayRatioTvLp.setMargins(Utils.dip2px(this, 70), Utils.dip2px(this, 20), 0, 0);
+//            }
+//            mRealPlayRatioTv.setLayoutParams(realPlayRatioTvLp);
+//            String sacleStr = String.valueOf(scale);
+//            mRealPlayRatioTv.setText(sacleStr.subSequence(0, Math.min(3, sacleStr.length())) + "X");
+//            //mj mRealPlayRatioTv.setVisibility(View.VISIBLE);
+//            mRealPlayRatioTv.setVisibility(View.GONE);
+//            hideControlRlAndFullOperateBar(false);
+            try {
+                if (mEzUiPlayer.getEzPlayer() != null) {
+                    mEzUiPlayer.getEzPlayer().setDisplayRegion(true, oRect, curRect);
+                }
+            } catch (BaseException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        mPlayScale = scale;
+        if (mPlayScale <= 1){
+            mPageGallery.setSwitch(true);
+        }else{
+            mPageGallery.setSwitch(false);
+        }
+    }
+    public void startDrag(int direction, float distance, float rate) {
+    }
 
+    public void stopDrag(boolean control) {
+    }
+    private float mZoomScale = 0;
+    private void startZoom(float scale) {
+        if (mEzUiPlayer.getEzPlayer() == null) {
+            return;
+        }
+
+//        hideControlRlAndFullOperateBar(false);
+        boolean preZoomIn = mZoomScale > 1.01 ? true : false;
+        boolean zoomIn = scale > 1.01 ? true : false;
+        if (mZoomScale != 0 && preZoomIn != zoomIn) {
+            LogUtil.debugLog(TAG, "startZoom stop:" + mZoomScale);
+
+//            mEZOpenSDK.controlPTZ(mZoomScale > 1.01 ? RealPlayStatus.PTZ_ZOOMIN
+//                                : RealPlayStatus.PTZ_ZOOMOUT, RealPlayStatus.PTZ_SPEED_DEFAULT, EZPlayer.PTZ_COMMAND_STOP);
+
+            ptzOption(mZoomScale > 1.01 ? EZConstants.EZPTZCommand.EZPTZCommandZoomIn
+                    : EZConstants.EZPTZCommand.EZPTZCommandZoomOut, EZConstants.EZPTZAction.EZPTZActionSTOP);
+            mZoomScale = 0;
+        }
+        if (scale != 0 && (mZoomScale == 0 || preZoomIn != zoomIn)) {
+            mZoomScale = scale;
+            LogUtil.debugLog(TAG, "startZoom start:" + mZoomScale);
+//            mEZOpenSDK.controlPTZ(mZoomScale > 1.01 ? RealPlayStatus.PTZ_ZOOMIN
+//                                : RealPlayStatus.PTZ_ZOOMOUT, RealPlayStatus.PTZ_SPEED_DEFAULT, EZPlayer.PTZ_COMMAND_START);
+
+            ptzOption(mZoomScale > 1.01 ? EZConstants.EZPTZCommand.EZPTZCommandZoomIn
+                    : EZConstants.EZPTZCommand.EZPTZCommandZoomOut, EZConstants.EZPTZAction.EZPTZActionSTART);
+        }
+    }
+    private void stopZoom() {
+        if (mEzUiPlayer.getEzPlayer() == null) {
+            return;
+        }
+        if (mZoomScale != 0) {
+            LogUtil.debugLog(TAG, "stopZoom stop:" + mZoomScale);
+            ptzOption(mZoomScale > 1.01 ? EZConstants.EZPTZCommand.EZPTZCommandZoomIn
+                    : EZConstants.EZPTZCommand.EZPTZCommandZoomOut, EZConstants.EZPTZAction.EZPTZActionSTOP);
+            mZoomScale = 0;
+        }
+    }
+    
     public final static String QA_HD = "/1.hd.live?mute=true";
     public final static String QA_BA = "/1.live?mute=true";
-    private String mVideoQa = QA_BA;
+    private String mVideoQa = QA_HD;
 
     public void setSurfaceSize(int width){
-        if (mEzUiPlayer!=null)
-            mEzUiPlayer.setSurfaceSize(width, 0);
+        if (mEzUiPlayer!=null) {
+            Point p = mEzUiPlayer.setSurfaceSize(width, 0);
+            mRealPlayTouchListener.setSacaleRect(Constant.MAX_SCALE, 0, 0, p.x, p.y);
+            setPlayScaleUI(1, null, null);
+        }
+    }
+
+    public void changeShowState(boolean bShow){
+        if (bShow){
+            mImgBg.setVisibility(GONE);
+            mEzUiPlayer.setVisibility(View.VISIBLE);
+        }else{
+//            滑动
+            if (mEzUiPlayer.getStatus() == EZUIPlayer.STATUS_PLAY){
+                Bitmap bmp = mEzUiPlayer.getEzPlayer().capturePicture();
+                mImgBg.setImageBitmap(bmp);
+            }
+            mImgBg.setVisibility(View.VISIBLE);
+            mEzUiPlayer.setVisibility(View.GONE);
+        }
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        switch (v.getId()) {
+            case R.id.realplay_pages_gallery:
+                mRealPlayTouchListener.touch(event);
+                break;
+            default:
+                break;
+        }
+        return false;
     }
 
     @Override
     public void onSupportVisible() {
         super.onSupportVisible();
+//        mImgBg.setVisibility(View.GONE);
+//        mEzUiPlayer.setVisibility(View.VISIBLE);
         mInTop = true;
         if (mVideoParent!=null)
             mVideoParent.onVideoSelect(mPos,mDataBean);
 
         if (mDataBean.getStatus() == 1 && mEzUiPlayer.getStatus() != EZUIPlayer.STATUS_PLAY){
+            mEzUiPlayer.setVisibility(View.VISIBLE);
+            mEzUiPlayer.setAutoPlay(true);
             mEzUiPlayer.startPlay();
         }else {
             if (mVideoParent!=null){
                 mVideoParent.onVideoPlayState(EZUIPlayer.STATUS_INIT,null);
-                mVideoParent.onVideoVoiceControl(true);
+                if (getSoundOpenStatus()) {
+                    mEzUiPlayer.setOpenSound(true);
+                    mVideoParent.onVideoVoiceControl(true);
+                }else {
+                    LocalInfo localInfo = getLocalInfo();
+                    localInfo.setSoundOpen(false);
+                    mEzUiPlayer.setOpenSound(false);
+                    mVideoParent.onVideoVoiceControl(false);
+                }
             }
         }
     }
@@ -261,6 +548,8 @@ public class VideoEntiryFragment extends SupportFragment {
     @Override
     public void onSupportInvisible(){
         super.onSupportInvisible();
+//        mImgBg.setVisibility(View.VISIBLE);
+//        mEzUiPlayer.setVisibility(View.GONE);
         mInTop = false;
         if (mIsRecording){
             stopRealPlayRecord();
@@ -270,6 +559,8 @@ public class VideoEntiryFragment extends SupportFragment {
         }
         if (mDataBean.getStatus() == 1)
             stopPlay();
+
+        mEzUiPlayer.setVisibility(View.VISIBLE);
     }
 
     public void stopPlay() {
@@ -283,6 +574,10 @@ public class VideoEntiryFragment extends SupportFragment {
         mHandler.removeMessages(MSG_HIDE_PTZ_DIRECTION);
         mHandler = null;
         releasePlay();
+        if (mCurBitmap!=null){
+            mCurBitmap.recycle();
+            mCurBitmap = null;
+        }
     }
 
     //待用
@@ -550,6 +845,13 @@ public class VideoEntiryFragment extends SupportFragment {
             mEzUiPlayer.setOpenSound(true);
             return true;
         }
+    }
+
+    private boolean getSoundOpenStatus(){
+        LocalInfo localInfo = getLocalInfo();
+        if (localInfo == null)
+            return false;
+        return localInfo.isSoundOpen();
     }
 
     public Boolean setVideoQa(final String qa){
