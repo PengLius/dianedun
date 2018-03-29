@@ -6,6 +6,12 @@
     android:background="@color/black"
     android:layout_width="match_parent">
 
+    <ImageView
+        android:id="@+id/vv_img_bg"
+        android:layout_width="match_parent"
+        android:scaleType="fitXY"
+        android:layout_height="match_parent" />
+
     <cn.dianedun.view.EZUIPlayer.EZUIPlayer
         android:id="@+id/vv_ezuiplayer"
         android:layout_width="match_parent"
@@ -60,5 +66,19 @@
         android:background="@drawable/left_twinkle"
         android:scaleType="fitXY"
         android:visibility="gone" />
+
+
+    <FrameLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/transparent" >
+
+        <cn.dianedun.view.PagesGallery
+            android:id="@+id/realplay_pages_gallery"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:spacing="0dp" />
+
+    </FrameLayout>
 
 </RelativeLayout>

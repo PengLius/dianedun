@@ -21,7 +21,10 @@ import android.view.Gravity;
 import android.view.OrientationEventListener;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -71,6 +74,7 @@ import cn.dianedun.view.timeshaftbar.TimerShaftBar;
 import cn.dianedun.view.timeshaftbar.TimerShaftRegionItem;
 
 import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 import static cn.dianedun.activity.VideoShowActivity.MSG_PLAY_UI_UPDATE;
 
 /**
@@ -250,8 +254,9 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     }
 
     @Override
-    public void onRetryLoad() {
+    public boolean onRetryLoad() {
         mEZUiPlayBack.setUrl(mPlayUrl);
+        return false;
     }
 
     //    private Date mCurDate;
@@ -276,7 +281,9 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mPlayUrl = getIntent().getStringExtra(PLAY_URL);
         mPlayPreUrl = getIntent().getStringExtra(PLAY_PRE_URL);
         mCurCalendar = (Calendar) getIntent().getSerializableExtra(PLAY_DATE);
-        mTvPlaces.setText(getIntent().getStringExtra(PLACENAME));
+        String title = getIntent().getStringExtra(PLACENAME);
+        mTvPlaces.setText(title);
+        mTvFullTitle.setText(title);
         mTimerShaftBar.setRefereshPlayTimeWithPlayer();
         mCurCalendar.set(Calendar.HOUR_OF_DAY,0);
         mCurCalendar.set(Calendar.MINUTE,0);
@@ -296,6 +303,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
 
         //默认开启播放
         mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+        mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstop);
         //设置加载需要显示的view
         mEZUiPlayBack.setLoadingView(initProgressBar());
         preparePlay();
@@ -333,9 +341,11 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         if (localInfo.isSoundOpen()) {
             localInfo.setSoundOpen(false);
             mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_nohorn);
+            mImgFullVoice.setImageResource(R.mipmap.ic_nor_full_closevoice);
         } else {
             localInfo.setSoundOpen(true);
             mRealPlaySoundBtn.setImageResource(R.mipmap.ic_nor_greenhorn);
+            mImgFullVoice.setImageResource(R.mipmap.ic_nor_full_openvoice);
         }
 
         setRealPlaySound();
@@ -360,6 +370,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         if (isResumePlay) {
             isResumePlay = false;
             mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
+            mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstart);
             mEZUiPlayBack.startPlay();
         }
     }
@@ -468,9 +479,121 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
 //        }
 //    }
 
+    private Animation mFadeInAnimation,mFadeOutAnimation;
+    private void fadeAnimation(boolean show){
+        if (!show){
+            if (mFadeOutAnimation==null){
+                mFadeOutAnimation = AnimationUtils.loadAnimation(PlayerBackActiviaty.this, R.anim.fade_out);
+                mFadeOutAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mRlFullControlBg.setVisibility(View.INVISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+            mRlFullControlBg.startAnimation(mFadeOutAnimation);
+        }else{
+            if (mFadeInAnimation==null){
+                mFadeInAnimation = AnimationUtils.loadAnimation(PlayerBackActiviaty.this, R.anim.fade_in);
+                mFadeInAnimation.setAnimationListener(new Animation.AnimationListener() {
+                    @Override
+                    public void onAnimationStart(Animation animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animation animation) {
+                        mRlFullControlBg.setVisibility(View.VISIBLE);
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animation animation) {
+
+                    }
+                });
+            }
+            mRlFullControlBg.startAnimation(mFadeInAnimation);
+        }
+    }
+
+    @Bind(R.id.av_rl_videocontainer)
+    RelativeLayout mRlVideoContainer;
+
+    private int m16to9Height = 0;
     @Override
     protected void bindEvent() {
         super.bindEvent();
+
+
+        mRlVideoContainer.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mOrientation != Configuration.ORIENTATION_PORTRAIT)
+                    fadeAnimation(mRlFullControlBg.getVisibility() != VISIBLE);
+            }
+        });
+        mImgFullBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateOrientation();
+            }
+        });
+
+        mImgFullStart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                doPlay();
+            }
+        });
+
+        mImgFullVoice.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getTokenEffect();
+                if (!TextUtils.isEmpty(mPlayErrStr)) {
+                    showToast(mPlayErrStr);
+                    return;
+                }
+                //声音
+                onSoundBtnClick();
+            }
+        });
+
+        mImgFullVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getTokenEffect();
+                //录像
+                if (!TextUtils.isEmpty(mPlayErrStr)) {
+                    showToast(mPlayErrStr);
+                    return;
+                }
+                onRecordBtnClick();
+            }
+        });
+        mImgFullTakePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getTokenEffect();
+                if (!TextUtils.isEmpty(mPlayErrStr)) {
+                    showToast(mPlayErrStr);
+                    return;
+                }
+                //拍照
+                onCapturePicBtnClick();
+            }
+        });
+
 //        mRlPlayback_1.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -735,45 +858,52 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlPlayback_go.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getTokenEffect();
-                if (!TextUtils.isEmpty(mPlayErrStr)) {
-                    showToast(mPlayErrStr);
-                    return;
-                }
-                if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PLAY) {
-                    //播放状态，点击停止播放
-
-                    if (mIsRecording){
-                        AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
-                        builder.setTitle("提示");
-                        builder.setMessage("该操作会中断录像，是否继续？");
-                        builder.setPositiveButton("取消", null);
-                        builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                stopRealPlayRecord();
-                                mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
-                                mEZUiPlayBack.pausePlay();
-                            }
-                        });
-                        builder.show();
-                        return;
-                    }
-
-
-                    mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
-                    mEZUiPlayBack.pausePlay();
-                } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PAUSE) {
-                    //停止状态，点击播放
-                    mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
-                    mEZUiPlayBack.resumePlay();
-                } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_STOP
-                        || mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_INIT) {
-                    mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
-                    mEZUiPlayBack.startPlay();
-                }
+                doPlay();
             }
         });
+    }
+
+    private void doPlay(){
+        getTokenEffect();
+        if (!TextUtils.isEmpty(mPlayErrStr)) {
+            showToast(mPlayErrStr);
+            return;
+        }
+        if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PLAY) {
+            //播放状态，点击停止播放
+
+            if (mIsRecording){
+                AlertDialog.Builder builder = new AlertDialog.Builder(PlayerBackActiviaty.this);
+                builder.setTitle("提示");
+                builder.setMessage("该操作会中断录像，是否继续？");
+                builder.setPositiveButton("取消", null);
+                builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        stopRealPlayRecord();
+                        mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
+                        mEZUiPlayBack.pausePlay();
+                    }
+                });
+                builder.show();
+                return;
+            }
+
+
+            mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
+            mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstart);
+            mEZUiPlayBack.pausePlay();
+        } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PAUSE) {
+            //停止状态，点击播放
+            mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+            mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstop);
+            mEZUiPlayBack.resumePlay();
+        } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_STOP
+                || mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_INIT) {
+            mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+            mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstop);
+            mEZUiPlayBack.startPlay();
+        }
     }
 
     /**
@@ -784,6 +914,31 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     @Bind(R.id.av_fl_displaycontainer)
     FrameLayout mFlDisplayContainer;
     ViewGroup.LayoutParams mSvLayoutParams;
+
+    @Bind(R.id.av_rl_fullcontrolbg)
+    RelativeLayout mRlFullControlBg;
+
+    @Bind(R.id.av_rl_fulltoolbar)
+    RelativeLayout mRlFullToolbar;
+
+    @Bind(R.id.av_img_fullback)
+    ImageView mImgFullBack;
+
+    @Bind(R.id.av_tv_fulltitle)
+    TextView mTvFullTitle;
+
+    @Bind(R.id.av_img_fullvoice)
+    ImageView mImgFullVoice;
+
+    @Bind(R.id.av_img_fullstart)
+    ImageView mImgFullStart;
+
+    @Bind(R.id.av_img_fulltakephoto)
+    ImageView mImgFullTakePhoto;
+
+    @Bind(R.id.av_img_fullvideo)
+    ImageView mImgFullVideo;
+
     private int mOrientation = Configuration.ORIENTATION_PORTRAIT;
     private void updateOperatorUI() {
         if (mOrientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -791,11 +946,15 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
             fullScreen(false);
 //            updateOrientation();
             mRlTitleLayout.setVisibility(View.VISIBLE);
+            mRlBottomLayout.setVisibility(View.VISIBLE);
+            mRlFullControlBg.setVisibility(GONE);
             mFlDisplayContainer.setLayoutParams(mSvLayoutParams);
         } else {
             // 隐藏状态栏
             fullScreen(true);
             mRlTitleLayout.setVisibility(GONE);
+            mRlBottomLayout.setVisibility(View.GONE);
+            mRlFullControlBg.setVisibility(View.VISIBLE);
             LinearLayout.LayoutParams realPlayPlayRlLp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT);
             realPlayPlayRlLp.gravity = Gravity.CENTER;
@@ -961,10 +1120,12 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_PAUSE) {
             //停止状态，点击播放
             mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+            mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstop);
             mEZUiPlayBack.resumePlay();
         } else if (mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_STOP
                 || mEZUiPlayBack.getStatus() == com.ezvizuikit.open.EZUIPlayer.STATUS_INIT) {
             mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+            mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstop);
             mEZUiPlayBack.startPlay();
         }
 
@@ -1029,13 +1190,13 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         if (!mIsOnStop) {
             mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
                     mImgVideoStop, 0, 90);
+
+            mImgFullVideo.setImageResource(R.mipmap.ic_nor_full_stopvideo);
         } else {
             mImgVideoStart.setVisibility(GONE);
             mImgVideoStop.setVisibility(View.VISIBLE);
         }
         mCurRecordName = "已将录像保存至目录：" + entityPath;
-        mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStart,
-                mImgVideoStop, 0, 90);
         mIsRecording = true;
         // 计时按钮可见
         mRlPrompt.setVisibility(View.VISIBLE);
@@ -1061,6 +1222,8 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         if (!mIsOnStop) {
             mRecordRotateViewUtil.applyRotation(mRealPlayRecordContainer, mImgVideoStop,
                     mImgVideoStart, 0, 90);
+
+            mImgFullVideo.setImageResource(R.mipmap.ic_nor_full_video);
         } else {
             mImgVideoStop.setVisibility(GONE);
             mImgVideoStart.setVisibility(View.VISIBLE);
@@ -1151,7 +1314,16 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRecordRotateViewUtil = new RotateViewUtil();
         mOrientationDetector = new MyOrientationDetector(this);
         new WindowSizeChangeNotifier(this, this);
-        mSvLayoutParams = mFlDisplayContainer.getLayoutParams();
+        mFlDisplayContainer.getViewTreeObserver().addOnGlobalLayoutListener(new ViewTreeObserver.OnGlobalLayoutListener() {
+            @Override
+            public void onGlobalLayout() {
+                if (m16to9Height == 0) {
+                    m16to9Height = (int) Math.round(mFlDisplayContainer.getWidth()/ 1.77);
+                    mFlDisplayContainer.getLayoutParams().height = m16to9Height;
+                    mSvLayoutParams = mFlDisplayContainer.getLayoutParams();
+                }
+            }
+        });
     }
 
     @Override
@@ -1243,6 +1415,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
     public void onPlayFail(EZUIError var1) {
         showToast(var1.getErrorString());
         mImgPlay.setImageResource(R.mipmap.ic_nor_greenplay);
+        mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstart);
         if (var1.getInternalErrorCode() == 0){
             mRlErr.setVisibility(View.VISIBLE);
             mTvErrTip.setText(var1.getErrorString());
@@ -1269,6 +1442,7 @@ public class PlayerBackActiviaty extends BaseActivity implements EZUIPlayer.EZUI
         mRlErr.setVisibility(GONE);
         mTimerShaftBar.setRefereshPlayTimeWithPlayer();
         mImgPlay.setImageResource(R.mipmap.ic_nor_stop);
+        mImgFullStart.setImageResource(R.mipmap.ic_nor_fullstop);
 //        updateOrientation();
     }
 

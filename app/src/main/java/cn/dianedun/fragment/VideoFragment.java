@@ -26,6 +26,7 @@ import butterknife.Bind;
 import cn.dianedun.R;
 import cn.dianedun.activity.LoginActivity;
 import cn.dianedun.activity.VideoPlayActivity;
+import cn.dianedun.activity.VideoShowActivity;
 import cn.dianedun.base.BaseTitlFragment;
 import cn.dianedun.bean.DepartPlacesListBean;
 import cn.dianedun.tools.App;
@@ -33,6 +34,7 @@ import cn.dianedun.tools.AppConfig;
 import cn.dianedun.view.SpitVideoPopView;
 
 import static android.view.View.GONE;
+import static com.vise.utils.handler.HandlerUtil.runOnUiThread;
 
 /**
  * Created by Administrator on 2017/8/3.
@@ -174,6 +176,32 @@ public class VideoFragment extends BaseTitlFragment {
         });
     }
 
+    //验证token
+    private void getTokenEffect(final Runnable runnable){
+        ViseApi api = new ViseApi.Builder(_mActivity).build();
+        api.apiPost(AppConfig.GETDEPARTPLACES, App.getInstance().getToken(),new HashMap(),false,new ApiCallback<DepartPlacesListBean.DataBean>(){
+            @Override
+            public void onStart() {
+
+            }
+
+            @Override
+            public void onNext(DepartPlacesListBean.DataBean dataBean){
+                runOnUiThread(runnable);
+            }
+
+            @Override
+            public void onError(ApiException e) {
+                if(e.getCode() == 2001)
+                    startActivity(new Intent(_mActivity, LoginActivity.class));
+                showToast(e.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+            }
+        });
+    }
 
     private CommonAdapter mCameraAdapter;
     private void addCameraList(List<DepartPlacesListBean.DataBean.ResultBean> result) {
@@ -187,7 +215,12 @@ public class VideoFragment extends BaseTitlFragment {
                         holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                               showToast("暂无设备信息");
+                                getTokenEffect(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        showToast("暂无设备信息");
+                                    }
+                                });
                             }
                         });
                     }else{
@@ -195,31 +228,41 @@ public class VideoFragment extends BaseTitlFragment {
                         holder.setOnClickListener(R.id.ia_ll_container, new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
-                                Intent intent = new Intent(_mActivity, VideoPlayActivity.class);
-                                intent.putExtra("id", bean.getId());
-                                intent.putExtra("place",bean.getDepartname());
-                                intent.putExtra("pos", 0);
-                                startActivity(intent);
+                                getTokenEffect(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Intent intent = new Intent(_mActivity, VideoPlayActivity.class);
+                                        intent.putExtra("id", bean.getId());
+                                        intent.putExtra("place",bean.getDepartname());
+                                        intent.putExtra("pos", 0);
+                                        startActivity(intent);
+                                    }
+                                });
                             }
                         });
                     }
                     holder.setOnClickListener(R.id.ic_img_spitVideo, new View.OnClickListener() {
                         @Override
-                        public void onClick(View v) {
-                            SpitVideoPopView spitVideoPopView = new SpitVideoPopView(LayoutInflater.from(_mActivity).inflate(R.layout.view_pop_spitvideo,null),
-                                    ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true,bean.getId());
-                            spitVideoPopView.setOnVideoSelect(new SpitVideoPopView.OnVideoSelect() {
+                        public void onClick(final View v) {
+                            getTokenEffect(new Runnable() {
                                 @Override
-                                public void onVideoSelect(int tag,int pos) {
-                                    Intent intent = new Intent(_mActivity, VideoPlayActivity.class);
-                                    intent.putExtra("id", bean.getId());
-                                    intent.putExtra("place",bean.getDepartname());
-                                    intent.putExtra("spit", tag);
-                                    intent.putExtra("pos",pos - 1);
-                                    startActivity(intent);
+                                public void run() {
+                                    SpitVideoPopView spitVideoPopView = new SpitVideoPopView(LayoutInflater.from(_mActivity).inflate(R.layout.view_pop_spitvideo,null),
+                                            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT, true,bean.getId());
+                                    spitVideoPopView.setOnVideoSelect(new SpitVideoPopView.OnVideoSelect() {
+                                        @Override
+                                        public void onVideoSelect(int tag,int pos) {
+                                            Intent intent = new Intent(_mActivity, VideoPlayActivity.class);
+                                            intent.putExtra("id", bean.getId());
+                                            intent.putExtra("place",bean.getDepartname());
+                                            intent.putExtra("spit", tag);
+                                            intent.putExtra("pos",pos - 1);
+                                            startActivity(intent);
+                                        }
+                                    });
+                                    spitVideoPopView.showPopupWindow(v);
                                 }
                             });
-                            spitVideoPopView.showPopupWindow(v);
                         }
                     });
                     holder.setText(R.id.ic_tv_recenttime,bean.getAddress());
