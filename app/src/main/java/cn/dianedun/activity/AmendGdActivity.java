@@ -70,6 +70,7 @@ import dev.xesam.android.toolbox.timer.CountTimer;
 
 /**
  * Created by Administrator on 2017/8/8.
+ * a
  */
 
 public class AmendGdActivity extends BaseTitlActivity implements View.OnClickListener,
